@@ -171,6 +171,8 @@
             <button id="tab-zufall" class="nav-btn" onclick="switchTab('zufall')">🎲 Zufall</button>
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
             <button id="tab-tipps" class="nav-btn" onclick="switchTab('tipps')">💡 Tipps</button>
+            <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">📊 Statistik</button>
+            <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -607,6 +609,27 @@
             </div>
         </div>
 
+        <div id="content-statistik" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>📊 Gesamtausgaben – Wer hat am meisten ausgegeben?</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Alle bestätigten Ausgaben pro Person zusammengezählt.</p>
+                <div id="stats-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--accent); margin-top:20px;">
+                <h3>💸 Gesamtausgaben der Gruppe</h3>
+                <div class="stats-box" style="margin-bottom:0;">Insgesamt ausgegeben: <span id="stats-total-all">0.00</span> €</div>
+            </div>
+        </div>
+
+        <div id="content-wetter" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>🌤️ Aktuelles Wetter in Barcelona</h3>
+                <div id="wetter-content" style="margin-top:15px; text-align:center;">
+                    <p style="color:var(--text-muted);">Wird geladen...</p>
+                </div>
+            </div>
+        </div>
+
         <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
@@ -747,6 +770,8 @@
         if (tabName === 'restaurants' || tabName === 'orte') {
             startLiveTracking();
         }
+        if (tabName === 'wetter') loadWetter();
+        if (tabName === 'statistik') updateStatistik();
     }
 
     function login() {
@@ -1160,6 +1185,95 @@
         // Bewertungen für alle Restaurants laden
         renderAllReviews();
     }
+
+    // ================= STATISTIK =================
+    function updateStatistik() {
+        normalizeDB();
+        const totals = {};
+        ALL_USERS.forEach(u => totals[u] = 0);
+
+        db.expenses.forEach(exp => {
+            totals[exp.payer] = (totals[exp.payer] || 0) + exp.totalAmount;
+        });
+
+        const sorted = ALL_USERS.slice().sort((a, b) => totals[b] - totals[a]);
+        const max = Math.max(...Object.values(totals)) || 1;
+        const grandTotal = Object.values(totals).reduce((a, b) => a + b, 0);
+
+        const colors = ["var(--primary)", "var(--accent)", "var(--success)", "var(--warning)"];
+        const bars = document.getElementById("stats-bars");
+        bars.innerHTML = "";
+
+        sorted.forEach((user, i) => {
+            const pct = max > 0 ? (totals[user] / max * 100).toFixed(1) : 0;
+            bars.innerHTML += `
+                <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span style="font-weight:700; color:${colors[i]}">${user} ${user === currentUser ? "(Du)" : ""}</span>
+                        <span style="font-weight:700; color:${colors[i]}">${totals[user].toFixed(2)} €</span>
+                    </div>
+                    <div style="background:#0f172a; border-radius:8px; height:22px; overflow:hidden;">
+                        <div style="width:${pct}%; background:${colors[i]}; height:100%; border-radius:8px; transition:width 0.6s ease;"></div>
+                    </div>
+                </div>`;
+        });
+
+        document.getElementById("stats-total-all").innerText = grandTotal.toFixed(2);
+    }
+
+    // ================= WETTER =================
+    var wetterLoaded = false;
+    function loadWetter() {
+        if (wetterLoaded) return;
+        wetterLoaded = true;
+        // Barcelona coords: 41.3851, 2.1734
+        const url = "https://api.open-meteo.com/v1/forecast?latitude=41.3851&longitude=2.1734&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&timezone=Europe/Madrid&forecast_days=5";
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                const c = data.current;
+                const d = data.daily;
+                const icon = wetterIcon(c.weathercode);
+                let html = `
+                    <div style="font-size:72px; margin-bottom:10px;">${icon}</div>
+                    <div style="font-size:48px; font-weight:800; color:var(--primary);">${c.temperature_2m}°C</div>
+                    <div style="color:var(--text-muted); margin:8px 0 20px 0; font-size:15px;">💨 Wind: ${c.windspeed_10m} km/h &nbsp;|&nbsp; 💧 Luftfeuchte: ${c.relativehumidity_2m}%</div>
+                    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:10px;">`;
+                const days = ["´s Heute", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+                const dayNames = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+                for (let i = 0; i < 5; i++) {
+                    const date = new Date(d.time[i]);
+                    const dayName = i === 0 ? "Heute" : dayNames[date.getDay()];
+                    html += `<div style="background:#0f172a; border-radius:12px; padding:12px 6px; border:1px solid var(--border);">
+                        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">${dayName}</div>
+                        <div style="font-size:26px;">${wetterIcon(d.weathercode[i])}</div>
+                        <div style="font-size:13px; font-weight:700; color:var(--primary); margin-top:6px;">${d.temperature_2m_max[i]}°</div>
+                        <div style="font-size:11px; color:var(--text-muted);">${d.temperature_2m_min[i]}°</div>
+                        <div style="font-size:11px; color:#60a5fa; margin-top:4px;">🌧️ ${d.precipitation_probability_max[i]}%</div>
+                    </div>`;
+                }
+                html += "</div>";
+                document.getElementById("wetter-content").innerHTML = html;
+            })
+            .catch(() => {
+                document.getElementById("wetter-content").innerHTML = '<p style="color:var(--danger);">❌ Wetter konnte nicht geladen werden. Bitte Internetverbindung prüfen.</p>';
+            });
+    }
+
+    function wetterIcon(code) {
+        if (code === 0) return "🌞";
+        if (code <= 2) return "🌤️";
+        if (code <= 3) return "☁️";
+        if (code <= 48) return "🌫";
+        if (code <= 57) return "🌦️";
+        if (code <= 67) return "🌧️";
+        if (code <= 77) return "❄️";
+        if (code <= 82) return "🌦️";
+        if (code <= 86) return "⛄️";
+        if (code <= 99) return "⛈️";
+        return "🌤️";
+    }
+
 </script>
 </body>
 </html>
