@@ -689,6 +689,7 @@
             if (!db.packing) db.packing = { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] };
         }
         isDbReady = true;
+        normalizeDB();
 
         showSyncPulse();
         if (currentUser) updateUI();
@@ -1080,8 +1081,23 @@
     }
 
     // ================= UPDATE UI SYSTEM =================
+    function normalizeDB() {
+        if (!db.expenses) db.expenses = [];
+        else if (!Array.isArray(db.expenses)) db.expenses = Object.values(db.expenses);
+        if (!db.debts) db.debts = [];
+        else if (!Array.isArray(db.debts)) db.debts = Object.values(db.debts);
+        if (!db.food_diary) db.food_diary = [];
+        else if (!Array.isArray(db.food_diary)) db.food_diary = Object.values(db.food_diary);
+        if (!db.packing) db.packing = {};
+        ALL_USERS.forEach(u => {
+            if (!db.packing[u]) db.packing[u] = [];
+            else if (!Array.isArray(db.packing[u])) db.packing[u] = Object.values(db.packing[u]);
+        });
+    }
+
     function updateUI() {
         if (!currentUser) return;
+        normalizeDB();
 
         const creditsList = document.getElementById('my-credits-list');
         const debtsList = document.getElementById('my-debts-list');
@@ -1120,8 +1136,7 @@
         ALL_USERS.forEach(user => {
             const isMe = (user === currentUser);
             let itemsHTML = '';
-            const rawList = db.packing[user];
-            const list = Array.isArray(rawList) ? rawList : (rawList ? Object.values(rawList) : []);
+            const list = db.packing[user] || [];
             if (list.length === 0) { itemsHTML = `<p style="font-size:12px; color:var(--text-muted); margin:5px 0;">Liste ist leer... 🧳</p>`; } 
             else {
                 list.forEach(item => {
