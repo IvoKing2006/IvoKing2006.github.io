@@ -670,7 +670,7 @@
     var database = firebase.database();
     var dbRef = database.ref('urlaubskasse');
 
-    var PASSWORDS = {"Ivo": "0511", "Romeo": "2508", "Anton": "1603", "Raul": "2406"};
+    var PASSWORDS = {"Ivo": "Barca24!", "Romeo": "Rambla77!", "Anton": "Gaudi55!", "Raul": "Messi10!"};
     var ALL_USERS = ["Ivo", "Romeo", "Anton", "Raul"];
     var currentUser = null;
     var currentBase64Image = "";
@@ -878,6 +878,8 @@
         const text = input.value.trim();
         if (!text) return;
 
+        if (!db.packing) db.packing = {};
+        if (!Array.isArray(db.packing[currentUser])) db.packing[currentUser] = [];
         db.packing[currentUser].push({ id: Date.now().toString(), name: text, checked: false });
         input.value = "";
         saveDB();
@@ -885,12 +887,14 @@
 
     function togglePackItem(user, itemId) {
         if (user !== currentUser) return;
+        if (!Array.isArray(db.packing[user])) db.packing[user] = Object.values(db.packing[user] || {});
         const item = db.packing[user].find(i => i.id === itemId);
         if (item) { item.checked = !item.checked; saveDB(); }
     }
 
     function deletePackItem(user, itemId) {
         if (user !== currentUser) return;
+        if (!Array.isArray(db.packing[user])) db.packing[user] = Object.values(db.packing[user] || {});
         db.packing[user] = db.packing[user].filter(i => i.id !== itemId);
         saveDB();
     }
@@ -1116,7 +1120,8 @@
         ALL_USERS.forEach(user => {
             const isMe = (user === currentUser);
             let itemsHTML = '';
-            const list = db.packing[user] || [];
+            const rawList = db.packing[user];
+            const list = Array.isArray(rawList) ? rawList : (rawList ? Object.values(rawList) : []);
             if (list.length === 0) { itemsHTML = `<p style="font-size:12px; color:var(--text-muted); margin:5px 0;">Liste ist leer... 🧳</p>`; } 
             else {
                 list.forEach(item => {
