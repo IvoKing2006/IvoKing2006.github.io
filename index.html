@@ -163,6 +163,11 @@
             </div>
         </div>
 
+        <div id="countdown-banner" style="background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(56,189,248,0.15)); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:14px; color:var(--text-muted);">✈️ Barcelona in:</span>
+            <span id="countdown-banner-text" style="font-size:16px; font-weight:800; color:var(--primary); letter-spacing:1px;">...</span>
+        </div>
+
         <div class="nav-tabs">
             <button id="tab-finanzen" class="nav-btn active" onclick="switchTab('finanzen')">💸 Finanzen</button>
             <button id="tab-packliste" class="nav-btn" onclick="switchTab('packliste')">🎒 Packliste</button>
@@ -173,7 +178,6 @@
             <button id="tab-tipps" class="nav-btn" onclick="switchTab('tipps')">💡 Tipps</button>
             <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">📊 Statistik</button>
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
-            <button id="tab-countdown" class="nav-btn" onclick="switchTab('countdown')">⟳ Countdown</button>
             <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">💬 Chat</button>
             <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">🏆 Rangliste</button>
         </div>
@@ -633,18 +637,6 @@
             </div>
         </div>
 
-        <div id="content-countdown" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--primary); text-align:center; padding: 40px 20px;">
-                <h3 style="font-size:22px;">⟳ Countdown bis Barcelona</h3>
-                <div id="countdown-display" style="margin: 30px 0;"></div>
-                <div style="margin-top: 20px;">
-                    <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:14px;">Abreisedatum ändern:</label>
-                    <input type="date" id="countdown-date" style="width:auto; padding:10px 16px; background:#0f172a; border:1px solid var(--border); border-radius:10px; color:var(--text-main); font-size:16px;">
-                    <button onclick="saveCountdownDate()" style="margin-top:12px; max-width:200px;">Speichern</button>
-                </div>
-            </div>
-        </div>
-
         <div id="content-chat" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--accent);">
                 <h3>💬 Gruppen-Chat</h3>
@@ -822,7 +814,6 @@
         }
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
-        if (tabName === 'countdown') updateCountdown();
         if (tabName === 'chat') renderChat();
         if (tabName === 'rangliste') renderRangliste();
     }
@@ -845,6 +836,7 @@
             setupShareCheckboxes();
             switchTab('finanzen'); 
             updateUI();
+            updateCountdown();
         } else {
             alert('Falsches Passwort!');
         }
@@ -1327,48 +1319,23 @@
         return "🌤️";
     }
 
-    // ================= COUNTDOWN =================
+    // ================= COUNTDOWN BANNER =================
     function updateCountdown() {
-        var savedDate = db.countdownDate || "2026-07-22";
-        document.getElementById("countdown-date").value = savedDate;
-        var target = new Date(savedDate + "T06:00:00");
+        var target = new Date("2026-07-22T06:00:00");
         var now = new Date();
         var diff = target - now;
-        var el = document.getElementById("countdown-display");
+        var el = document.getElementById("countdown-banner-text");
+        if (!el) return;
         if (diff <= 0) {
-            el.innerHTML = '<div style="font-size:60px;">🎉</div><div style="font-size:28px; font-weight:800; color:var(--success); margin-top:10px;">Es geht los! Viel Spaß in Barcelona!</div>';
+            el.innerText = "🎉 Es geht los!";
             return;
         }
         var days = Math.floor(diff / (1000*60*60*24));
         var hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
         var mins = Math.floor((diff % (1000*60*60)) / (1000*60));
         var secs = Math.floor((diff % (1000*60)) / 1000);
-        el.innerHTML = `
-            <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
-                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
-                    <div style="font-size:48px; font-weight:800; color:var(--primary);">${days}</div>
-                    <div style="color:var(--text-muted); font-size:13px;">Tage</div>
-                </div>
-                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
-                    <div style="font-size:48px; font-weight:800; color:var(--accent);">${hours}</div>
-                    <div style="color:var(--text-muted); font-size:13px;">Stunden</div>
-                </div>
-                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
-                    <div style="font-size:48px; font-weight:800; color:var(--success);">${mins}</div>
-                    <div style="color:var(--text-muted); font-size:13px;">Minuten</div>
-                </div>
-                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
-                    <div style="font-size:48px; font-weight:800; color:var(--warning);">${secs}</div>
-                    <div style="color:var(--text-muted); font-size:13px;">Sekunden</div>
-                </div>
-            </div>`;
+        el.innerText = `${days}T  ${hours}Std  ${mins}Min  ${secs}Sek`;
         setTimeout(updateCountdown, 1000);
-    }
-
-    function saveCountdownDate() {
-        db.countdownDate = document.getElementById("countdown-date").value;
-        saveDB();
-        updateCountdown();
     }
 
     // ================= CHAT =================
