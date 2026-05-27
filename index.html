@@ -173,6 +173,9 @@
             <button id="tab-tipps" class="nav-btn" onclick="switchTab('tipps')">💡 Tipps</button>
             <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">📊 Statistik</button>
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
+            <button id="tab-countdown" class="nav-btn" onclick="switchTab('countdown')">⟳ Countdown</button>
+            <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">💬 Chat</button>
+            <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">🏆 Rangliste</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -630,6 +633,53 @@
             </div>
         </div>
 
+        <div id="content-countdown" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--primary); text-align:center; padding: 40px 20px;">
+                <h3 style="font-size:22px;">⟳ Countdown bis Barcelona</h3>
+                <div id="countdown-display" style="margin: 30px 0;"></div>
+                <div style="margin-top: 20px;">
+                    <label style="display:block; margin-bottom:8px; color:var(--text-muted); font-size:14px;">Abreisedatum ändern:</label>
+                    <input type="date" id="countdown-date" style="width:auto; padding:10px 16px; background:#0f172a; border:1px solid var(--border); border-radius:10px; color:var(--text-main); font-size:16px;">
+                    <button onclick="saveCountdownDate()" style="margin-top:12px; max-width:200px;">Speichern</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-chat" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--accent);">
+                <h3>💬 Gruppen-Chat</h3>
+                <div id="chat-messages" style="height:350px; overflow-y:auto; background:#0f172a; border-radius:10px; border:1px solid var(--border); padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;"></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="chat-input" placeholder="Nachricht schreiben..." style="flex:1;" onkeydown="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" style="width:auto; padding:0 20px;">📤 Senden</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-rangliste" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--warning);">
+                <h3>🏆 Rangliste – Wer ist der King?</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Jeder trägt seine eigenen Werte ein. Ehrlichkeit Pflicht! 😄</p>
+                <div id="rangliste-content"></div>
+                <div class="card" style="margin-top:20px; background:#0f172a;">
+                    <h4 style="margin-bottom:15px; color:var(--warning);">Deine Werte eintragen:</h4>
+                    <div class="form-group">
+                        <label>🍺 Getränke heute:</label>
+                        <input type="number" id="rl-drinks" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>🌙 Schlafen gegangen um (Uhr):</label>
+                        <input type="number" id="rl-sleep" min="0" max="30" placeholder="z.B. 3 für 3 Uhr">
+                    </div>
+                    <div class="form-group">
+                        <label>🏃 Schritte heute (vom Handy):</label>
+                        <input type="number" id="rl-steps" min="0" placeholder="0">
+                    </div>
+                    <button onclick="saveRangliste()" style="background: linear-gradient(135deg, var(--warning), #d97706); box-shadow: 0 4px 10px rgba(245,158,11,0.3);">💾 Speichern</button>
+                </div>
+            </div>
+        </div>
+
         <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
@@ -772,6 +822,9 @@
         }
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
+        if (tabName === 'countdown') updateCountdown();
+        if (tabName === 'chat') renderChat();
+        if (tabName === 'rangliste') renderRangliste();
     }
 
     function login() {
@@ -1272,6 +1325,136 @@
         if (code <= 86) return "⛄️";
         if (code <= 99) return "⛈️";
         return "🌤️";
+    }
+
+    // ================= COUNTDOWN =================
+    function updateCountdown() {
+        var savedDate = db.countdownDate || "2026-07-22";
+        document.getElementById("countdown-date").value = savedDate;
+        var target = new Date(savedDate + "T06:00:00");
+        var now = new Date();
+        var diff = target - now;
+        var el = document.getElementById("countdown-display");
+        if (diff <= 0) {
+            el.innerHTML = '<div style="font-size:60px;">🎉</div><div style="font-size:28px; font-weight:800; color:var(--success); margin-top:10px;">Es geht los! Viel Spaß in Barcelona!</div>';
+            return;
+        }
+        var days = Math.floor(diff / (1000*60*60*24));
+        var hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        var mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+        var secs = Math.floor((diff % (1000*60)) / 1000);
+        el.innerHTML = `
+            <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
+                    <div style="font-size:48px; font-weight:800; color:var(--primary);">${days}</div>
+                    <div style="color:var(--text-muted); font-size:13px;">Tage</div>
+                </div>
+                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
+                    <div style="font-size:48px; font-weight:800; color:var(--accent);">${hours}</div>
+                    <div style="color:var(--text-muted); font-size:13px;">Stunden</div>
+                </div>
+                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
+                    <div style="font-size:48px; font-weight:800; color:var(--success);">${mins}</div>
+                    <div style="color:var(--text-muted); font-size:13px;">Minuten</div>
+                </div>
+                <div style="background:#0f172a; border:1px solid var(--border); border-radius:14px; padding:20px 25px; min-width:80px;">
+                    <div style="font-size:48px; font-weight:800; color:var(--warning);">${secs}</div>
+                    <div style="color:var(--text-muted); font-size:13px;">Sekunden</div>
+                </div>
+            </div>`;
+        setTimeout(updateCountdown, 1000);
+    }
+
+    function saveCountdownDate() {
+        db.countdownDate = document.getElementById("countdown-date").value;
+        saveDB();
+        updateCountdown();
+    }
+
+    // ================= CHAT =================
+    function sendChatMessage() {
+        var input = document.getElementById("chat-input");
+        var text = input.value.trim();
+        if (!text) return;
+        if (!db.chat) db.chat = [];
+        else if (!Array.isArray(db.chat)) db.chat = Object.values(db.chat);
+        db.chat.push({
+            id: Date.now().toString(),
+            author: currentUser,
+            text: text,
+            time: new Date().toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"})
+        });
+        input.value = "";
+        saveDB();
+    }
+
+    function renderChat() {
+        var box = document.getElementById("chat-messages");
+        if (!box) return;
+        if (!db.chat) db.chat = [];
+        else if (!Array.isArray(db.chat)) db.chat = Object.values(db.chat);
+        var colors = {"Ivo":"var(--primary)","Romeo":"var(--accent)","Anton":"var(--success)","Raul":"var(--warning)"};
+        box.innerHTML = db.chat.length === 0 ? '<p style="color:var(--text-muted); text-align:center; margin-top:40px;">Noch keine Nachrichten... Fang an! 👋</p>' : "";
+        db.chat.forEach(msg => {
+            var isMe = msg.author === currentUser;
+            var color = colors[msg.author] || "var(--primary)";
+            box.innerHTML += `<div style="display:flex; flex-direction:column; align-items:${isMe ? "flex-end" : "flex-start"};">
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:3px;">${msg.author} � ${msg.time}</div>
+                <div style="background:${isMe ? color : "#334155"}; color:white; padding:10px 14px; border-radius:${isMe ? "14px 14px 4px 14px" : "14px 14px 14px 4px"}; max-width:75%; font-size:14px; word-break:break-word;">${msg.text}</div>
+            </div>`;
+        });
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // ================= RANGLISTE =================
+    function saveRangliste() {
+        if (!db.rangliste) db.rangliste = {};
+        db.rangliste[currentUser] = {
+            drinks: parseInt(document.getElementById("rl-drinks").value) || 0,
+            sleep: parseInt(document.getElementById("rl-sleep").value) || 0,
+            steps: parseInt(document.getElementById("rl-steps").value) || 0
+        };
+        saveDB();
+        renderRangliste();
+    }
+
+    function renderRangliste() {
+        var el = document.getElementById("rangliste-content");
+        if (!el) return;
+        if (!db.rangliste) db.rangliste = {};
+        var r = db.rangliste;
+
+        // Pre-fill current user inputs
+        if (r[currentUser]) {
+            document.getElementById("rl-drinks").value = r[currentUser].drinks || 0;
+            document.getElementById("rl-sleep").value = r[currentUser].sleep || 0;
+            document.getElementById("rl-steps").value = r[currentUser].steps || 0;
+        }
+
+        var categories = [
+            { key: "drinks", label: "🍺 Meiste Getränke", higher: true },
+            { key: "sleep", label: "🌙 Spätest schlafen gegangen", higher: true },
+            { key: "steps", label: "🏃 Meiste Schritte", higher: true }
+        ];
+
+        var html = "";
+        categories.forEach(cat => {
+            var sorted = ALL_USERS.filter(u => r[u]).sort((a, b) => r[b][cat.key] - r[a][cat.key]);
+            if (sorted.length === 0) return;
+            html += `<div class="card" style="background:#0f172a; margin-bottom:15px;">
+                <h4 style="margin-bottom:12px; color:var(--warning);">${cat.label}</h4>`;
+            sorted.forEach((u, i) => {
+                var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "  ";
+                var val = cat.key === "sleep" ? r[u][cat.key] + " Uhr" : r[u][cat.key];
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
+                    <span>${medal} <strong>${u}</strong>${u === currentUser ? " (Du)" : ""}</span>
+                    <span style="color:var(--primary); font-weight:700;">${val}</span>
+                </div>`;
+            });
+            html += "</div>";
+        });
+
+        el.innerHTML = html || '<p style="color:var(--text-muted);">Noch keine Einträge. Tragt eure Werte ein!</p>';
     }
 
 </script>
