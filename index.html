@@ -1807,7 +1807,18 @@
         ALL_USERS.forEach(u => totals[u] = 0);
 
         db.expenses.forEach(exp => {
-            totals[exp.payer] = (totals[exp.payer] || 0) + exp.totalAmount;
+            // Dem Zahler seinen eigenen Anteil anrechnen
+            const payerShare = exp.participants.includes(exp.payer) ? exp.shareAmount : exp.totalAmount;
+            totals[exp.payer] = (totals[exp.payer] || 0) + payerShare;
+
+            // Allen anderen Teilnehmern ihren Anteil anrechnen, sobald Schuld beglichen
+            exp.participants.forEach(participant => {
+                if (participant === exp.payer) return;
+                const debt = db.debts.find(d => d.expenseId === exp.id && d.from === participant);
+                if (debt && debt.resolved) {
+                    totals[participant] = (totals[participant] || 0) + exp.shareAmount;
+                }
+            });
         });
 
         const sorted = ALL_USERS.slice().sort((a, b) => totals[b] - totals[a]);
