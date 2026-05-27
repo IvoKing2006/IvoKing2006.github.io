@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barcelona Tracker Pro - Ivo, Romeo, Anton & Raul</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -131,6 +132,9 @@
         .modal-content { background: var(--card-bg); padding: 25px; border-radius: 16px; max-width: 90%; width: 450px; border: 1px solid var(--border); position: relative; }
         .modal-content img { max-width: 100%; max-height: 350px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border); }
         .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; width: auto; padding: 0; box-shadow: none; }
+        .map-container { height: 380px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-top: 20px; }
+        .tabak-tag { display: inline-block; background: rgba(245, 158, 11, 0.15); color: var(--warning); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+        .hours-info { font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -172,6 +176,7 @@
             <button id="tab-finanzen" class="nav-btn active" onclick="switchTab('finanzen')">💸 Finanzen</button>
             <button id="tab-packliste" class="nav-btn" onclick="switchTab('packliste')">🎒 Packliste</button>
             <button id="tab-restaurants" class="nav-btn" onclick="switchTab('restaurants')">🍔 Restaurants</button>
+            <button id="tab-tabak" class="nav-btn" onclick="switchTab('tabak')">🚬 Tabakläden</button>
             <button id="tab-orte" class="nav-btn" onclick="switchTab('orte')">🧭 Orte & Pläne</button>
             <button id="tab-zufall" class="nav-btn" onclick="switchTab('zufall')">🎲 Zufall</button>
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
@@ -472,10 +477,339 @@
                         <div class="reviews-container" data-rest-name="Fast Eddie’s"></div>
                     </div>
                 </div>
+                <div id="map-restaurants" class="map-container"></div>
             </div>
         </div>
 
-        <div id="content-orte" class="tab-content hidden">
+        <div id="content-tabak" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--warning);">
+                <h3>🚬 Tabakläden in Barcelona</h3>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                    Alle Tabakläden nach Entfernung sortiert – live aktualisiert.
+                </p>
+
+                <div class="restaurant-grid" id="tabak-grid">
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3938" data-lng="2.1606">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC EXP. 170</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer del Rosselló, 241, Eixample</div>
+                        <span class="hours-info">Mo–Do: 07:30–22:30 · Fr: 07:30–23:00 · Sa: 09:00–23:00 · So: 09:00–14:00 &amp; 15:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC EXP. 170','Carrer del Rosselló, 241, Eixample, 08008 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3862" data-lng="2.1547">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc-Tabacs (Casanova)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Casanova, 101, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–20:30 · Sa: 09:00–13:30 &amp; 17:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc-Tabacs','Carrer de Casanova, 101, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3792" data-lng="2.1487">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Entença 57</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer d'Entença, 57, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–20:30 · Sa: 09:00–14:00 &amp; 16:30–20:30 · So: 10:00–14:00 &amp; 16:30–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Entença 57','Carrer d\'Entença, 57, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3937" data-lng="2.1674">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc nº50 (Pau Claris)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">C. de Pau Claris, 110, Eixample</div>
+                        <span class="hours-info">Mo–Sa: 08:00–21:00 · So: 09:00–19:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc nº50 Barcelona','C. de Pau Claris, 110, Eixample, 08009 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3923" data-lng="2.1623">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">L'estanc (Rambla de Catalunya)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Rambla de Catalunya, 88, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 07:30–22:30 · Sa: 09:00–22:30 · So: 09:00–15:00 &amp; 16:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'estanc','Rambla de Catalunya, 88, Eixample, 08008 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3839" data-lng="2.1810">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc d'Argentería</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de l'Argenteria, 45, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 10:00–22:00 · So: 10:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc d\'Argentería','Carrer de l\'Argenteria, 45, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3840" data-lng="2.1755">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanco Barcelona Nº077</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer Comtal, 17, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 08:00–23:00 · Sa–So: 10:00–23:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanco Barcelona Nº077','Carrer Comtal, 17, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3836" data-lng="2.1764">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Catedral</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Av. de la Catedral, 1, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 09:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Catedral','Av. de la Catedral, 1, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3775" data-lng="2.1719">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. Nº 21</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer Nou de la Rambla, 68, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Do: 09:00–21:00 · Fr–So: 11:00–14:30 &amp; 16:00–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. Nº 21','Carrer Nou de la Rambla, 68, Ciutat Vella, 08400 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3851" data-lng="2.1801">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs El Tunel</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Placeta de Montcada, 6, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 10:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs El Tunel','Placeta de Montcada, 6, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3832" data-lng="2.1865">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC TABACS La Barceloneta</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer d'Andrea Dòria, 8, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 08:00–21:30 · So: 09:30–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC TABACS La Barceloneta','Carrer d\'Andrea Dòria, 8, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3831" data-lng="2.1842">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Bové – 57 BCN</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Pepe Rubianes, 6, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 09:00–21:00 · So: 10:00–15:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Bové - 57 BCN','Carrer de Pepe Rubianes, 6, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3864" data-lng="2.1852">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Vara</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de la Maquinista, 4, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 08:00–21:00 · Sa: 09:00–21:00 · So: 09:00–19:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Vara','Carrer de la Maquinista, 4, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4045" data-lng="2.1742">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sagrada Família</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Sardenya, 312, Eixample</div>
+                        <span class="hours-info">Mo–So: 09:00–22:30</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sagrada Família','Carrer de Sardenya, 312, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4051" data-lng="2.1789">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sagrada Família Exp. 409</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">C/ de Padilla, 311, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 09:30–14:30 &amp; 17:00–20:30 · Sa: 10:00–14:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sagrada Família Exp. 409','C/ de Padilla, 311, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4063" data-lng="2.1790">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs (Castillejos)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de los Castillejos, 320, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 07:30–21:00 · Sa: 09:00–15:30 &amp; 16:30–21:00 · So: 09:00–15:00 &amp; 16:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Castillejos','Carrer de los Castillejos, 320, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4027" data-lng="2.1852">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Nº 47 (Provença)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Provença, 443, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:00–20:00 · Sa: 10:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Nº 47','Carrer de Provença, 443, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4009" data-lng="2.1771">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC DE TABACS N°268</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de los Castillejos, 250, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 09:00–20:30 · Sa: 09:00–14:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC DE TABACS N°268','Carrer de los Castillejos, 250, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3780" data-lng="2.1523">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Sant Antoni Exp. 78</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Viladomat, 60, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:00–21:00 · Sa–So: 09:00–15:00 &amp; 16:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Sant Antoni Exp. 78','Carrer de Viladomat, 60, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3786" data-lng="2.1605">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Exp Nº 055 (Parlament)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer del Parlament, 58, Eixample</div>
+                        <span class="hours-info">Mo–Sa: 08:15–22:00 · So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Exp Nº 055','Carrer del Parlament, 58, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3766" data-lng="2.1568">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Mistral</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Av. de Mistral, 28-30, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–20:30 · Sa: 09:00–14:00 &amp; 16:30–20:00 · So: 09:00–14:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Mistral','Av. de Mistral, 28-30, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3783" data-lng="2.1601">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Dídac (Floridablanca)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Floridablanca, 98, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–21:00 · Sa: 09:30–21:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Dídac','Carrer de Floridablanca, 98, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3856" data-lng="2.1528">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sepúlveda</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Sepúlveda, 173, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 09:00–14:00 &amp; 16:00–20:00 · Sa: 10:00–14:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sepúlveda','Carrer de Sepúlveda, 173, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3848" data-lng="2.1861">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC DEL BORN</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Av. del Marquès de l'Argentera, 15, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 07:30–22:00 · Sa: 09:00–20:00 · So: 10:00–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC DEL BORN','Av. del Marquès de l\'Argentera, 15, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3842" data-lng="2.1791">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Princesa 12</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de la Princesa, 12, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 09:00–21:00 · Sa–So: 10:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Princesa 12','Carrer de la Princesa, 12, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3843" data-lng="2.1820">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs I Timbres (Princesa 42)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de la Princesa, 42, Ciutat Vella</div>
+                        <span class="hours-info">Mo–So: 08:30–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs I Timbres','Carrer de la Princesa, 42, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3975" data-lng="2.1978">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">L'estanc de Pujades</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Pujades, 205, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 08:00–21:00 · Sa: 09:00–21:00 · So: 09:30–14:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'estanc de Pujades','Carrer de Pujades, 205, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3990" data-lng="2.1970">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Rambla del Poblenou 77</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Rambla del Poblenou, 77, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 08:00–20:30 · Sa: 08:00–14:00 &amp; 16:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Rambla del Poblenou 77','Rambla del Poblenou, 77, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3976" data-lng="2.1960">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">L'Estanc De La Rambla (Poblenou 51)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Rambla del Poblenou, 51, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 08:00–20:30 · Sa: 08:00–14:00 &amp; 16:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'Estanc De La Rambla','Rambla del Poblenou, 51, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3960" data-lng="2.1993">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc 305 (Carrer de Llull)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Llull, 233, Sant Martí</div>
+                        <span class="hours-info">Mo–Sa: 08:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc 305','Carrer de Llull, 233, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3987" data-lng="2.2015">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc 316 de Barcelona</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de l'Arquitecte Sert, 18, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 07:30–21:00 · Sa: 08:00–15:00 &amp; 16:00–21:00 · So: 09:00–15:00 &amp; 16:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc 316 de Barcelona','Carrer de l\'Arquitecte Sert, 18, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3820" data-lng="2.1635">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc del Raval (Joaquín Costa)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Joaquín Costa, 35, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 08:30–21:00 · Sa: 10:00–21:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc del Raval','Carrer de Joaquín Costa, 35, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3813" data-lng="2.1688">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. Nº 14 (Carme 61)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer del Carme, 61, Ciutat Vella</div>
+                        <span class="hours-info">Mo–So: 08:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. Nº 14','Carrer del Carme, 61, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3799" data-lng="2.1721">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabac Liceu</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Sant Pau, 4, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 09:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabac Liceu','Carrer de Sant Pau, 4, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3822" data-lng="2.1697">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. Nº 15 (Carme 15)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer del Carme, 15, Ciutat Vella</div>
+                        <span class="hours-info">Mo–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. Nº 15','Carrer del Carme, 15, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                </div>
+
+                <div id="map-tabak" class="map-container"></div>
+            </div>
+        </div>
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🧭 Wichtige Orte & Aktivitäten</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
@@ -539,6 +873,7 @@
                         <button class="btn-nav-link" onclick="openMap('Bunkers del Carmel', 'Carrer de la Gran Vista, 96, Horta-Guinardó, 08032 Barcelona')">🗺️ Route öffnen</button>
                     </div>
                 </div>
+                <div id="map-orte" class="map-container"></div>
             </div>
         </div>
 
@@ -738,6 +1073,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
     // ================= FIREBASE SETUP =================
@@ -829,9 +1165,12 @@
         document.getElementById(`content-${tabName}`).classList.remove('hidden');
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
-        if (tabName === 'restaurants' || tabName === 'orte') {
+        if (tabName === 'restaurants' || tabName === 'orte' || tabName === 'tabak') {
             startLiveTracking();
         }
+        if (tabName === 'restaurants') setTimeout(() => initMap('map-restaurants', 'restaurants'), 100);
+        if (tabName === 'orte') setTimeout(() => initMap('map-orte', 'orte'), 100);
+        if (tabName === 'tabak') setTimeout(() => initMap('map-tabak', 'tabak'), 100);
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
         if (tabName === 'chat') renderChat();
@@ -1526,6 +1865,68 @@
 
         el.innerHTML = html || '<p style="color:var(--text-muted);">Noch keine Einträge. Tragt eure Werte ein!</p>';
     }
+    // ================= LEAFLET MAPS =================
+    var mapInstances = {};
+
+    function initMap(mapId, tabName) {
+        if (mapInstances[mapId]) {
+            mapInstances[mapId].invalidateSize();
+            return;
+        }
+        var el = document.getElementById(mapId);
+        if (!el) return;
+
+        var map = L.map(mapId, { zoomControl: true, scrollWheelZoom: true });
+        mapInstances[mapId] = map;
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Collect markers from the relevant section
+        var sectionId = 'content-' + tabName;
+        var section = document.getElementById(sectionId);
+        var cards = section ? section.querySelectorAll('.card[data-lat]') : [];
+
+        var bounds = [];
+        var tabakIcon = L.divIcon({ html: '🚬', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+        var restIcon  = L.divIcon({ html: '🍽️', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+        var orteIcon  = L.divIcon({ html: '📍', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+
+        var chosenIcon = tabName === 'tabak' ? tabakIcon : tabName === 'restaurants' ? restIcon : orteIcon;
+
+        cards.forEach(card => {
+            var lat = parseFloat(card.getAttribute('data-lat'));
+            var lng = parseFloat(card.getAttribute('data-lng'));
+            if (isNaN(lat) || isNaN(lng)) return;
+            var name = card.querySelector('h4') ? card.querySelector('h4').innerText : '';
+            var addr = card.querySelector('.meta-info') ? card.querySelector('.meta-info').innerText : '';
+            L.marker([lat, lng], { icon: chosenIcon })
+                .addTo(map)
+                .bindPopup(`<strong>${name}</strong><br><span style="font-size:12px;">${addr}</span>`);
+            bounds.push([lat, lng]);
+        });
+
+        if (bounds.length > 0) map.fitBounds(bounds, { padding: [40, 40] });
+        else map.setView([41.3902, 2.1541], 13);
+
+        // Live user position marker
+        var userMarker = null;
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(pos => {
+                var latlng = [pos.coords.latitude, pos.coords.longitude];
+                if (!userMarker) {
+                    var youIcon = L.divIcon({ html: '<div style="width:14px;height:14px;background:#38bdf8;border-radius:50%;border:3px solid white;box-shadow:0 0 8px #38bdf8;"></div>', className: '', iconSize: [14, 14], iconAnchor: [7, 7] });
+                    userMarker = L.marker(latlng, { icon: youIcon }).addTo(map).bindPopup('📍 Du bist hier');
+                } else {
+                    userMarker.setLatLng(latlng);
+                }
+            }, null, { enableHighAccuracy: true });
+        }
+    }
+
+
     function renderCategoryBreakdown() {
         var el = document.getElementById('category-breakdown');
         if (!el) return;
