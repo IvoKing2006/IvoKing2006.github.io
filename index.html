@@ -134,6 +134,8 @@
         .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; width: auto; padding: 0; box-shadow: none; }
         .map-container { height: 380px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-top: 20px; }
         .tabak-tag { display: inline-block; background: rgba(245, 158, 11, 0.15); color: var(--warning); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+        .apotheke-tag { display: inline-block; background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+        .bereitschaft-tag { display: inline-block; background: rgba(239, 68, 68, 0.15); color: var(--danger); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 6px; margin-left: 6px; }
         .hours-info { font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.5; }
     </style>
 </head>
@@ -177,6 +179,7 @@
             <button id="tab-packliste" class="nav-btn" onclick="switchTab('packliste')">🎒 Packliste</button>
             <button id="tab-restaurants" class="nav-btn" onclick="switchTab('restaurants')">🍔 Restaurants</button>
             <button id="tab-tabak" class="nav-btn" onclick="switchTab('tabak')">🚬 Tabakläden</button>
+            <button id="tab-apotheke" class="nav-btn" onclick="switchTab('apotheke')">💊 Apotheken</button>
             <button id="tab-orte" class="nav-btn" onclick="switchTab('orte')">🧭 Orte & Pläne</button>
             <button id="tab-zufall" class="nav-btn" onclick="switchTab('zufall')">🎲 Zufall</button>
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
@@ -811,6 +814,93 @@
             </div>
         </div>
 
+        <div id="content-apotheke" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--success);">
+                <h3>💊 Apotheken in Barcelona</h3>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                    Apotheken im Stadtgebiet – <span style="color:var(--danger); font-weight:600;">🔴 24h / Bereitschaft</span> immer verfügbar.
+                </p>
+
+                <div class="restaurant-grid" id="apotheke-grid">
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3887" data-lng="2.1592">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Torres</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
+                        <div class="meta-info">Carrer d'Aribau, 62, Eixample</div>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet · Klingeln bei geschlossenem Rolltor</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Torres','Carrer d\'Aribau, 62, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3783" data-lng="2.1460">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Aragó 1</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
+                        <div class="meta-info">Carrer d'Aragó, 1, Eixample</div>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Aragó 1','Carrer d\'Aragó, 1, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4053" data-lng="2.1752">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Laguna 24 hores</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
+                        <div class="meta-info">Carrer de Provença, 459, Eixample (Sagrada Família)</div>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Laguna 24 hores','Carrer de Provença, 459, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3823" data-lng="2.1726">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Clapés (Las Ramblas)</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
+                        <div class="meta-info">La Rambla, 98, Ciutat Vella</div>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Clapés','La Rambla, 98, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3950" data-lng="2.1621">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia La Pedrera</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Passeig de Gràcia, 90, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 07:30–22:00 · Sa–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia La Pedrera','Passeig de Gràcia, 90, Eixample, 08008 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4039" data-lng="2.1916">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Diagonal 197</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Avinguda Diagonal, 197, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 07:00–00:00 · Sa–So: 08:00–00:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Diagonal 197','Avinguda Diagonal, 197, Sant Martí, 08018 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3879" data-lng="2.1525">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Provença 156</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Carrer de Provença, 156, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–22:00 · Sa–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Provença 156','Carrer de Provença, 156, Eixample, 08036 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3933" data-lng="2.1531">
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Mariné</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Carrer d'Aribau, 180, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:00–22:00 · Sa–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Mariné','Carrer d\'Aribau, 180, Eixample, 08036 Barcelona')">🗺️ Route öffnen</button>
+                    </div>
+
+                </div>
+
+                <div id="map-apotheke" class="map-container"></div>
+            </div>
+        </div>
+
         <div id="content-orte" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🧭 Wichtige Orte & Aktivitäten</h3>
@@ -1173,6 +1263,7 @@
         if (tabName === 'restaurants') setTimeout(() => initMap('map-restaurants', 'restaurants'), 100);
         if (tabName === 'orte') setTimeout(() => initMap('map-orte', 'orte'), 100);
         if (tabName === 'tabak') setTimeout(() => initMap('map-tabak', 'tabak'), 100);
+        if (tabName === 'apotheke') setTimeout(() => initMap('map-apotheke', 'apotheke'), 100);
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
         if (tabName === 'chat') renderChat();
