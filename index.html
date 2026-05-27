@@ -220,6 +220,10 @@
                             <label for="exp-image">Foto vom Kassenbon:</label>
                             <input type="file" id="exp-image" accept="image/*" onchange="previewImage(event)">
                             <img id="image-preview" class="file-preview hidden">
+                            <div id="scan-status" style="margin-top:10px; font-size:13px; color:var(--accent); display:none;">
+                                🔍 Kassenbon wird ausgelesen...
+                            </div>
+                            <div id="scan-result" style="margin-top:8px; font-size:13px; color:var(--success); display:none;"></div>
                         </div>
                     </div>
                     <button onclick="addExpense()" style="margin-top:15px;">Ausgabe speichern</button>
@@ -240,6 +244,16 @@
             <div class="card" style="margin-top: 25px;">
                 <h3>Dein Ausgaben-Verlauf (Bestätigte Posten)</h3>
                 <ul id="personal-history"></ul>
+                <div id="payment-summary" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
+                    <div style="flex:1; background:#0f172a; border-radius:10px; padding:12px 16px; border:1px solid var(--border); text-align:center;">
+                        💳 <span style="color:var(--text-muted); font-size:13px;">Karte gesamt</span><br>
+                        <span id="sum-karte" style="font-size:20px; font-weight:800; color:var(--primary);">0.00 €</span>
+                    </div>
+                    <div style="flex:1; background:#0f172a; border-radius:10px; padding:12px 16px; border:1px solid var(--border); text-align:center;">
+                        💵 <span style="color:var(--text-muted); font-size:13px;">Bar gesamt</span><br>
+                        <span id="sum-bar" style="font-size:20px; font-weight:800; color:var(--accent);">0.00 €</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -885,8 +899,67 @@
             const preview = document.getElementById('image-preview');
             preview.src = currentBase64Image;
             preview.classList.remove('hidden');
+            scanReceipt(currentBase64Image);
         }
         reader.readAsDataURL(file);
+    }
+
+    async function scanReceipt(base64DataUrl) {
+        const statusEl = document.getElementById("scan-status");
+        const resultEl = document.getElementById("scan-result");
+        const amountField = document.getElementById("exp-amount");
+
+        statusEl.style.display = "block";
+        resultEl.style.display = "none";
+
+        try {
+            // Extract base64 data without the data URL prefix
+            const base64Data = base64DataUrl.split(",")[1];
+            const mediaType = base64DataUrl.split(";")[0].split(":")[1];
+
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "claude-sonnet-4-20250514",
+                    max_tokens: 200,
+                    messages: [{
+                        role: "user",
+                        content: [
+                            {
+                                type: "image",
+                                source: { type: "base64", media_type: mediaType, data: base64Data }
+                            },
+                            {
+                                type: "text",
+                                text: "This is a receipt. Find the total amount to pay. Reply with ONLY the number, no currency symbol, no text. Use a dot as decimal separator. Example: 12.50"
+                            }
+                        ]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const text = data.content[0].text.trim();
+            const amount = parseFloat(text);
+
+            statusEl.style.display = "none";
+
+            if (!isNaN(amount) && amount > 0) {
+                amountField.value = amount.toFixed(2);
+                resultEl.style.display = "block";
+                resultEl.innerHTML = `✅ Betrag erkannt: <strong>${amount.toFixed(2)} €</strong> — automatisch eingetragen!`;
+            } else {
+                resultEl.style.display = "block";
+                resultEl.style.color = "var(--warning)";
+                resultEl.innerHTML = "⚠️ Betrag konnte nicht erkannt werden. Bitte manuell eintragen.";
+            }
+        } catch(err) {
+            statusEl.style.display = "none";
+            resultEl.style.display = "block";
+            resultEl.style.color = "var(--danger)";
+            resultEl.innerHTML = "❌ Scan fehlgeschlagen. Bitte Betrag manuell eintragen.";
+        }
     }
 
     function clearReceiptForm() {
@@ -918,9 +991,12 @@
             img = currentBase64Image;
         }
 
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const ts = `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())} Uhr`;
         db.expenses.push({
             id: id, payer: currentUser, totalAmount: amount, shareAmount: shareAmount, 
-            purpose: purpose, method: method, timestamp: new Date().toLocaleDateString('de-DE'),
+            purpose: purpose, method: method, timestamp: ts,
             participants: checkedPeople, personalNote: note, personalImage: img
         });
 
@@ -1190,12 +1266,12 @@
                 totalOwnCost += myPart;
                 const hasReceipt = exp.personalNote || exp.personalImage;
                 const receiptButton = hasReceipt ? `<button class="btn-receipt-view" onclick="openReceiptModal('${exp.id}')">📄 Beleg</button>` : '';
-                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')}</span></div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
+                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
                     totalOwnCost += exp.shareAmount;
-                    historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method})<span class="meta-info">${exp.payer} bezahlt (Schuld beglichen). Gesamt: ${exp.totalAmount.toFixed(2)}€</span></div><span class="amount-tag amount-danger">-${exp.shareAmount.toFixed(2)} €</span></li>`;
+                    historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method})<span class="meta-info">${exp.payer} bezahlt (Schuld beglichen). Gesamt: ${exp.totalAmount.toFixed(2)}€ | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${exp.shareAmount.toFixed(2)} €</span></li>`;
                 }
             }
         });
@@ -1226,6 +1302,24 @@
         if(creditsList.innerHTML === '') creditsList.innerHTML = '<li>Niemand schuldet dir was! 😎</li>';
         if(debtsList.innerHTML === '') debtsList.innerHTML = '<li>Keine offenen Schulden! 🎉</li>';
         if(historyList.innerHTML === '') historyList.innerHTML = '<li>Keine Ausgaben im Verlauf.</li>';
+
+        // Karte vs Bar Summe
+        var sumKarte = 0; var sumBar = 0;
+        db.expenses.forEach(exp => {
+            var myPart = 0;
+            if (exp.payer === currentUser && exp.participants.includes(currentUser)) {
+                myPart = exp.totalAmount / exp.participants.length;
+            } else if (exp.payer !== currentUser && exp.participants.includes(currentUser)) {
+                myPart = exp.shareAmount || (exp.totalAmount / exp.participants.length);
+            }
+            if (myPart > 0) {
+                if (exp.method === 'Karte') sumKarte += myPart;
+                else sumBar += myPart;
+            }
+        });
+        document.getElementById('sum-karte').innerText = sumKarte.toFixed(2) + ' €';
+        document.getElementById('sum-bar').innerText = sumBar.toFixed(2) + ' €';
+        document.getElementById('payment-summary').style.display = (sumKarte + sumBar > 0) ? 'flex' : 'none';
 
         // Bewertungen für alle Restaurants laden
         renderAllReviews();
