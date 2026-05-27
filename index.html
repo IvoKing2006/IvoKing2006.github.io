@@ -143,7 +143,7 @@
 
 <div class="container">
     <div id="login-screen">
-        <h1>Barcelona Tracker âï¸</h1>
+        <h1>Barcelona Tracker ✈️</h1>
         <div class="form-group">
             <label for="login-user">Wer bist du?</label>
             <select id="login-user">
@@ -162,55 +162,55 @@
 
     <div id="app-screen" class="hidden">
         <div class="header-bar">
-            <h2>Hi, <span id="current-username" style="color:var(--primary)"></span>! ð</h2>
+            <h2>Hi, <span id="current-username" style="color:var(--primary)"></span>! 👋</h2>
             <div style="display:flex; align-items:center; gap:12px;">
-                <span id="sync-indicator" style="font-size:12px; color:var(--success); opacity:0; transition: opacity 0.4s; white-space:nowrap;">ð Synced</span>
+                <span id="sync-indicator" style="font-size:12px; color:var(--success); opacity:0; transition: opacity 0.4s; white-space:nowrap;">🔄 Synced</span>
                 <button class="btn-logout" style="width:auto; margin:0;" onclick="logout()">Abmelden</button>
             </div>
         </div>
 
         <div id="countdown-banner" style="background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(56,189,248,0.15)); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-            <span style="font-size:14px; color:var(--text-muted);">âï¸ Barcelona in:</span>
+            <span style="font-size:14px; color:var(--text-muted);">✈️ Barcelona in:</span>
             <span id="countdown-banner-text" style="font-size:16px; font-weight:800; color:var(--primary); letter-spacing:1px;">...</span>
         </div>
 
         <div class="nav-tabs">
-            <button id="tab-finanzen" class="nav-btn active" onclick="switchTab('finanzen')">ð¸ Finanzen</button>
-            <button id="tab-packliste" class="nav-btn" onclick="switchTab('packliste')">ð Packliste</button>
-            <button id="tab-restaurants" class="nav-btn" onclick="switchTab('restaurants')">ð Restaurants</button>
-            <button id="tab-tabak" class="nav-btn" onclick="switchTab('tabak')">ð¬ TabaklÃ¤den</button>
-            <button id="tab-apotheke" class="nav-btn" onclick="switchTab('apotheke')">ð Apotheken</button>
-            <button id="tab-orte" class="nav-btn" onclick="switchTab('orte')">ð§­ Orte & PlÃ¤ne</button>
-            <button id="tab-zufall" class="nav-btn" onclick="switchTab('zufall')">ð² Zufall</button>
-            <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">ð Gesetze</button>
-            <button id="tab-tipps" class="nav-btn" onclick="switchTab('tipps')">ð¡ Tipps</button>
-            <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">ð Statistik</button>
-            <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">ð¤ï¸ Wetter</button>
-            <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">ð¬ Chat</button>
-            <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">ð Rangliste</button>
+            <button id="tab-finanzen" class="nav-btn active" onclick="switchTab('finanzen')">💸 Finanzen</button>
+            <button id="tab-packliste" class="nav-btn" onclick="switchTab('packliste')">🎒 Packliste</button>
+            <button id="tab-restaurants" class="nav-btn" onclick="switchTab('restaurants')">🍔 Restaurants</button>
+            <button id="tab-tabak" class="nav-btn" onclick="switchTab('tabak')">🚬 Tabakläden</button>
+            <button id="tab-apotheke" class="nav-btn" onclick="switchTab('apotheke')">💊 Apotheken</button>
+            <button id="tab-orte" class="nav-btn" onclick="switchTab('orte')">🧭 Orte & Pläne</button>
+            <button id="tab-zufall" class="nav-btn" onclick="switchTab('zufall')">🎲 Zufall</button>
+            <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
+            <button id="tab-tipps" class="nav-btn" onclick="switchTab('tipps')">💡 Tipps</button>
+            <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">📊 Statistik</button>
+            <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
+            <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">💬 Chat</button>
+            <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">🏆 Rangliste</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
             <div class="stats-box">
-                Dein persÃ¶nlicher Urlaubsanteil: <span id="total-own-expenses">0.00</span> â¬
+                Dein persönlicher Urlaubsanteil: <span id="total-own-expenses">0.00</span> €
             </div>
 
             <div class="grid">
                 <div class="card">
                     <h3>Ausgabe eintragen</h3>
                     <div class="form-group">
-                        <label for="exp-amount">Betrag (â¬):</label>
+                        <label for="exp-amount">Betrag (€):</label>
                         <input type="number" id="exp-amount" step="0.01" placeholder="0.00">
                     </div>
                     <div class="form-group">
-                        <label for="exp-purpose">WofÃ¼r? (Grund):</label>
+                        <label for="exp-purpose">Wofür? (Grund):</label>
                         <input type="text" id="exp-purpose" placeholder="z.B. Club, Tanken, Hotel...">
                     </div>
                     <div class="form-group">
                         <label for="exp-method">Zahlungsart:</label>
                         <select id="exp-method">
-                            <option value="Bar">ð¸ Bar</option>
-                            <option value="Karte">ð³ Karte</option>
+                            <option value="Bar">💸 Bar</option>
+                            <option value="Karte">💳 Karte</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -219,7 +219,7 @@
                     </div>
 
                     <div id="personal-receipt-section" class="personal-receipt-box hidden">
-                        <h4 style="margin: 0 0 10px 0; color: var(--accent);">ð Eigener Beleg (Optional)</h4>
+                        <h4 style="margin: 0 0 10px 0; color: var(--accent);">📄 Eigener Beleg (Optional)</h4>
                         <div class="form-group" style="margin-bottom: 10px;">
                             <label for="exp-note">Spezielle Notiz / Details:</label>
                             <input type="text" id="exp-note" placeholder="z.B. Souvenir, Kleidung...">
@@ -229,7 +229,7 @@
                             <input type="file" id="exp-image" accept="image/*" onchange="previewImage(event)">
                             <img id="image-preview" class="file-preview hidden">
                             <div id="scan-status" style="margin-top:10px; font-size:13px; color:var(--accent); display:none;">
-                                ð Kassenbon wird ausgelesen...
+                                🔍 Kassenbon wird ausgelesen...
                             </div>
                             <div id="scan-result" style="margin-top:8px; font-size:13px; color:var(--success); display:none;"></div>
                         </div>
@@ -250,33 +250,33 @@
             </div>
 
             <div class="card" style="margin-top: 25px;">
-                <h3>Dein Ausgaben-Verlauf (BestÃ¤tigte Posten)</h3>
+                <h3>Dein Ausgaben-Verlauf (Bestätigte Posten)</h3>
                 <ul id="personal-history"></ul>
                 <div id="payment-summary" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
                     <div style="flex:1; background:#0f172a; border-radius:10px; padding:12px 16px; border:1px solid var(--border); text-align:center;">
-                        ð³ <span style="color:var(--text-muted); font-size:13px;">Karte gesamt</span><br>
-                        <span id="sum-karte" style="font-size:20px; font-weight:800; color:var(--primary);">0.00 â¬</span>
+                        💳 <span style="color:var(--text-muted); font-size:13px;">Karte gesamt</span><br>
+                        <span id="sum-karte" style="font-size:20px; font-weight:800; color:var(--primary);">0.00 €</span>
                     </div>
                     <div style="flex:1; background:#0f172a; border-radius:10px; padding:12px 16px; border:1px solid var(--border); text-align:center;">
-                        ðµ <span style="color:var(--text-muted); font-size:13px;">Bar gesamt</span><br>
-                        <span id="sum-bar" style="font-size:20px; font-weight:800; color:var(--accent);">0.00 â¬</span>
+                        💵 <span style="color:var(--text-muted); font-size:13px;">Bar gesamt</span><br>
+                        <span id="sum-bar" style="font-size:20px; font-weight:800; color:var(--accent);">0.00 €</span>
                     </div>
                 </div>
             </div>
 
             <div class="card" style="margin-top: 25px; border-left: 4px solid var(--warning);">
-                <h3 style="color: var(--warning);">ð Ausgaben nach Kategorie</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Gleiche Begriffe werden automatisch zusammengefasst (egal ob groÃ oder klein geschrieben).</p>
+                <h3 style="color: var(--warning);">📊 Ausgaben nach Kategorie</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Gleiche Begriffe werden automatisch zusammengefasst (egal ob groß oder klein geschrieben).</p>
                 <ul id="category-breakdown"></ul>
             </div>
         </div>
 
         <div id="content-packliste" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>ð Truppen-Packliste & Checkliste</h3>
+                <h3>🎒 Truppen-Packliste & Checkliste</h3>
                 <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input type="text" id="new-pack-item" placeholder="Gegenstand fÃ¼r DEINE Liste hinzufÃ¼gen...">
-                    <button onclick="addPackItem()" style="width: auto; padding: 0 25px; white-space: nowrap;">HinzufÃ¼gen</button>
+                    <input type="text" id="new-pack-item" placeholder="Gegenstand für DEINE Liste hinzufügen...">
+                    <button onclick="addPackItem()" style="width: auto; padding: 0 25px; white-space: nowrap;">Hinzufügen</button>
                 </div>
                 <div class="packing-grid" id="all-packing-lists"></div>
             </div>
@@ -284,7 +284,7 @@
 
         <div id="content-restaurants" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--accent);">
-                <h3>ð Live Restaurant-Entfernungen & Tagebuch</h3>
+                <h3>🍔 Live Restaurant-Entfernungen & Tagebuch</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
                     Hier seht ihr, wie weit die Buden live entfernt sind. Ladet eure Food-Pics hoch und bewertet die Lokale!
                 </p>
@@ -292,192 +292,192 @@
                 <div class="restaurant-grid">
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.398547" data-lng="2.194539">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Petit Bangkok</h4>
-                        <div class="cuisine-tag">ð¹ð­ ThailÃ¤ndisch</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer d'Ãvila, 87, Sant MartÃ­, 08005 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Petit Bangkok', 'Carrer d\'Ãvila, 87, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Petit Bangkok')">â­ Bewerten & Fotos</button>
+                        <div class="cuisine-tag">🇹🇭 Thailändisch</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer d'Àvila, 87, Sant Martí, 08005 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Petit Bangkok', 'Carrer d\'Àvila, 87, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Petit Bangkok')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Petit Bangkok"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.399943" data-lng="2.203082">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Da Nanni | Poblenou</h4>
-                        <div class="cuisine-tag">ð Pizzeria</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Rambla del Poblenou, 20, Sant MartÃ­, 08005 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Da Nanni | Poblenou', 'Rambla del Poblenou, 20, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Da Nanni | Poblenou')">â­ Bewerten & Fotos</button>
+                        <div class="cuisine-tag">🍕 Pizzeria</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Rambla del Poblenou, 20, Sant Martí, 08005 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Da Nanni | Poblenou', 'Rambla del Poblenou, 20, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Da Nanni | Poblenou')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Da Nanni | Poblenou"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.382894" data-lng="2.177813">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Da Nanni Pizzeria</h4>
-                        <div class="cuisine-tag">ð®ð¹ Italienisch</div>
+                        <div class="cuisine-tag">🇮🇹 Italienisch</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de la Llibreteria, 10, Ciutat Vella, 08002 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Da Nanni Pizzeria', 'Carrer de la Llibreteria, 10, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Da Nanni Pizzeria')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Da Nanni Pizzeria', 'Carrer de la Llibreteria, 10, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Da Nanni Pizzeria')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Da Nanni Pizzeria"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.380234" data-lng="2.176941">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Lady Dumpling | Escudellers</h4>
-                        <div class="cuisine-tag">ð¨ð³ Chinesisch</div>
+                        <div class="cuisine-tag">🇨🇳 Chinesisch</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer dels Escudellers, 30, Ciutat Vella, 08002 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Lady Dumpling | Escudellers', 'Carrer dels Escudellers, 30, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Lady Dumpling | Escudellers')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Lady Dumpling | Escudellers', 'Carrer dels Escudellers, 30, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Lady Dumpling | Escudellers')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Lady Dumpling | Escudellers"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.401344" data-lng="2.156553">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">La Caravana</h4>
-                        <div class="cuisine-tag">ð¸ð¾ Syrisch</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Mozart, 15, 16, GrÃ cia, 08012 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('La Caravana', 'Carrer de Mozart, 15, 16, GrÃ cia, 08012 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('La Caravana')">â­ Bewerten & Fotos</button>
+                        <div class="cuisine-tag">🇸🇾 Syrisch</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Mozart, 15, 16, Gràcia, 08012 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('La Caravana', 'Carrer de Mozart, 15, 16, Gràcia, 08012 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('La Caravana')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="La Caravana"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.381739" data-lng="2.171585">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Mercat de la Boqueria</h4>
-                        <div class="cuisine-tag">ð Markt / Tapas</div>
+                        <div class="cuisine-tag">🍇 Markt / Tapas</div>
                         <div class="meta-info" style="margin-bottom: 10px;">La Rambla, 91, Ciutat Vella, 08001 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Mercat de la Boqueria', 'La Rambla, 91, Ciutat Vella, 08001 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Mercat de la Boqueria')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Mercat de la Boqueria', 'La Rambla, 91, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Mercat de la Boqueria')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Mercat de la Boqueria"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.392471" data-lng="2.176882">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Bella Istanbul</h4>
-                        <div class="cuisine-tag">ð¹ð· TÃ¼rkisch</div>
+                        <div class="cuisine-tag">🇹🇷 Türkisch</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Pg. de St. Joan, 57, Eixample, 08009 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Bella Istanbul', 'Pg. de St. Joan, 57, Eixample, 08009 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Bella Istanbul')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Bella Istanbul', 'Pg. de St. Joan, 57, Eixample, 08009 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Bella Istanbul')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Bella Istanbul"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.408711" data-lng="2.174154">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">TKO Tacos | Avenida GaudÃ­</h4>
-                        <div class="cuisine-tag">ð® Taco-Restaurant</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Av. de GaudÃ­, 22, Eixample, 08025 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('TKO Tacos | Avenida GaudÃ­', 'Av. de GaudÃ­, 22, Eixample, 08025 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('TKO Tacos | Avenida GaudÃ­')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="TKO Tacos | Avenida GaudÃ­"></div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">TKO Tacos | Avenida Gaudí</h4>
+                        <div class="cuisine-tag">🌮 Taco-Restaurant</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Av. de Gaudí, 22, Eixample, 08025 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('TKO Tacos | Avenida Gaudí', 'Av. de Gaudí, 22, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('TKO Tacos | Avenida Gaudí')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="TKO Tacos | Avenida Gaudí"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.381188" data-lng="2.174786">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">TKO Tacos | Gothic Quarter</h4>
-                        <div class="cuisine-tag">ð® Taco-Restaurant</div>
+                        <div class="cuisine-tag">🌮 Taco-Restaurant</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de Ferran, 10, Ciutat Vella, 08002 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('TKO Tacos | Gothic Quarter', 'Carrer de Ferran, 10, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('TKO Tacos | Gothic Quarter')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('TKO Tacos | Gothic Quarter', 'Carrer de Ferran, 10, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('TKO Tacos | Gothic Quarter')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="TKO Tacos | Gothic Quarter"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.387815" data-lng="2.164344">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">TKO Tacos | PlaÃ§a Catalunya</h4>
-                        <div class="cuisine-tag">ð²ð½ Mexikanisch</div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">TKO Tacos | Plaça Catalunya</h4>
+                        <div class="cuisine-tag">🇲🇽 Mexikanisch</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Ronda de la Univ., 31, Eixample, 08007 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('TKO Tacos | PlaÃ§a Catalunya', 'Ronda de la Univ., 31, Eixample, 08007 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('TKO Tacos | PlaÃ§a Catalunya')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="TKO Tacos | PlaÃ§a Catalunya"></div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('TKO Tacos | Plaça Catalunya', 'Ronda de la Univ., 31, Eixample, 08007 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('TKO Tacos | Plaça Catalunya')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="TKO Tacos | Plaça Catalunya"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.384112" data-lng="2.172421">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">99 Cheesecake | Canuda</h4>
-                        <div class="cuisine-tag">ð§ Konditorei</div>
+                        <div class="cuisine-tag">🧁 Konditorei</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de la Canuda, 13, Ciutat Vella, 08002 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('99 Cheesecake | Canuda', 'Carrer de la Canuda, 13, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Canuda')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('99 Cheesecake | Canuda', 'Carrer de la Canuda, 13, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Canuda')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="99 Cheesecake | Canuda"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.389531" data-lng="2.158422">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">99 Cheesecake | Aribau</h4>
-                        <div class="cuisine-tag">ð° TortenfachgeschÃ¤ft</div>
+                        <div class="cuisine-tag">🍰 Tortenfachgeschäft</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer d'Aribau, 42, Eixample, 08011 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('99 Cheesecake | Aribau', 'Carrer d\'Aribau, 42, Eixample, 08011 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Aribau')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('99 Cheesecake | Aribau', 'Carrer d\'Aribau, 42, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Aribau')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="99 Cheesecake | Aribau"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.400511" data-lng="2.151245">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">99 Cheesecake | Gran de GrÃ cia</h4>
-                        <div class="cuisine-tag">ð§ Konditorei</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer Gran de GrÃ cia, 194, GrÃ cia, 08012 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('99 Cheesecake | Gran de GrÃ cia', 'Carrer Gran de GrÃ cia, 194, GrÃ cia, 08012 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Gran de GrÃ cia')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="99 Cheesecake | Gran de GrÃ cia"></div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">99 Cheesecake | Gran de Gràcia</h4>
+                        <div class="cuisine-tag">🧁 Konditorei</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer Gran de Gràcia, 194, Gràcia, 08012 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('99 Cheesecake | Gran de Gràcia', 'Carrer Gran de Gràcia, 194, Gràcia, 08012 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Gran de Gràcia')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="99 Cheesecake | Gran de Gràcia"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.396554" data-lng="2.161123">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">La Pepita</h4>
-                        <div class="cuisine-tag">ð¥ Tapasbar</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de CÃ²rsega, 343, GrÃ cia, 08037 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('La Pepita', 'Carrer de CÃ²rsega, 343, GrÃ cia, 08037 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('La Pepita')">â­ Bewerten & Fotos</button>
+                        <div class="cuisine-tag">🥘 Tapasbar</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Còrsega, 343, Gràcia, 08037 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('La Pepita', 'Carrer de Còrsega, 343, Gràcia, 08037 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('La Pepita')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="La Pepita"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.381342" data-lng="2.173511">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">Mustafa Can's GemÃ¼se Kebap</h4>
-                        <div class="cuisine-tag">ð¥ DÃ¶ner</div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">Mustafa Can's Gemüse Kebap</h4>
+                        <div class="cuisine-tag">🥙 Döner</div>
                         <div class="meta-info" style="margin-bottom: 10px;">La Rambla, 54, Ciutat Vella, 08002 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Mustafa Can\'s GemÃ¼se Kebap', 'La Rambla, 54, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Mustafa Can\'s GemÃ¼se Kebap')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Mustafa Can's GemÃ¼se Kebap"></div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Mustafa Can\'s Gemüse Kebap', 'La Rambla, 54, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Mustafa Can\'s Gemüse Kebap')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="Mustafa Can's Gemüse Kebap"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.393452" data-lng="2.167812">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">L'EntrecÃ´te Barcelona</h4>
-                        <div class="cuisine-tag">ð¥© FranzÃ¶sisches Steakhaus</div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">L'Entrecôte Barcelona</h4>
+                        <div class="cuisine-tag">🥩 Französisches Steakhaus</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de Pau Claris, 142, Eixample, 08009 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('L\'EntrecÃ´te Barcelona', 'Carrer de Pau Claris, 142, Eixample, 08009 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('L\'EntrecÃ´te Barcelona')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="L'EntrecÃ´te Barcelona"></div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('L\'Entrecôte Barcelona', 'Carrer de Pau Claris, 142, Eixample, 08009 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('L\'Entrecôte Barcelona')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="L'Entrecôte Barcelona"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.384534" data-lng="2.179123">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Rosa Negra (Laietana)</h4>
-                        <div class="cuisine-tag">ð²ð½ Mexikanisch & Bar</div>
+                        <div class="cuisine-tag">🇲🇽 Mexikanisch & Bar</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Via Laietana, 46, Ciutat Vella, 08003 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Rosa Negra (Laietana)', 'Via Laietana, 46, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Rosa Negra (Laietana)')">â­ Bewerten & Fotos</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Rosa Negra (Laietana)', 'Via Laietana, 46, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Rosa Negra (Laietana)')">⭐ Bewerten & Fotos</button>
                         <div class="reviews-container" data-rest-name="Rosa Negra (Laietana)"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.383112" data-lng="2.181234">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">CAJÃ gelato</h4>
-                        <div class="cuisine-tag">ð¦ Eis</div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">CAJÚ gelato</h4>
+                        <div class="cuisine-tag">🍦 Eis</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de Rera Palau, 9, Ciutat Vella, 08003 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('CAJÃ gelato', 'Carrer de Rera Palau, 9, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('CAJÃ gelato')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="CAJÃ gelato"></div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('CAJÚ gelato', 'Carrer de Rera Palau, 9, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('CAJÚ gelato')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="CAJÚ gelato"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.385567" data-lng="2.179890">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">Fast Eddieâs</h4>
-                        <div class="cuisine-tag">ð Burger</div>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">Fast Eddie’s</h4>
+                        <div class="cuisine-tag">🍔 Burger</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer dels Carders, 6, Ciutat Vella, 08003 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Fast Eddieâs', 'Carrer dels Carders, 6, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Fast Eddieâs')">â­ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Fast Eddieâs"></div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Fast Eddie’s', 'Carrer dels Carders, 6, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-bewerten" onclick="openReviewModal('Fast Eddie’s')">⭐ Bewerten & Fotos</button>
+                        <div class="reviews-container" data-rest-name="Fast Eddie’s"></div>
                     </div>
                 </div>
                 <div id="map-restaurants" class="map-container"></div>
@@ -486,326 +486,326 @@
 
         <div id="content-tabak" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--warning);">
-                <h3>ð¬ TabaklÃ¤den in Barcelona</h3>
+                <h3>🚬 Tabakläden in Barcelona</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-                    Alle TabaklÃ¤den nach Entfernung sortiert â live aktualisiert.
+                    Alle Tabakläden nach Entfernung sortiert – live aktualisiert.
                 </p>
 
                 <div class="restaurant-grid" id="tabak-grid">
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3938" data-lng="2.1606">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC EXP. 170</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer del RossellÃ³, 241, Eixample</div>
-                        <span class="hours-info">MoâDo: 07:30â22:30 Â· Fr: 07:30â23:00 Â· Sa: 09:00â23:00 Â· So: 09:00â14:00 &amp; 15:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC EXP. 170','Carrer del RossellÃ³, 241, Eixample, 08008 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer del Rosselló, 241, Eixample</div>
+                        <span class="hours-info">Mo–Do: 07:30–22:30 · Fr: 07:30–23:00 · Sa: 09:00–23:00 · So: 09:00–14:00 &amp; 15:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC EXP. 170','Carrer del Rosselló, 241, Eixample, 08008 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3862" data-lng="2.1547">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc-Tabacs (Casanova)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de Casanova, 101, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:30â20:30 Â· Sa: 09:00â13:30 &amp; 17:00â20:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc-Tabacs','Carrer de Casanova, 101, Eixample, 08011 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:30–20:30 · Sa: 09:00–13:30 &amp; 17:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc-Tabacs','Carrer de Casanova, 101, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3792" data-lng="2.1487">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc EntenÃ§a 57</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer d'EntenÃ§a, 57, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:30â20:30 Â· Sa: 09:00â14:00 &amp; 16:30â20:30 Â· So: 10:00â14:00 &amp; 16:30â20:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc EntenÃ§a 57','Carrer d\'EntenÃ§a, 57, Eixample, 08015 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Entença 57</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer d'Entença, 57, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–20:30 · Sa: 09:00–14:00 &amp; 16:30–20:30 · So: 10:00–14:00 &amp; 16:30–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Entença 57','Carrer d\'Entença, 57, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3937" data-lng="2.1674">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc nÂº50 (Pau Claris)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc nº50 (Pau Claris)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">C. de Pau Claris, 110, Eixample</div>
-                        <span class="hours-info">MoâSa: 08:00â21:00 Â· So: 09:00â19:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc nÂº50 Barcelona','C. de Pau Claris, 110, Eixample, 08009 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 08:00–21:00 · So: 09:00–19:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc nº50 Barcelona','C. de Pau Claris, 110, Eixample, 08009 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3923" data-lng="2.1623">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">L'estanc (Rambla de Catalunya)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Rambla de Catalunya, 88, Eixample</div>
-                        <span class="hours-info">MoâFr: 07:30â22:30 Â· Sa: 09:00â22:30 Â· So: 09:00â15:00 &amp; 16:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'estanc','Rambla de Catalunya, 88, Eixample, 08008 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 07:30–22:30 · Sa: 09:00–22:30 · So: 09:00–15:00 &amp; 16:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'estanc','Rambla de Catalunya, 88, Eixample, 08008 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3839" data-lng="2.1810">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc d'ArgenterÃ­a</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc d'Argentería</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de l'Argenteria, 45, Ciutat Vella</div>
-                        <span class="hours-info">MoâSa: 10:00â22:00 Â· So: 10:00â21:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc d\'ArgenterÃ­a','Carrer de l\'Argenteria, 45, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 10:00–22:00 · So: 10:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc d\'Argentería','Carrer de l\'Argenteria, 45, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3840" data-lng="2.1755">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanco Barcelona NÂº077</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanco Barcelona Nº077</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer Comtal, 17, Ciutat Vella</div>
-                        <span class="hours-info">MoâFr: 08:00â23:00 Â· SaâSo: 10:00â23:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanco Barcelona NÂº077','Carrer Comtal, 17, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:00–23:00 · Sa–So: 10:00–23:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanco Barcelona Nº077','Carrer Comtal, 17, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3836" data-lng="2.1764">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Catedral</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Av. de la Catedral, 1, Ciutat Vella</div>
-                        <span class="hours-info">MoâSa: 09:00â20:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Catedral','Av. de la Catedral, 1, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 09:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Catedral','Av. de la Catedral, 1, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3775" data-lng="2.1719">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. NÂº 21</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. Nº 21</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer Nou de la Rambla, 68, Ciutat Vella</div>
-                        <span class="hours-info">MoâDo: 09:00â21:00 Â· FrâSo: 11:00â14:30 &amp; 16:00â20:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. NÂº 21','Carrer Nou de la Rambla, 68, Ciutat Vella, 08400 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Do: 09:00–21:00 · Fr–So: 11:00–14:30 &amp; 16:00–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. Nº 21','Carrer Nou de la Rambla, 68, Ciutat Vella, 08400 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3851" data-lng="2.1801">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs El Tunel</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Placeta de Montcada, 6, Ciutat Vella</div>
-                        <span class="hours-info">MoâSa: 10:00â20:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs El Tunel','Placeta de Montcada, 6, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 10:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs El Tunel','Placeta de Montcada, 6, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3832" data-lng="2.1865">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC TABACS La Barceloneta</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer d'Andrea DÃ²ria, 8, Ciutat Vella</div>
-                        <span class="hours-info">MoâSa: 08:00â21:30 Â· So: 09:30â21:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC TABACS La Barceloneta','Carrer d\'Andrea DÃ²ria, 8, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer d'Andrea Dòria, 8, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Sa: 08:00–21:30 · So: 09:30–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC TABACS La Barceloneta','Carrer d\'Andrea Dòria, 8, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3831" data-lng="2.1842">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc BovÃ© â 57 BCN</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Bové – 57 BCN</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de Pepe Rubianes, 6, Ciutat Vella</div>
-                        <span class="hours-info">MoâSa: 09:00â21:00 Â· So: 10:00â15:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc BovÃ© - 57 BCN','Carrer de Pepe Rubianes, 6, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 09:00–21:00 · So: 10:00–15:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Bové - 57 BCN','Carrer de Pepe Rubianes, 6, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3864" data-lng="2.1852">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Vara</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de la Maquinista, 4, Ciutat Vella</div>
-                        <span class="hours-info">MoâFr: 08:00â21:00 Â· Sa: 09:00â21:00 Â· So: 09:00â19:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Vara','Carrer de la Maquinista, 4, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:00–21:00 · Sa: 09:00–21:00 · So: 09:00–19:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Vara','Carrer de la Maquinista, 4, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4045" data-lng="2.1742">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sagrada FamÃ­lia</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sagrada Família</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de Sardenya, 312, Eixample</div>
-                        <span class="hours-info">MoâSo: 09:00â22:30</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sagrada FamÃ­lia','Carrer de Sardenya, 312, Eixample, 08013 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–So: 09:00–22:30</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sagrada Família','Carrer de Sardenya, 312, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4051" data-lng="2.1789">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sagrada FamÃ­lia Exp. 409</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sagrada Família Exp. 409</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">C/ de Padilla, 311, Eixample</div>
-                        <span class="hours-info">MoâFr: 09:30â14:30 &amp; 17:00â20:30 Â· Sa: 10:00â14:30 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sagrada FamÃ­lia Exp. 409','C/ de Padilla, 311, Eixample, 08025 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 09:30–14:30 &amp; 17:00–20:30 · Sa: 10:00–14:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sagrada Família Exp. 409','C/ de Padilla, 311, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4063" data-lng="2.1790">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs (Castillejos)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de los Castillejos, 320, Eixample</div>
-                        <span class="hours-info">MoâFr: 07:30â21:00 Â· Sa: 09:00â15:30 &amp; 16:30â21:00 Â· So: 09:00â15:00 &amp; 16:00â21:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Castillejos','Carrer de los Castillejos, 320, Eixample, 08025 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 07:30–21:00 · Sa: 09:00–15:30 &amp; 16:30–21:00 · So: 09:00–15:00 &amp; 16:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Castillejos','Carrer de los Castillejos, 320, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4027" data-lng="2.1852">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc NÂº 47 (ProvenÃ§a)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer de ProvenÃ§a, 443, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:00â20:00 Â· Sa: 10:00â20:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc NÂº 47','Carrer de ProvenÃ§a, 443, Eixample, 08025 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Nº 47 (Provença)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Provença, 443, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:00–20:00 · Sa: 10:00–20:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Nº 47','Carrer de Provença, 443, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4009" data-lng="2.1771">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC DE TABACS NÂ°268</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC DE TABACS N°268</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de los Castillejos, 250, Eixample</div>
-                        <span class="hours-info">MoâFr: 09:00â20:30 Â· Sa: 09:00â14:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC DE TABACS NÂ°268','Carrer de los Castillejos, 250, Eixample, 08013 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 09:00–20:30 · Sa: 09:00–14:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC DE TABACS N°268','Carrer de los Castillejos, 250, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3780" data-lng="2.1523">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Sant Antoni Exp. 78</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de Viladomat, 60, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:00â21:00 Â· SaâSo: 09:00â15:00 &amp; 16:00â21:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Sant Antoni Exp. 78','Carrer de Viladomat, 60, Eixample, 08015 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:00–21:00 · Sa–So: 09:00–15:00 &amp; 16:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Sant Antoni Exp. 78','Carrer de Viladomat, 60, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3786" data-lng="2.1605">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Exp NÂº 055 (Parlament)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Estanc Exp Nº 055 (Parlament)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer del Parlament, 58, Eixample</div>
-                        <span class="hours-info">MoâSa: 08:15â22:00 Â· So: 09:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Exp NÂº 055','Carrer del Parlament, 58, Eixample, 08015 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 08:15–22:00 · So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Estanc Exp Nº 055','Carrer del Parlament, 58, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3766" data-lng="2.1568">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Mistral</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Av. de Mistral, 28-30, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:30â20:30 Â· Sa: 09:00â14:00 &amp; 16:30â20:00 Â· So: 09:00â14:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Mistral','Av. de Mistral, 28-30, Eixample, 08015 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:30–20:30 · Sa: 09:00–14:00 &amp; 16:30–20:00 · So: 09:00–14:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Mistral','Av. de Mistral, 28-30, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3783" data-lng="2.1601">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc DÃ­dac (Floridablanca)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Dídac (Floridablanca)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de Floridablanca, 98, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:30â21:00 Â· Sa: 09:30â21:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc DÃ­dac','Carrer de Floridablanca, 98, Eixample, 08015 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:30–21:00 · Sa: 09:30–21:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Dídac','Carrer de Floridablanca, 98, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3856" data-lng="2.1528">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc SepÃºlveda</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer de SepÃºlveda, 173, Eixample</div>
-                        <span class="hours-info">MoâFr: 09:00â14:00 &amp; 16:00â20:00 Â· Sa: 10:00â14:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc SepÃºlveda','Carrer de SepÃºlveda, 173, Eixample, 08011 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Sepúlveda</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Sepúlveda, 173, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 09:00–14:00 &amp; 16:00–20:00 · Sa: 10:00–14:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Sepúlveda','Carrer de Sepúlveda, 173, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3848" data-lng="2.1861">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC DEL BORN</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Av. del MarquÃ¨s de l'Argentera, 15, Ciutat Vella</div>
-                        <span class="hours-info">MoâFr: 07:30â22:00 Â· Sa: 09:00â20:00 Â· So: 10:00â20:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC DEL BORN','Av. del MarquÃ¨s de l\'Argentera, 15, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Av. del Marquès de l'Argentera, 15, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 07:30–22:00 · Sa: 09:00–20:00 · So: 10:00–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('ESTANC DEL BORN','Av. del Marquès de l\'Argentera, 15, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3842" data-lng="2.1791">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Princesa 12</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de la Princesa, 12, Ciutat Vella</div>
-                        <span class="hours-info">MoâFr: 09:00â21:00 Â· SaâSo: 10:00â21:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Princesa 12','Carrer de la Princesa, 12, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 09:00–21:00 · Sa–So: 10:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Princesa 12','Carrer de la Princesa, 12, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3843" data-lng="2.1820">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs I Timbres (Princesa 42)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de la Princesa, 42, Ciutat Vella</div>
-                        <span class="hours-info">MoâSo: 08:30â20:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs I Timbres','Carrer de la Princesa, 42, Ciutat Vella, 08003 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–So: 08:30–20:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs I Timbres','Carrer de la Princesa, 42, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3975" data-lng="2.1978">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">L'estanc de Pujades</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer de Pujades, 205, Sant MartÃ­</div>
-                        <span class="hours-info">MoâFr: 08:00â21:00 Â· Sa: 09:00â21:00 Â· So: 09:30â14:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'estanc de Pujades','Carrer de Pujades, 205, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Pujades, 205, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 08:00–21:00 · Sa: 09:00–21:00 · So: 09:30–14:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'estanc de Pujades','Carrer de Pujades, 205, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3990" data-lng="2.1970">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Tabacs Rambla del Poblenou 77</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Rambla del Poblenou, 77, Sant MartÃ­</div>
-                        <span class="hours-info">MoâFr: 08:00â20:30 Â· Sa: 08:00â14:00 &amp; 16:30â20:30 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Rambla del Poblenou 77','Rambla del Poblenou, 77, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Rambla del Poblenou, 77, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 08:00–20:30 · Sa: 08:00–14:00 &amp; 16:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Tabacs Rambla del Poblenou 77','Rambla del Poblenou, 77, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3976" data-lng="2.1960">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">L'Estanc De La Rambla (Poblenou 51)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Rambla del Poblenou, 51, Sant MartÃ­</div>
-                        <span class="hours-info">MoâFr: 08:00â20:30 Â· Sa: 08:00â14:00 &amp; 16:30â20:30 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'Estanc De La Rambla','Rambla del Poblenou, 51, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Rambla del Poblenou, 51, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 08:00–20:30 · Sa: 08:00–14:00 &amp; 16:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('L\'Estanc De La Rambla','Rambla del Poblenou, 51, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3960" data-lng="2.1993">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc 305 (Carrer de Llull)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer de Llull, 233, Sant MartÃ­</div>
-                        <span class="hours-info">MoâSa: 08:30â20:30 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc 305','Carrer de Llull, 233, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Llull, 233, Sant Martí</div>
+                        <span class="hours-info">Mo–Sa: 08:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc 305','Carrer de Llull, 233, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3987" data-lng="2.2015">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc 316 de Barcelona</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer de l'Arquitecte Sert, 18, Sant MartÃ­</div>
-                        <span class="hours-info">MoâFr: 07:30â21:00 Â· Sa: 08:00â15:00 &amp; 16:00â21:00 Â· So: 09:00â15:00 &amp; 16:00â21:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc 316 de Barcelona','Carrer de l\'Arquitecte Sert, 18, Sant MartÃ­, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de l'Arquitecte Sert, 18, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 07:30–21:00 · Sa: 08:00–15:00 &amp; 16:00–21:00 · So: 09:00–15:00 &amp; 16:00–21:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc 316 de Barcelona','Carrer de l\'Arquitecte Sert, 18, Sant Martí, 08005 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3820" data-lng="2.1635">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc del Raval (JoaquÃ­n Costa)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
-                        <div class="meta-info">Carrer de JoaquÃ­n Costa, 35, Ciutat Vella</div>
-                        <span class="hours-info">MoâFr: 08:30â21:00 Â· Sa: 10:00â21:00 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc del Raval','Carrer de JoaquÃ­n Costa, 35, Ciutat Vella, 08001 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc del Raval (Joaquín Costa)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
+                        <div class="meta-info">Carrer de Joaquín Costa, 35, Ciutat Vella</div>
+                        <span class="hours-info">Mo–Fr: 08:30–21:00 · Sa: 10:00–21:00 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc del Raval','Carrer de Joaquín Costa, 35, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3813" data-lng="2.1688">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. NÂº 14 (Carme 61)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. Nº 14 (Carme 61)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer del Carme, 61, Ciutat Vella</div>
-                        <span class="hours-info">MoâSo: 08:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. NÂº 14','Carrer del Carme, 61, Ciutat Vella, 08001 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–So: 08:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. Nº 14','Carrer del Carme, 61, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3799" data-lng="2.1721">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabac Liceu</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer de Sant Pau, 4, Ciutat Vella</div>
-                        <span class="hours-info">MoâSa: 09:30â20:30 Â· So: Geschlossen</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabac Liceu','Carrer de Sant Pau, 4, Ciutat Vella, 08001 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Sa: 09:30–20:30 · So: Geschlossen</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabac Liceu','Carrer de Sant Pau, 4, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3822" data-lng="2.1697">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. NÂº 15 (Carme 15)</h4>
-                        <div class="tabak-tag">ð¬ Tabakladen</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Estanc Tabacs Exp. Nº 15 (Carme 15)</h4>
+                        <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer del Carme, 15, Ciutat Vella</div>
-                        <span class="hours-info">MoâSo: 09:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. NÂº 15','Carrer del Carme, 15, Ciutat Vella, 08001 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc Tabacs Exp. Nº 15','Carrer del Carme, 15, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                 </div>
@@ -816,153 +816,151 @@
 
         <div id="content-apotheke" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--success);">
-                <h3>ð Apotheken in Barcelona</h3>
+                <h3>💊 Apotheken in Barcelona</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-                    Apotheken im Stadtgebiet â <span style="color:var(--danger); font-weight:600;">ð´ 24h / Bereitschaft</span> immer verfÃ¼gbar.
+                    Apotheken im Stadtgebiet – <span style="color:var(--danger); font-weight:600;">🔴 24h / Bereitschaft</span> immer verfügbar.
                 </p>
-
                 <div class="restaurant-grid" id="apotheke-grid">
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3887" data-lng="2.1592">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia Torres</h4>
-                        <div class="apotheke-tag">ð Apotheke</div><div class="bereitschaft-tag">ð´ 24h Bereitschaft</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Torres</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
                         <div class="meta-info">Carrer d'Aribau, 62, Eixample</div>
-                        <span class="hours-info">MoâSo: 24 Stunden geÃ¶ffnet Â· Klingeln bei geschlossenem Rolltor</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia Torres','Carrer d\'Aribau, 62, Eixample, 08011 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet · Klingeln bei geschlossenem Rolltor</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Torres','Carrer d\'Aribau, 62, Eixample, 08011 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3783" data-lng="2.1460">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia AragÃ³ 1</h4>
-                        <div class="apotheke-tag">ð Apotheke</div><div class="bereitschaft-tag">ð´ 24h Bereitschaft</div>
-                        <div class="meta-info">Carrer d'AragÃ³, 1, Eixample</div>
-                        <span class="hours-info">MoâSo: 24 Stunden geÃ¶ffnet</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia AragÃ³ 1','Carrer d\'AragÃ³, 1, Eixample, 08015 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Aragó 1</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
+                        <div class="meta-info">Carrer d'Aragó, 1, Eixample</div>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Aragó 1','Carrer d\'Aragó, 1, Eixample, 08015 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4053" data-lng="2.1752">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia Laguna 24 hores</h4>
-                        <div class="apotheke-tag">ð Apotheke</div><div class="bereitschaft-tag">ð´ 24h Bereitschaft</div>
-                        <div class="meta-info">Carrer de ProvenÃ§a, 459, Eixample (Sagrada FamÃ­lia)</div>
-                        <span class="hours-info">MoâSo: 24 Stunden geÃ¶ffnet</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia Laguna 24 hores','Carrer de ProvenÃ§a, 459, Eixample, 08025 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Laguna 24 hores</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
+                        <div class="meta-info">Carrer de Provença, 459, Eixample</div>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Laguna 24 hores','Carrer de Provença, 459, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3823" data-lng="2.1726">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia ClapÃ©s (Las Ramblas)</h4>
-                        <div class="apotheke-tag">ð Apotheke</div><div class="bereitschaft-tag">ð´ 24h Bereitschaft</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Clapés (Las Ramblas)</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
                         <div class="meta-info">La Rambla, 98, Ciutat Vella</div>
-                        <span class="hours-info">MoâSo: 24 Stunden geÃ¶ffnet</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia ClapÃ©s','La Rambla, 98, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–So: 24 Stunden geöffnet</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Clapés','La Rambla, 98, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3950" data-lng="2.1621">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia La Pedrera</h4>
-                        <div class="apotheke-tag">ð Apotheke</div>
-                        <div class="meta-info">Passeig de GrÃ cia, 90, Eixample</div>
-                        <span class="hours-info">MoâFr: 07:30â22:00 Â· SaâSo: 09:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia La Pedrera','Passeig de GrÃ cia, 90, Eixample, 08008 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia La Pedrera</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Passeig de Gràcia, 90, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 07:30–22:00 · Sa–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia La Pedrera','Passeig de Gràcia, 90, Eixample, 08008 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.4039" data-lng="2.1916">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia Diagonal 197</h4>
-                        <div class="apotheke-tag">ð Apotheke</div>
-                        <div class="meta-info">Avinguda Diagonal, 197, Sant MartÃ­</div>
-                        <span class="hours-info">MoâFr: 07:00â00:00 Â· SaâSo: 08:00â00:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia Diagonal 197','Avinguda Diagonal, 197, Sant MartÃ­, 08018 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Diagonal 197</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Avinguda Diagonal, 197, Sant Martí</div>
+                        <span class="hours-info">Mo–Fr: 07:00–00:00 · Sa–So: 08:00–00:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Diagonal 197','Avinguda Diagonal, 197, Sant Martí, 08018 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3879" data-lng="2.1525">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia ProvenÃ§a 156</h4>
-                        <div class="apotheke-tag">ð Apotheke</div>
-                        <div class="meta-info">Carrer de ProvenÃ§a, 156, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:30â22:00 Â· SaâSo: 09:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia ProvenÃ§a 156','Carrer de ProvenÃ§a, 156, Eixample, 08036 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Provença 156</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
+                        <div class="meta-info">Carrer de Provença, 156, Eixample</div>
+                        <span class="hours-info">Mo–Fr: 08:30–22:00 · Sa–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Provença 156','Carrer de Provença, 156, Eixample, 08036 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3933" data-lng="2.1531">
-                        <h4 style="font-size: 16px; margin-bottom: 4px;">FarmÃ cia MarinÃ©</h4>
-                        <div class="apotheke-tag">ð Apotheke</div>
+                        <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Mariné</h4>
+                        <div class="apotheke-tag">💊 Apotheke</div>
                         <div class="meta-info">Carrer d'Aribau, 180, Eixample</div>
-                        <span class="hours-info">MoâFr: 08:00â22:00 Â· SaâSo: 09:00â22:00</span>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('FarmÃ cia MarinÃ©','Carrer d\'Aribau, 180, Eixample, 08036 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <span class="hours-info">Mo–Fr: 08:00–22:00 · Sa–So: 09:00–22:00</span>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmàcia Mariné','Carrer d\'Aribau, 180, Eixample, 08036 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                 </div>
-
                 <div id="map-apotheke" class="map-container"></div>
             </div>
         </div>
 
         <div id="content-orte" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>ð§­ Wichtige Orte & AktivitÃ¤ten</h3>
+                <h3>🧭 Wichtige Orte & Aktivitäten</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-                    Euer AirBNB, SehenswÃ¼rdigkeiten und wichtige Anlaufstellen im Live-Tracker.
+                    Euer AirBNB, Sehenswürdigkeiten und wichtige Anlaufstellen im Live-Tracker.
                 </p>
 
                 <div class="restaurant-grid">
                     <div class="card" style="background: #0f172a; margin-bottom:0; border: 1px solid var(--success);" data-lat="41.399222" data-lng="2.190981">
-                        <h4 style="font-size: 17px; margin-bottom: 5px; color: var(--success);">ð  Unser AirBNB</h4>
+                        <h4 style="font-size: 17px; margin-bottom: 5px; color: var(--success);">🏠 Unser AirBNB</h4>
                         <div class="cuisine-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">Unterkunft</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Sancho de Ãvila, 32, Sant MartÃ­, 08018 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="openMap('Unser AirBNB', 'Carrer de Sancho de Ãvila, 32, Sant MartÃ­, 08018 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Sancho de Ávila, 32, Sant Martí, 08018 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="openMap('Unser AirBNB', 'Carrer de Sancho de Ávila, 32, Sant Martí, 08018 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.397682" data-lng="2.194255">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Billars Agbar</h4>
-                        <div class="cuisine-tag" style="background: rgba(168, 85, 247, 0.15); color: var(--accent);">ð± Billardhalle</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Pere IV, 29, Sexto 1a, Sant MartÃ­, 08018 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Billars Agbar', 'Carrer de Pere IV, 29, Sexto 1a, Sant MartÃ­, 08018 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="cuisine-tag" style="background: rgba(168, 85, 247, 0.15); color: var(--accent);">🎱 Billardhalle</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de Pere IV, 29, Sexto 1a, Sant Martí, 08018 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Billars Agbar', 'Carrer de Pere IV, 29, Sexto 1a, Sant Martí, 08018 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.385123" data-lng="2.167812">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Carrer dels Tallers</h4>
-                        <div class="cuisine-tag">ð£ï¸ Bedeutende StraÃe</div>
+                        <div class="cuisine-tag">🛣️ Bedeutende Straße</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Ciutat Vella, 08001 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Carrer dels Tallers', 'Ciutat Vella, 08001 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Carrer dels Tallers', 'Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.381395" data-lng="2.179331">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Il Capo Vintage Traginers</h4>
-                        <div class="cuisine-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);">ð BekleidungsgeschÃ¤ft</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">PlaÃ§a dels Traginers, 3, Ciutat Vella, 08002 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Il Capo Vintage Traginers', 'PlaÃ§a dels Traginers, 3, Ciutat Vella, 08002 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="cuisine-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);">👕 Bekleidungsgeschäft</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Plaça dels Traginers, 3, Ciutat Vella, 08002 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Il Capo Vintage Traginers', 'Plaça dels Traginers, 3, Ciutat Vella, 08002 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.386047" data-lng="2.197368">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Casino Barcelona</h4>
-                        <div class="cuisine-tag" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">ð° GlÃ¼ckspiel</div>
+                        <div class="cuisine-tag" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">🎰 Glückspiel</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de la Marina, 19, 21, Ciutat Vella, 08005 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Casino Barcelona', 'Carrer de la Marina, 19, 21, Ciutat Vella, 08005 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Casino Barcelona', 'Carrer de la Marina, 19, 21, Ciutat Vella, 08005 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.414494" data-lng="2.152694">
-                        <h4 style="font-size: 17px; margin-bottom: 5px;">Park GÃ¼ell</h4>
-                        <div class="cuisine-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">ð³ Park</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">GrÃ cia, 08024 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Park GÃ¼ell', 'GrÃ cia, 08024 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <h4 style="font-size: 17px; margin-bottom: 5px;">Park Güell</h4>
+                        <div class="cuisine-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">🌳 Park</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Gràcia, 08024 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Park Güell', 'Gràcia, 08024 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.419294" data-lng="2.161942">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Bunkers del Carmel</h4>
-                        <div class="cuisine-tag" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">â°ï¸ Aussichtspunkt</div>
-                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de la Gran Vista, 96, Horta-GuinardÃ³, 08032 Barcelona</div>
-                        <div class="distance-live">ð Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Bunkers del Carmel', 'Carrer de la Gran Vista, 96, Horta-GuinardÃ³, 08032 Barcelona')">ðºï¸ Route Ã¶ffnen</button>
+                        <div class="cuisine-tag" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">⛰️ Aussichtspunkt</div>
+                        <div class="meta-info" style="margin-bottom: 10px;">Carrer de la Gran Vista, 96, Horta-Guinardó, 08032 Barcelona</div>
+                        <div class="distance-live">🔍 Suche GPS...</div>
+                        <button class="btn-nav-link" onclick="openMap('Bunkers del Carmel', 'Carrer de la Gran Vista, 96, Horta-Guinardó, 08032 Barcelona')">🗺️ Route öffnen</button>
                     </div>
                 </div>
                 <div id="map-orte" class="map-container"></div>
@@ -971,56 +969,56 @@
 
         <div id="content-zufall" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--accent); text-align: center; padding: 40px 20px;">
-                <h3 style="font-size: 24px; margin-bottom: 10px;">ð² Allgemeiner Zufallsgenerator</h3>
+                <h3 style="font-size: 24px; margin-bottom: 10px;">🎲 Allgemeiner Zufallsgenerator</h3>
                 <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px;">
-                    Egal ob "Wer zahlt die Runde?", "Wer bringt den MÃ¼ll raus?" oder "Wer darf zuerst duschen?" â hier entscheidet das Schicksal!
+                    Egal ob "Wer zahlt die Runde?", "Wer bringt den Müll raus?" oder "Wer darf zuerst duschen?" – hier entscheidet das Schicksal!
                 </p>
                 <div id="roulette-result" style="font-size: 40px; font-weight: bold; margin: 30px 0; color: var(--primary); text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);">
                     ?
                 </div>
-                <button id="btn-roulette" onclick="runRoulette()" style="max-width: 300px; margin: 0 auto; background: linear-gradient(135deg, var(--accent), #7e22ce); font-size: 18px; padding: 15px;">ð¯ Zufall wÃ¤hlen!</button>
+                <button id="btn-roulette" onclick="runRoulette()" style="max-width: 300px; margin: 0 auto; background: linear-gradient(135deg, var(--accent), #7e22ce); font-size: 18px; padding: 15px;">🎯 Zufall wählen!</button>
             </div>
         </div>
 
         <div id="content-regeln" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--warning);">
-                <h3 style="color: var(--warning);">ð Barcelona BuÃgeld-Katalog & Gesetze</h3>
+                <h3 style="color: var(--warning);">📜 Barcelona Bußgeld-Katalog & Gesetze</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
                     Die lokale Polizei (*Guardia Urbana* & *Mossos*) zieht bei Touristen extrem streng durch. Merkt euch diese Regeln, um die Urlaubskasse zu schonen:
                 </p>
                 
                 <div class="law-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
-                    <strong>ð¨ Taschendiebe (Extrem wichtig):</strong>
+                    <strong>🚨 Taschendiebe (Extrem wichtig):</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        In Barcelona wird geklaut wie nirgendwo sonst. Trickdiebe arbeiten oft zu dritt. Handys NIEMALS auf den Tisch legen im CafÃ©. RucksÃ¤cke in der Metro und auf den Ramblas vor dem Bauch tragen!
+                        In Barcelona wird geklaut wie nirgendwo sonst. Trickdiebe arbeiten oft zu dritt. Handys NIEMALS auf den Tisch legen im Café. Rucksäcke in der Metro und auf den Ramblas vor dem Bauch tragen!
                     </p>
                 </div>
 
                 <div class="law-box">
-                    <strong>ðº Alkoholverbot im Freien (BotellÃ³n):</strong>
+                    <strong>🍺 Alkoholverbot im Freien (Botellón):</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Dosenbier oder MixgetrÃ¤nke auf PlÃ¤tzen, StraÃen oder direkt am Strand zu trinken ist streng verboten. Wer von Zivilpolizisten mit offenem Alkohol erwischt wird, zahlt sofort zwischen <b>100 â¬ und 600 â¬</b> Strafe.
+                        Dosenbier oder Mixgetränke auf Plätzen, Straßen oder direkt am Strand zu trinken ist streng verboten. Wer von Zivilpolizisten mit offenem Alkohol erwischt wird, zahlt sofort zwischen <b>100 € und 600 €</b> Strafe.
                     </p>
                 </div>
 
                 <div class="law-box" style="border-left-color: #38bdf8; background: rgba(56, 189, 248, 0.05);">
-                    <strong>ð©² Kleiderordnung (Kein "Oben-Ohne" in der Stadt):</strong>
+                    <strong>🩲 Kleiderordnung (Kein "Oben-Ohne" in der Stadt):</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Nackte OberkÃ¶rper oder herumlaufen in reiner Badekleidung ist nur direkt am Strand erlaubt. Sobald ihr in die Stadt geht: T-Shirt an! BuÃgeld: bis zu <b>300 â¬</b>.
+                        Nackte Oberkörper oder herumlaufen in reiner Badekleidung ist nur direkt am Strand erlaubt. Sobald ihr in die Stadt geht: T-Shirt an! Bußgeld: bis zu <b>300 €</b>.
                     </p>
                 </div>
 
                 <div class="law-box" style="border-left-color: #a855f7; background: rgba(168, 85, 247, 0.05);">
-                    <strong>ð´ E-Scooter / E-Roller Regeln:</strong>
+                    <strong>🛴 E-Scooter / E-Roller Regeln:</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Fahren auf dem Gehweg ist verboten. KopfhÃ¶rer wÃ¤hrend der Fahrt im Ohr kosten <b>200 â¬</b> Strafe. Zu zweit auf einem Roller fahren kostet ebenfalls <b>100 â¬</b>.
+                        Fahren auf dem Gehweg ist verboten. Kopfhörer während der Fahrt im Ohr kosten <b>200 €</b> Strafe. Zu zweit auf einem Roller fahren kostet ebenfalls <b>100 €</b>.
                     </p>
                 </div>
 
                 <div class="law-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
-                    <strong>ð­ Rauchverbot am Strand:</strong>
+                    <strong>🚭 Rauchverbot am Strand:</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        An ausnahmslos allen StrÃ¤nden Barcelonas gilt ein gesetzliches Rauchverbot (Zigaretten, E-Zigaretten, Vapes). Wer im Sand raucht und erwischt wird, zahlt <b>30 â¬</b>.
+                        An ausnahmslos allen Stränden Barcelonas gilt ein gesetzliches Rauchverbot (Zigaretten, E-Zigaretten, Vapes). Wer im Sand raucht und erwischt wird, zahlt <b>30 €</b>.
                     </p>
                 </div>
             </div>
@@ -1028,36 +1026,36 @@
 
         <div id="content-tipps" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--success);">
-                <h3 style="color: var(--success);">ð¡ Barcelona Survival- & Insider-Tipps</h3>
+                <h3 style="color: var(--success);">💡 Barcelona Survival- & Insider-Tipps</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
                     Wie ihr als Truppe am besten spart, richtig feiert und die Touristenfallen umgeht:
                 </p>
 
                 <div class="tip-box">
-                    <strong>ð Nahverkehr: Holt euch das "T-Usual" oder "T-Casual" Ticket</strong>
+                    <strong>🚇 Nahverkehr: Holt euch das "T-Usual" oder "T-Casual" Ticket</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Kauft NIEMALS Einzeltickets fÃ¼r die Metro (viel zu teuer). Holt euch am Automaten das <b>T-Casual</b> (10 Fahrten) oder prÃ¼ft, ob das unbegrenzte Monatsticket <b>T-Usual</b> fÃ¼r euch billiger ist.
+                        Kauft NIEMALS Einzeltickets für die Metro (viel zu teuer). Holt euch am Automaten das <b>T-Casual</b> (10 Fahrten) oder prüft, ob das unbegrenzte Monatsticket <b>T-Usual</b> für euch billiger ist.
                     </p>
                 </div>
 
                 <div class="tip-box" style="border-left-color: #a855f7; background: rgba(168, 85, 247, 0.05);">
-                    <strong>ð« Tickets fÃ¼r Sagrada FamÃ­lia / Park GÃ¼ell:</strong>
+                    <strong>🎫 Tickets für Sagrada Família / Park Güell:</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Ihr mÃ¼sst die Tickets Wochen im Voraus online buchen. Vor Ort gibt es absolut keine Tageskasse mehr.
+                        Ihr müsst die Tickets Wochen im Voraus online buchen. Vor Ort gibt es absolut keine Tageskasse mehr.
                     </p>
                 </div>
 
                 <div class="tip-box" style="border-left-color: #38bdf8; background: rgba(56, 189, 248, 0.05);">
-                    <strong>ð½ï¸ Restaurant-Regel: Las Ramblas meiden!</strong>
+                    <strong>🍽️ Restaurant-Regel: Las Ramblas meiden!</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Esst niemals direkt auf der Hauptpromenade "Las Ramblas". Das Essen ist minderwertig und teuer. Geht zwei StraÃen weiter in die Viertel <b>El Born</b> oder <b>GrÃ cia</b>.
+                        Esst niemals direkt auf der Hauptpromenade "Las Ramblas". Das Essen ist minderwertig und teuer. Geht zwei Straßen weiter in die Viertel <b>El Born</b> oder <b>Gràcia</b>.
                     </p>
                 </div>
 
                 <div class="tip-box">
-                    <strong>ðï¸ Der bessere Strand:</strong>
+                    <strong>🏖️ Der bessere Strand:</strong>
                     <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Der Hauptstrand "Barceloneta" ist meist komplett Ã¼berlaufen. Fahrt mit der Metro lieber ein paar Stationen weiter hoch zum Strand <b>Bogatell</b> oder <b>Mar Bella</b>.
+                        Der Hauptstrand "Barceloneta" ist meist komplett überlaufen. Fahrt mit der Metro lieber ein paar Stationen weiter hoch zum Strand <b>Bogatell</b> oder <b>Mar Bella</b>.
                     </p>
                 </div>
             </div>
@@ -1065,19 +1063,19 @@
 
         <div id="content-statistik" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>ð Gesamtausgaben â Wer hat am meisten ausgegeben?</h3>
-                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Alle bestÃ¤tigten Ausgaben pro Person zusammengezÃ¤hlt.</p>
+                <h3>📊 Gesamtausgaben – Wer hat am meisten ausgegeben?</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Alle bestätigten Ausgaben pro Person zusammengezählt.</p>
                 <div id="stats-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
             </div>
             <div class="card" style="border-top: 4px solid var(--accent); margin-top:20px;">
-                <h3>ð¸ Gesamtausgaben der Gruppe</h3>
-                <div class="stats-box" style="margin-bottom:0;">Insgesamt ausgegeben: <span id="stats-total-all">0.00</span> â¬</div>
+                <h3>💸 Gesamtausgaben der Gruppe</h3>
+                <div class="stats-box" style="margin-bottom:0;">Insgesamt ausgegeben: <span id="stats-total-all">0.00</span> €</div>
             </div>
         </div>
 
         <div id="content-wetter" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>ð¤ï¸ Aktuelles Wetter in Barcelona</h3>
+                <h3>🌤️ Aktuelles Wetter in Barcelona</h3>
                 <div id="wetter-content" style="margin-top:15px; text-align:center;">
                     <p style="color:var(--text-muted);">Wird geladen...</p>
                 </div>
@@ -1086,46 +1084,46 @@
 
         <div id="content-chat" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--accent);">
-                <h3>ð¬ Gruppen-Chat</h3>
+                <h3>💬 Gruppen-Chat</h3>
                 <div id="chat-messages" style="height:350px; overflow-y:auto; background:#0f172a; border-radius:10px; border:1px solid var(--border); padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;"></div>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="chat-input" placeholder="Nachricht schreiben..." style="flex:1;" onkeydown="if(event.key==='Enter') sendChatMessage()">
-                    <button onclick="sendChatMessage()" style="width:auto; padding:0 20px;">ð¤ Senden</button>
+                    <button onclick="sendChatMessage()" style="width:auto; padding:0 20px;">📤 Senden</button>
                 </div>
             </div>
         </div>
 
         <div id="content-rangliste" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--warning);">
-                <h3>ð Rangliste â Wer ist der King?</h3>
-                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Jeder trÃ¤gt seine eigenen Werte ein. Ehrlichkeit Pflicht! ð</p>
+                <h3>🏆 Rangliste – Wer ist der King?</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Jeder trägt seine eigenen Werte ein. Ehrlichkeit Pflicht! 😄</p>
                 <div id="rangliste-content"></div>
                 <div class="card" style="margin-top:20px; background:#0f172a;">
                     <h4 style="margin-bottom:15px; color:var(--warning);">Deine Werte eintragen:</h4>
                     <div class="form-group">
-                        <label>ðº GetrÃ¤nke heute:</label>
+                        <label>🍺 Getränke heute:</label>
                         <input type="number" id="rl-drinks" min="0" placeholder="0">
                     </div>
                     <div class="form-group">
-                        <label>ð Schlafen gegangen um (Uhr):</label>
-                        <input type="number" id="rl-sleep" min="0" max="30" placeholder="z.B. 3 fÃ¼r 3 Uhr">
+                        <label>🌙 Schlafen gegangen um (Uhr):</label>
+                        <input type="number" id="rl-sleep" min="0" max="30" placeholder="z.B. 3 für 3 Uhr">
                     </div>
                     <div class="form-group">
-                        <label>ð Schritte heute (vom Handy):</label>
+                        <label>🏃 Schritte heute (vom Handy):</label>
                         <input type="number" id="rl-steps" min="0" placeholder="0">
                     </div>
-                    <button onclick="saveRangliste()" style="background: linear-gradient(135deg, var(--warning), #d97706); box-shadow: 0 4px 10px rgba(245,158,11,0.3);">ð¾ Speichern</button>
+                    <button onclick="saveRangliste()" style="background: linear-gradient(135deg, var(--warning), #d97706); box-shadow: 0 4px 10px rgba(245,158,11,0.3);">💾 Speichern</button>
                 </div>
             </div>
         </div>
 
-        <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">â ï¸ Gesamte App auf Null zurÃ¼cksetzen (Admin)</button>
+        <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
 
 <div id="receipt-modal" class="modal hidden">
     <div class="modal-content">
-        <button class="close-modal" onclick="closeModal()">â</button>
+        <button class="close-modal" onclick="closeModal()">✕</button>
         <h3 id="modal-title">Beleg-Details</h3>
         <p id="modal-note" style="color: var(--text-muted); font-size: 14px; margin: 5px 0;"></p>
         <div id="modal-image-container"></div>
@@ -1134,7 +1132,7 @@
 
 <div id="review-modal" class="modal hidden">
     <div class="modal-content" style="width:400px; padding: 25px; max-height:90vh; overflow-y:auto;">
-        <button class="close-modal" onclick="closeReviewModal()">â</button>
+        <button class="close-modal" onclick="closeReviewModal()">✕</button>
         <h3 id="review-modal-title" style="margin-bottom: 15px;">Bewertung abgeben</h3>
         <input type="hidden" id="rev-rest-id">
         <div class="rating-grid">
@@ -1159,7 +1157,7 @@
             <label>Foto vom Essen:</label>
             <input type="file" id="rev-img" accept="image/*">
         </div>
-        <button onclick="saveReview()" style="margin-top:20px;">ð¾ Bewertung Speichern</button>
+        <button onclick="saveReview()" style="margin-top:20px;">💾 Bewertung Speichern</button>
     </div>
 </div>
 
@@ -1193,7 +1191,7 @@
         expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] }, food_diary: []
     };
 
-    // ================= LIVE SYNC: Firebase â local db =================
+    // ================= LIVE SYNC: Firebase → local db =================
     dbRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1232,7 +1230,7 @@
         const btn = document.getElementById('btn-roulette');
         
         btn.disabled = true;
-        btn.innerText = "WÃ¼rfelt...";
+        btn.innerText = "Würfelt...";
         
         let counter = 0;
         const interval = setInterval(() => {
@@ -1243,9 +1241,9 @@
             if (counter > 15) {
                 clearInterval(interval);
                 const winner = ALL_USERS[Math.floor(Math.random() * ALL_USERS.length)];
-                res.innerHTML = "ð <span style='color: white;'>" + winner + "</span> ð";
+                res.innerHTML = "🎉 <span style='color: white;'>" + winner + "</span> 🎉";
                 btn.disabled = false;
-                btn.innerText = "ð¯ Noch mal wÃ¼rfeln!";
+                btn.innerText = "🎯 Noch mal würfeln!";
             }
         }, 80);
     }
@@ -1386,17 +1384,17 @@
             if (!isNaN(amount) && amount > 0) {
                 amountField.value = amount.toFixed(2);
                 resultEl.style.display = "block";
-                resultEl.innerHTML = `â Betrag erkannt: <strong>${amount.toFixed(2)} â¬</strong> â automatisch eingetragen!`;
+                resultEl.innerHTML = `✅ Betrag erkannt: <strong>${amount.toFixed(2)} €</strong> — automatisch eingetragen!`;
             } else {
                 resultEl.style.display = "block";
                 resultEl.style.color = "var(--warning)";
-                resultEl.innerHTML = "â ï¸ Betrag konnte nicht erkannt werden. Bitte manuell eintragen.";
+                resultEl.innerHTML = "⚠️ Betrag konnte nicht erkannt werden. Bitte manuell eintragen.";
             }
         } catch(err) {
             statusEl.style.display = "none";
             resultEl.style.display = "block";
             resultEl.style.color = "var(--danger)";
-            resultEl.innerHTML = "â Scan fehlgeschlagen. Bitte Betrag manuell eintragen.";
+            resultEl.innerHTML = "❌ Scan fehlgeschlagen. Bitte Betrag manuell eintragen.";
         }
     }
 
@@ -1419,7 +1417,7 @@
         });
 
         if (isNaN(amount) || amount <= 0 || !purpose) { alert('Bitte Betrag und Grund eintragen!'); return; }
-        if (checkedPeople.length === 0) { alert('Bitte wÃ¤hle jemanden zum Teilen aus!'); return; }
+        if (checkedPeople.length === 0) { alert('Bitte wähle jemanden zum Teilen aus!'); return; }
 
         const id = Date.now().toString();
         const shareAmount = parseFloat((amount / checkedPeople.length).toFixed(2));
@@ -1486,7 +1484,7 @@
 
     function resetAllData() {
         if (currentUser !== "Ivo") return;
-        if (confirm("MÃ¶chtest du wirklich ALLE Daten lÃ¶schen?")) {
+        if (confirm("Möchtest du wirklich ALLE Daten löschen?")) {
             db = { expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] }, food_diary: [] };
             saveDB(); logout();
         }
@@ -1506,7 +1504,7 @@
         document.getElementById('receipt-modal').classList.remove('hidden');
     }
 
-    // Funktionen fÃ¼r das Food Diary
+    // Funktionen für das Food Diary
     function openReviewModal(restId) {
         document.getElementById('rev-rest-id').value = restId;
         document.getElementById('review-modal-title').innerText = restId + " bewerten";
@@ -1572,7 +1570,7 @@
             const reviews = db.food_diary.filter(r => r.restId === restName);
             
             if (reviews.length > 0) {
-                let html = `<h5 style="margin: 15px 0 5px 0; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">Tagebuch-EintrÃ¤ge:</h5>`;
+                let html = `<h5 style="margin: 15px 0 5px 0; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">Tagebuch-Einträge:</h5>`;
                 reviews.forEach(r => {
                     html += `
                         <div class="review-card">
@@ -1581,10 +1579,10 @@
                                 <span style="font-size: 11px; color: var(--text-muted);">${r.timestamp}</span>
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px;">
-                                <span>ð½ï¸ Geschmack: <span class="stars">${r.ratings.taste}</span></span>
-                                <span>ð¸ P/L: <span class="stars">${r.ratings.pl}</span></span>
-                                <span>ð´ï¸ Service: <span class="stars">${r.ratings.service}</span></span>
-                                <span>ð· Ambiente: <span class="stars">${r.ratings.amb}</span></span>
+                                <span>🍽️ Geschmack: <span class="stars">${r.ratings.taste}</span></span>
+                                <span>💸 P/L: <span class="stars">${r.ratings.pl}</span></span>
+                                <span>🕴️ Service: <span class="stars">${r.ratings.service}</span></span>
+                                <span>🍷 Ambiente: <span class="stars">${r.ratings.amb}</span></span>
                             </div>
                             ${r.photo ? `<img src="${r.photo}">` : ''}
                         </div>
@@ -1601,7 +1599,7 @@
     });
     function closeModal() { document.getElementById('receipt-modal').classList.add('hidden'); }
 
-    // ================= LIVE TRACKING FÃR RESTAURANTS & ORTE =================
+    // ================= LIVE TRACKING FÜR RESTAURANTS & ORTE =================
     var trackingActive = false;
 
     function startLiveTracking() {
@@ -1613,7 +1611,7 @@
             });
             trackingActive = true;
         } else {
-            updateDistanceDisplays("â GPS nicht unterstÃ¼tzt");
+            updateDistanceDisplays("❌ GPS nicht unterstützt");
         }
     }
 
@@ -1641,12 +1639,12 @@
                 const d = calcDistance(userLat, userLng, restLat, restLng);
                 card.setAttribute('data-distance', d);
                 const distanceStr = d < 1
-                    ? `ð¢ ${Math.round(d * 1000)} Meter entfernt`
-                    : `ð¢ ${d.toFixed(2)} km entfernt`;
+                    ? `🟢 ${Math.round(d * 1000)} Meter entfernt`
+                    : `🟢 ${d.toFixed(2)} km entfernt`;
                 card.querySelector('.distance-live').innerHTML = distanceStr;
             });
 
-            // Nach Entfernung sortieren, nÃ¤chstes oben
+            // Nach Entfernung sortieren, nächstes oben
             cards.sort((a, b) => parseFloat(a.getAttribute('data-distance')) - parseFloat(b.getAttribute('data-distance')));
             cards.forEach(card => grid.appendChild(card));
         });
@@ -1654,7 +1652,7 @@
 
         function handleTrackingError(error) {
         console.error(error);
-        updateDistanceDisplays("â GPS blockiert / Fehler");
+        updateDistanceDisplays("❌ GPS blockiert / Fehler");
     }
 
     function updateDistanceDisplays(msg) {
@@ -1691,11 +1689,11 @@
         let totalOwnCost = 0;
 
         db.debts.filter(d => d.to === currentUser && !d.resolved).forEach(d => {
-            creditsList.innerHTML += `<li><div><strong>${d.from}</strong> schuldet dir <span style="color:var(--success); font-weight:bold;">${d.amount.toFixed(2)} â¬</span><span class="meta-info">fÃ¼r: ${d.purpose}</span></div><button class="btn-check" onclick="resolveDebt('${d.id}')">Erledigt â</button></li>`;
+            creditsList.innerHTML += `<li><div><strong>${d.from}</strong> schuldet dir <span style="color:var(--success); font-weight:bold;">${d.amount.toFixed(2)} €</span><span class="meta-info">für: ${d.purpose}</span></div><button class="btn-check" onclick="resolveDebt('${d.id}')">Erledigt ✓</button></li>`;
         });
 
         db.debts.filter(d => d.from === currentUser && !d.resolved).forEach(d => {
-            debtsList.innerHTML += `<li><div>Du schuldest <strong>${d.to}</strong> <span style="color:var(--danger); font-weight:bold;">${d.amount.toFixed(2)} â¬</span><span class="meta-info">fÃ¼r: ${d.purpose}</span></div></li>`;
+            debtsList.innerHTML += `<li><div>Du schuldest <strong>${d.to}</strong> <span style="color:var(--danger); font-weight:bold;">${d.amount.toFixed(2)} €</span><span class="meta-info">für: ${d.purpose}</span></div></li>`;
         });
 
         db.expenses.forEach(exp => {
@@ -1703,13 +1701,13 @@
                 const myPart = exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
                 totalOwnCost += myPart;
                 const hasReceipt = exp.personalNote || exp.personalImage;
-                const receiptButton = hasReceipt ? `<button class="btn-receipt-view" onclick="openReceiptModal('${exp.id}')">ð Beleg</button>` : '';
-                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}â¬ | Geteilt mit: ${exp.participants.join(', ')} | ð ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} â¬</span></li>`;
+                const receiptButton = hasReceipt ? `<button class="btn-receipt-view" onclick="openReceiptModal('${exp.id}')">📄 Beleg</button>` : '';
+                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
                     totalOwnCost += exp.shareAmount;
-                    historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method})<span class="meta-info">${exp.payer} bezahlt (Schuld beglichen). Gesamt: ${exp.totalAmount.toFixed(2)}â¬ | ð ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${exp.shareAmount.toFixed(2)} â¬</span></li>`;
+                    historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method})<span class="meta-info">${exp.payer} bezahlt (Schuld beglichen). Gesamt: ${exp.totalAmount.toFixed(2)}€ | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${exp.shareAmount.toFixed(2)} €</span></li>`;
                 }
             }
         });
@@ -1721,7 +1719,7 @@
             const isMe = (user === currentUser);
             let itemsHTML = '';
             const list = db.packing[user] || [];
-            if (list.length === 0) { itemsHTML = `<p style="font-size:12px; color:var(--text-muted); margin:5px 0;">Liste ist leer... ð§³</p>`; } 
+            if (list.length === 0) { itemsHTML = `<p style="font-size:12px; color:var(--text-muted); margin:5px 0;">Liste ist leer... 🧳</p>`; } 
             else {
                 list.forEach(item => {
                     itemsHTML += `
@@ -1730,15 +1728,15 @@
                                 <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px; accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
                                 ${item.name}
                             </label>
-                            ${isMe ? `<button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">ðï¸</button>` : ''}
+                            ${isMe ? `<button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>` : ''}
                         </div>`;
                 });
             }
-            packingGrid.innerHTML += `<div class="card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-color: ${isMe ? 'var(--primary)' : 'var(--border)'}"><h4 style="color: ${isMe ? 'var(--primary)' : 'var(--text-main)'}; margin-bottom:10px;">${user}'s GepÃ¤ck ${isMe ? '(Du)' : ''}</h4><div>${itemsHTML}</div></div>`;
+            packingGrid.innerHTML += `<div class="card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-color: ${isMe ? 'var(--primary)' : 'var(--border)'}"><h4 style="color: ${isMe ? 'var(--primary)' : 'var(--text-main)'}; margin-bottom:10px;">${user}'s Gepäck ${isMe ? '(Du)' : ''}</h4><div>${itemsHTML}</div></div>`;
         });
 
-        if(creditsList.innerHTML === '') creditsList.innerHTML = '<li>Niemand schuldet dir was! ð</li>';
-        if(debtsList.innerHTML === '') debtsList.innerHTML = '<li>Keine offenen Schulden! ð</li>';
+        if(creditsList.innerHTML === '') creditsList.innerHTML = '<li>Niemand schuldet dir was! 😎</li>';
+        if(debtsList.innerHTML === '') debtsList.innerHTML = '<li>Keine offenen Schulden! 🎉</li>';
         if(historyList.innerHTML === '') historyList.innerHTML = '<li>Keine Ausgaben im Verlauf.</li>';
 
         // Karte vs Bar Summe
@@ -1755,14 +1753,14 @@
                 else sumBar += myPart;
             }
         });
-        document.getElementById('sum-karte').innerText = sumKarte.toFixed(2) + ' â¬';
-        document.getElementById('sum-bar').innerText = sumBar.toFixed(2) + ' â¬';
+        document.getElementById('sum-karte').innerText = sumKarte.toFixed(2) + ' €';
+        document.getElementById('sum-bar').innerText = sumBar.toFixed(2) + ' €';
         document.getElementById('payment-summary').style.display = (sumKarte + sumBar > 0) ? 'flex' : 'none';
 
         // Kategorie-Auswertung
         renderCategoryBreakdown();
 
-        // Bewertungen fÃ¼r alle Restaurants laden
+        // Bewertungen für alle Restaurants laden
         renderAllReviews();
     }
 
@@ -1790,7 +1788,7 @@
                 <div>
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                         <span style="font-weight:700; color:${colors[i]}">${user} ${user === currentUser ? "(Du)" : ""}</span>
-                        <span style="font-weight:700; color:${colors[i]}">${totals[user].toFixed(2)} â¬</span>
+                        <span style="font-weight:700; color:${colors[i]}">${totals[user].toFixed(2)} €</span>
                     </div>
                     <div style="background:#0f172a; border-radius:8px; height:22px; overflow:hidden;">
                         <div style="width:${pct}%; background:${colors[i]}; height:100%; border-radius:8px; transition:width 0.6s ease;"></div>
@@ -1816,10 +1814,10 @@
                 const icon = wetterIcon(c.weathercode);
                 let html = `
                     <div style="font-size:72px; margin-bottom:10px;">${icon}</div>
-                    <div style="font-size:48px; font-weight:800; color:var(--primary);">${c.temperature_2m}Â°C</div>
-                    <div style="color:var(--text-muted); margin:8px 0 20px 0; font-size:15px;">ð¨ Wind: ${c.windspeed_10m} km/h &nbsp;|&nbsp; ð§ Luftfeuchte: ${c.relativehumidity_2m}%</div>
+                    <div style="font-size:48px; font-weight:800; color:var(--primary);">${c.temperature_2m}°C</div>
+                    <div style="color:var(--text-muted); margin:8px 0 20px 0; font-size:15px;">💨 Wind: ${c.windspeed_10m} km/h &nbsp;|&nbsp; 💧 Luftfeuchte: ${c.relativehumidity_2m}%</div>
                     <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:10px;">`;
-                const days = ["Â´s Heute", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+                const days = ["´s Heute", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
                 const dayNames = ["So","Mo","Di","Mi","Do","Fr","Sa"];
                 for (let i = 0; i < 5; i++) {
                     const date = new Date(d.time[i]);
@@ -1827,31 +1825,31 @@
                     html += `<div style="background:#0f172a; border-radius:12px; padding:12px 6px; border:1px solid var(--border);">
                         <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">${dayName}</div>
                         <div style="font-size:26px;">${wetterIcon(d.weathercode[i])}</div>
-                        <div style="font-size:13px; font-weight:700; color:var(--primary); margin-top:6px;">${d.temperature_2m_max[i]}Â°</div>
-                        <div style="font-size:11px; color:var(--text-muted);">${d.temperature_2m_min[i]}Â°</div>
-                        <div style="font-size:11px; color:#60a5fa; margin-top:4px;">ð§ï¸ ${d.precipitation_probability_max[i]}%</div>
+                        <div style="font-size:13px; font-weight:700; color:var(--primary); margin-top:6px;">${d.temperature_2m_max[i]}°</div>
+                        <div style="font-size:11px; color:var(--text-muted);">${d.temperature_2m_min[i]}°</div>
+                        <div style="font-size:11px; color:#60a5fa; margin-top:4px;">🌧️ ${d.precipitation_probability_max[i]}%</div>
                     </div>`;
                 }
                 html += "</div>";
                 document.getElementById("wetter-content").innerHTML = html;
             })
             .catch(() => {
-                document.getElementById("wetter-content").innerHTML = '<p style="color:var(--danger);">â Wetter konnte nicht geladen werden. Bitte Internetverbindung prÃ¼fen.</p>';
+                document.getElementById("wetter-content").innerHTML = '<p style="color:var(--danger);">❌ Wetter konnte nicht geladen werden. Bitte Internetverbindung prüfen.</p>';
             });
     }
 
     function wetterIcon(code) {
-        if (code === 0) return "ð";
-        if (code <= 2) return "ð¤ï¸";
-        if (code <= 3) return "âï¸";
-        if (code <= 48) return "ð«";
-        if (code <= 57) return "ð¦ï¸";
-        if (code <= 67) return "ð§ï¸";
-        if (code <= 77) return "âï¸";
-        if (code <= 82) return "ð¦ï¸";
-        if (code <= 86) return "âï¸";
-        if (code <= 99) return "âï¸";
-        return "ð¤ï¸";
+        if (code === 0) return "🌞";
+        if (code <= 2) return "🌤️";
+        if (code <= 3) return "☁️";
+        if (code <= 48) return "🌫";
+        if (code <= 57) return "🌦️";
+        if (code <= 67) return "🌧️";
+        if (code <= 77) return "❄️";
+        if (code <= 82) return "🌦️";
+        if (code <= 86) return "⛄️";
+        if (code <= 99) return "⛈️";
+        return "🌤️";
     }
 
     // ================= COUNTDOWN BANNER =================
@@ -1862,7 +1860,7 @@
         var el = document.getElementById("countdown-banner-text");
         if (!el) return;
         if (diff <= 0) {
-            el.innerText = "ð Es geht los!";
+            el.innerText = "🎉 Es geht los!";
             return;
         }
         var days = Math.floor(diff / (1000*60*60*24));
@@ -1896,7 +1894,7 @@
         if (!db.chat) db.chat = [];
         else if (!Array.isArray(db.chat)) db.chat = Object.values(db.chat);
         var colors = {"Ivo":"var(--primary)","Romeo":"var(--accent)","Anton":"var(--success)","Raul":"var(--warning)"};
-        box.innerHTML = db.chat.length === 0 ? '<p style="color:var(--text-muted); text-align:center; margin-top:40px;">Noch keine Nachrichten... Fang an! ð</p>' : "";
+        box.innerHTML = db.chat.length === 0 ? '<p style="color:var(--text-muted); text-align:center; margin-top:40px;">Noch keine Nachrichten... Fang an! 👋</p>' : "";
         db.chat.forEach(msg => {
             var isMe = msg.author === currentUser;
             var color = colors[msg.author] || "var(--primary)";
@@ -1934,9 +1932,9 @@
         }
 
         var categories = [
-            { key: "drinks", label: "ðº Meiste GetrÃ¤nke", higher: true },
-            { key: "sleep", label: "ð SpÃ¤test schlafen gegangen", higher: true },
-            { key: "steps", label: "ð Meiste Schritte", higher: true }
+            { key: "drinks", label: "🍺 Meiste Getränke", higher: true },
+            { key: "sleep", label: "🌙 Spätest schlafen gegangen", higher: true },
+            { key: "steps", label: "🏃 Meiste Schritte", higher: true }
         ];
 
         var html = "";
@@ -1946,7 +1944,7 @@
             html += `<div class="card" style="background:#0f172a; margin-bottom:15px;">
                 <h4 style="margin-bottom:12px; color:var(--warning);">${cat.label}</h4>`;
             sorted.forEach((u, i) => {
-                var medal = i === 0 ? "ð¥" : i === 1 ? "ð¥" : i === 2 ? "ð¥" : "  ";
+                var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "  ";
                 var val = cat.key === "sleep" ? r[u][cat.key] + " Uhr" : r[u][cat.key];
                 html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
                     <span>${medal} <strong>${u}</strong>${u === currentUser ? " (Du)" : ""}</span>
@@ -1956,7 +1954,7 @@
             html += "</div>";
         });
 
-        el.innerHTML = html || '<p style="color:var(--text-muted);">Noch keine EintrÃ¤ge. Tragt eure Werte ein!</p>';
+        el.innerHTML = html || '<p style="color:var(--text-muted);">Noch keine Einträge. Tragt eure Werte ein!</p>';
     }
     // ================= LEAFLET MAPS =================
     var mapInstances = {};
@@ -1973,7 +1971,7 @@
         mapInstances[mapId] = map;
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Â© OpenStreetMap contributors',
+            attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
@@ -2013,7 +2011,7 @@
                 var latlng = [pos.coords.latitude, pos.coords.longitude];
                 if (!userMarker) {
                     var youIcon = L.divIcon({ html: '<div style="width:14px;height:14px;background:#38bdf8;border-radius:50%;border:3px solid white;box-shadow:0 0 8px #38bdf8;"></div>', className: '', iconSize: [14, 14], iconAnchor: [7, 7] });
-                    userMarker = L.marker(latlng, { icon: youIcon }).addTo(map).bindPopup('ð Du bist hier');
+                    userMarker = L.marker(latlng, { icon: youIcon }).addTo(map).bindPopup('📍 Du bist hier');
                 } else {
                     userMarker.setLatLng(latlng);
                 }
@@ -2059,7 +2057,7 @@
             return `<li style="flex-direction:column; align-items:flex-start; gap:6px;">
                 <div style="display:flex; justify-content:space-between; width:100%;">
                     <span><strong>${label}</strong> <span style="color:var(--text-muted); font-size:12px;">(${cat.count}x)</span></span>
-                    <span class="amount-tag amount-danger">-${cat.total.toFixed(2)} â¬</span>
+                    <span class="amount-tag amount-danger">-${cat.total.toFixed(2)} €</span>
                 </div>
                 <div style="width:100%; background:#0f172a; border-radius:6px; height:8px;">
                     <div style="width:${pct}%; background:linear-gradient(90deg, var(--warning), var(--primary)); height:8px; border-radius:6px; transition:width 0.4s;"></div>
