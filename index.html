@@ -810,6 +810,8 @@
                 <div id="map-tabak" class="map-container"></div>
             </div>
         </div>
+
+        <div id="content-orte" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🧭 Wichtige Orte & Aktivitäten</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
@@ -1890,11 +1892,13 @@
         var cards = section ? section.querySelectorAll('.card[data-lat]') : [];
 
         var bounds = [];
-        var tabakIcon = L.divIcon({ html: '🚬', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
-        var restIcon  = L.divIcon({ html: '🍽️', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
-        var orteIcon  = L.divIcon({ html: '📍', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
-
-        var chosenIcon = tabName === 'tabak' ? tabakIcon : tabName === 'restaurants' ? restIcon : orteIcon;
+        var makeRedIcon = function(label) {
+            return L.divIcon({
+                html: '<div style="width:14px;height:14px;background:#ef4444;border-radius:50%;border:2.5px solid white;box-shadow:0 0 5px rgba(239,68,68,0.8);"></div>',
+                className: '', iconSize: [14, 14], iconAnchor: [7, 7]
+            });
+        };
+        var chosenIcon = makeRedIcon();
 
         cards.forEach(card => {
             var lat = parseFloat(card.getAttribute('data-lat'));
