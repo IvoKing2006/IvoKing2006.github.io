@@ -255,6 +255,12 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card" style="margin-top: 25px; border-left: 4px solid var(--warning);">
+                <h3 style="color: var(--warning);">📊 Ausgaben nach Kategorie</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Gleiche Begriffe werden automatisch zusammengefasst (egal ob groß oder klein geschrieben).</p>
+                <ul id="category-breakdown"></ul>
+            </div>
         </div>
 
         <div id="content-packliste" class="tab-content hidden">
@@ -1321,6 +1327,9 @@
         document.getElementById('sum-bar').innerText = sumBar.toFixed(2) + ' €';
         document.getElementById('payment-summary').style.display = (sumKarte + sumBar > 0) ? 'flex' : 'none';
 
+        // Kategorie-Auswertung
+        renderCategoryBreakdown();
+
         // Bewertungen für alle Restaurants laden
         renderAllReviews();
     }
@@ -1517,7 +1526,49 @@
 
         el.innerHTML = html || '<p style="color:var(--text-muted);">Noch keine Einträge. Tragt eure Werte ein!</p>';
     }
+    function renderCategoryBreakdown() {
+        var el = document.getElementById('category-breakdown');
+        if (!el) return;
 
-</script>
-</body>
-</html>
+        // Alle Ausgaben sammeln, die dem currentUser zuzurechnen sind
+        var categories = {};
+        db.expenses.forEach(exp => {
+            var myPart = 0;
+            if (exp.payer === currentUser) {
+                myPart = exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
+            } else if (exp.participants.includes(currentUser)) {
+                var debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
+                if (debt && debt.resolved) myPart = exp.shareAmount;
+            }
+            if (myPart > 0) {
+                var key = exp.purpose.trim().toLowerCase();
+                var label = exp.purpose.trim();
+                if (!categories[key]) categories[key] = { label: label, total: 0, count: 0 };
+                categories[key].total += myPart;
+                categories[key].count++;
+            }
+        });
+
+        var sorted = Object.values(categories).sort((a, b) => b.total - a.total);
+
+        if (sorted.length === 0) {
+            el.innerHTML = '<li>Noch keine Ausgaben vorhanden.</li>';
+            return;
+        }
+
+        var maxVal = sorted[0].total;
+        el.innerHTML = sorted.map(cat => {
+            var pct = Math.round((cat.total / maxVal) * 100);
+            var label = cat.label.charAt(0).toUpperCase() + cat.label.slice(1);
+            return `<li style="flex-direction:column; align-items:flex-start; gap:6px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <span><strong>${label}</strong> <span style="color:var(--text-muted); font-size:12px;">(${cat.count}x)</span></span>
+                    <span class="amount-tag amount-danger">-${cat.total.toFixed(2)} €</span>
+                </div>
+                <div style="width:100%; background:#0f172a; border-radius:6px; height:8px;">
+                    <div style="width:${pct}%; background:linear-gradient(90deg, var(--warning), var(--primary)); height:8px; border-radius:6px; transition:width 0.4s;"></div>
+                </div>
+            </li>`;
+        }).join('');
+    }
+
