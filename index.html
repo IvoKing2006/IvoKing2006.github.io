@@ -1257,7 +1257,7 @@
         document.getElementById(`content-${tabName}`).classList.remove('hidden');
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
-        if (tabName === 'restaurants' || tabName === 'orte' || tabName === 'tabak') {
+        if (tabName === 'restaurants' || tabName === 'orte' || tabName === 'tabak' || tabName === 'apotheke') {
             startLiveTracking();
         }
         if (tabName === 'restaurants') setTimeout(() => initMap('map-restaurants', 'restaurants'), 100);
