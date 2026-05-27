@@ -1453,7 +1453,33 @@
 
     function resolveDebt(debtId) {
         const debt = db.debts.find(d => d.id === debtId);
-        if (debt) { debt.resolved = true; saveDB(); }
+        if (!debt) return;
+
+        // Popup: Wie wurde zurückgezahlt?
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);backdrop-filter:blur(5px);display:flex;justify-content:center;align-items:center;z-index:9999;';
+        modal.innerHTML = `
+            <div style="background:#1e293b;padding:28px;border-radius:16px;max-width:340px;width:90%;border:1px solid #334155;text-align:center;">
+                <h3 style="margin:0 0 8px;color:#f8fafc;">💸 Rückzahlung bestätigen</h3>
+                <p style="color:#94a3b8;font-size:14px;margin:0 0 20px;"><strong style="color:#f8fafc;">${debt.from}</strong> hat <strong style="color:#10b981;">${debt.amount.toFixed(2)} €</strong> für <em>${debt.purpose}</em> zurückgezahlt.</p>
+                <p style="color:#94a3b8;font-size:14px;margin:0 0 16px;">Wie wurde gezahlt?</p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button onclick="confirmResolve('${debtId}','Bar', this.closest('div').parentElement.parentElement)" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;padding:12px;border-radius:10px;color:white;font-size:15px;font-weight:700;cursor:pointer;">💵 Bar</button>
+                    <button onclick="confirmResolve('${debtId}','Karte', this.closest('div').parentElement.parentElement)" style="flex:1;background:linear-gradient(135deg,#38bdf8,#0284c7);border:none;padding:12px;border-radius:10px;color:white;font-size:15px;font-weight:700;cursor:pointer;">💳 Karte</button>
+                </div>
+                <button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;background:#334155;border:none;padding:8px 16px;border-radius:8px;color:#94a3b8;font-size:13px;cursor:pointer;width:auto;box-shadow:none;">Abbrechen</button>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
+    function confirmResolve(debtId, method, modal) {
+        const debt = db.debts.find(d => d.id === debtId);
+        if (debt) {
+            debt.resolved = true;
+            debt.resolvedMethod = method;
+            saveDB();
+        }
+        modal.remove();
     }
 
     function addPackItem() {
@@ -1707,7 +1733,8 @@
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
                     totalOwnCost += exp.shareAmount;
-                    historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method})<span class="meta-info">${exp.payer} bezahlt (Schuld beglichen). Gesamt: ${exp.totalAmount.toFixed(2)}€ | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${exp.shareAmount.toFixed(2)} €</span></li>`;
+                    const resolvedMethod = associatedDebt.resolvedMethod || exp.method;
+                    historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${resolvedMethod})<span class="meta-info">${exp.payer} bezahlt (Schuld beglichen). Gesamt: ${exp.totalAmount.toFixed(2)}€ | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${exp.shareAmount.toFixed(2)} €</span></li>`;
                 }
             }
         });
@@ -1749,8 +1776,17 @@
                 myPart = exp.shareAmount || (exp.totalAmount / exp.participants.length);
             }
             if (myPart > 0) {
-                if (exp.method === 'Karte') sumKarte += myPart;
-                else sumBar += myPart;
+                if (exp.payer === currentUser) {
+                    // Eigene Ausgabe: eigene Zahlungsmethode
+                    if (exp.method === 'Karte') sumKarte += myPart;
+                    else sumBar += myPart;
+                } else {
+                    // Schuld beglichen: resolvedMethod des Schuldners verwenden
+                    const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
+                    const method = (debt && debt.resolvedMethod) ? debt.resolvedMethod : exp.method;
+                    if (method === 'Karte') sumKarte += myPart;
+                    else sumBar += myPart;
+                }
             }
         });
         document.getElementById('sum-karte').innerText = sumKarte.toFixed(2) + ' €';
