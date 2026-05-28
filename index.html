@@ -478,6 +478,45 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.4); }
+
+        /* ===== SCHWIMMEN CARDS ===== */
+        .schw-card {
+            width: 68px; height: 100px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .schw-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .schw-card-back {
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0,212,255,0.08) 0px, rgba(0,212,255,0.08) 4px,
+                rgba(124,58,237,0.08) 4px, rgba(124,58,237,0.08) 8px
+            ), linear-gradient(145deg, #1e293b, #0f172a);
+            cursor: default;
+        }
+        .schw-card-back:hover { transform: none; }
+        .schw-card-corner {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.2;
+            text-align: center;
+        }
+        .schw-card-tl { top: 5px; left: 6px; }
+        .schw-card-br { bottom: 5px; right: 6px; transform: rotate(180deg); }
+        .schw-card-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 26px;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
@@ -555,6 +594,7 @@
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
             <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">💬 Chat</button>
             <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">🏆 Rangliste</button>
+            <button id="tab-schwimmen" class="nav-btn" onclick="switchTab('schwimmen')">🃏 Schwimmen</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -1484,7 +1524,13 @@
             </div>
         </div>
 
-        <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
+        <div id="content-schwimmen" class="tab-content hidden">
+            <div id="schw-container" style="min-height:300px;">
+                <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">🃏 Lade Spiel...</div>
+            </div>
+        </div>
+
+                <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
 
@@ -1528,7 +1574,411 @@
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+    // ====================== SCHWIMMEN SPIEL ======================
+    var _schwSelectedHandCard = null;
+
+    const SCHW_SUITS = {herz:'♥', karo:'♦', kreuz:'♣', pik:'♠'};
+    const SCHW_COLORS = {herz:'#f87171', karo:'#f87171', kreuz:'#e2e8f0', pik:'#e2e8f0'};
+
+    function schwCardVal(c) {
+        if (['B','D','K'].includes(c.value)) return 10;
+        if (c.value === 'A') return 11;
+        return parseInt(c.value);
+    }
+
+    function schwScore(hand) {
+        if (!hand || hand.length !== 3) return 0;
+        // Drei gleiche Werte = 30.5
+        if (hand[0].value === hand[1].value && hand[1].value === hand[2].value) return 30.5;
+        // Maximale Punktzahl gleicher Farbe
+        let max = 0;
+        ['herz','karo','kreuz','pik'].forEach(s => {
+            const sum = hand.filter(c => c.suit === s).reduce((t,c) => t + schwCardVal(c), 0);
+            if (sum > max) max = sum;
+        });
+        return max;
+    }
+
+    function schwDeck() {
+        const vals = ['6','7','8','9','10','B','D','K','A'];
+        const suits = ['herz','karo','kreuz','pik'];
+        const d = [];
+        suits.forEach(s => vals.forEach(v => d.push({suit:s, value:v})));
+        for (let i = d.length-1; i > 0; i--) {
+            const j = Math.floor(Math.random()*(i+1));
+            [d[i],d[j]]=[d[j],d[i]];
+        }
+        return d;
+    }
+
+    function schwCard(c, faceDown, selected, onclick) {
+        if (faceDown || !c) return `<div class="schw-card schw-card-back"></div>`;
+        const sym = SCHW_SUITS[c.suit]||'?';
+        const col = SCHW_COLORS[c.suit]||'#fff';
+        const val = {B:'J',D:'Q',K:'K',A:'A'}[c.value] || c.value;
+        const sel = selected ? 'transform:translateY(-14px);box-shadow:0 0 0 2px #00d4ff,0 12px 28px rgba(0,212,255,0.4);' : '';
+        const oc = onclick ? `onclick="${onclick}"` : '';
+        return `<div class="schw-card" style="color:${col};${sel}" ${oc}>
+            <div class="schw-card-corner schw-card-tl">${val}<br>${sym}</div>
+            <div class="schw-card-center">${sym}</div>
+            <div class="schw-card-corner schw-card-br">${val}<br>${sym}</div>
+        </div>`;
+    }
+
+    function schwLives(g) {
+        return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;justify-content:center;">
+            ${ALL_USERS.map(u => {
+                const lives = g.lives[u] ?? 3;
+                const isSwim = g.swimmer === u;
+                const isElim = (g.eliminated||[]).includes(u);
+                let hearts = '';
+                if (isElim) hearts = '💀';
+                else if (isSwim) hearts = '🌊';
+                else hearts = '❤️'.repeat(Math.max(0,lives)) + '🖤'.repeat(Math.max(0,3-lives));
+                const isCurrent = g.currentPlayer === u && g.status === 'playing';
+                return `<div style="background:${isCurrent?'rgba(0,255,163,0.1)':'rgba(255,255,255,0.04)'};border:1px solid ${isCurrent?'rgba(0,255,163,0.4)':'var(--glass-border)'};border-radius:10px;padding:8px 12px;text-align:center;min-width:75px;">
+                    <div style="font-size:11px;font-weight:700;color:${isCurrent?'var(--success)':'var(--text-muted)'};text-transform:uppercase;">${u}${isCurrent?' 👉':''}</div>
+                    <div style="font-size:15px;margin-top:3px;">${hearts}</div>
+                    ${isSwim?'<div style="font-size:9px;color:#38bdf8;font-weight:700;">SCHWIMMT</div>':''}
+                </div>`;
+            }).join('')}
+        </div>`;
+    }
+
+    function schwimmenInit() {
+        const lives = {};
+        ALL_USERS.forEach(u => lives[u] = 3);
+        db.schwimmen = {
+            status: 'idle',
+            lives: lives,
+            swimmer: null,
+            eliminated: [],
+            dealer: ALL_USERS[Math.floor(Math.random()*ALL_USERS.length)],
+            hands: {}, dealerSetA: [], dealerSetB: [],
+            middle: [], deck: [],
+            currentPlayer: null, turnOrder: [],
+            roundClosedBy: null, closedPlayersDone: [],
+            skippedThisRound: [], roundNumber: 0,
+            log: [], roundScores: {}
+        };
+        schwimmenStartRound();
+    }
+
+    function schwimmenStartRound() {
+        const g = db.schwimmen;
+        g.roundNumber = (g.roundNumber||0)+1;
+        g.roundClosedBy = null; g.closedPlayersDone = [];
+        g.skippedThisRound = []; g.roundScores = {};
+        g.hands = {}; g.log = [];
+
+        const deck = schwDeck();
+        const alive = ALL_USERS.filter(u => !(g.eliminated||[]).includes(u));
+
+        g.dealerSetA = [deck.pop(), deck.pop(), deck.pop()];
+        g.dealerSetB = [deck.pop(), deck.pop(), deck.pop()];
+        alive.forEach(p => { if (p !== g.dealer) g.hands[p] = [deck.pop(), deck.pop(), deck.pop()]; });
+        g.deck = deck;
+        g.middle = [];
+
+        const idx = alive.indexOf(g.dealer);
+        g.turnOrder = [...alive.slice(idx+1), ...alive.slice(0,idx+1)];
+        g.currentPlayer = g.dealer;
+        g.status = 'choosingMiddle';
+        g.log = ['🃏 Runde '+g.roundNumber+' – '+g.dealer+' gibt.'];
+        saveDB();
+    }
+
+    function schwimmenDealerChoose(choice) {
+        const g = db.schwimmen;
+        if (currentUser !== g.dealer) return;
+        if (choice === 'A') {
+            g.hands[g.dealer] = [...g.dealerSetA];
+            g.middle = [...g.dealerSetB];
+            g.log.unshift(g.dealer+' behält Stapel A.');
+        } else {
+            g.hands[g.dealer] = [...g.dealerSetB];
+            g.middle = [...g.dealerSetA];
+            g.log.unshift(g.dealer+' wechselt blind zu Stapel B.');
+        }
+        g.dealerSetA = []; g.dealerSetB = [];
+        if (schwScore(g.hands[g.dealer]) === 31) {
+            g.log.unshift('🎉 '+g.dealer+' hat sofort 31!');
+            schwimmenEndRound(); return;
+        }
+        g.currentPlayer = g.turnOrder[0];
+        g.status = 'playing';
+        saveDB();
+    }
+
+    function schwimmenSwapOne(hi, mi) {
+        const g = db.schwimmen;
+        if (currentUser !== g.currentPlayer) return;
+        const h = [...g.hands[currentUser]];
+        const m = [...g.middle];
+        [h[hi], m[mi]] = [m[mi], h[hi]];
+        g.hands[currentUser] = h; g.middle = m;
+        g.log.unshift(currentUser+' tauscht 1 Karte.');
+        _schwSelectedHandCard = null;
+        if (g.skippedThisRound) g.skippedThisRound = g.skippedThisRound.filter(u=>u!==currentUser);
+        if (schwScore(h) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
+        schwimmenNextTurn();
+    }
+
+    function schwimmenSwapAll() {
+        const g = db.schwimmen;
+        if (currentUser !== g.currentPlayer) return;
+        const oldH = [...g.hands[currentUser]];
+        g.hands[currentUser] = [...g.middle];
+        g.middle = oldH;
+        g.log.unshift(currentUser+' tauscht alle 3 Karten.');
+        _schwSelectedHandCard = null;
+        if (g.skippedThisRound) g.skippedThisRound = g.skippedThisRound.filter(u=>u!==currentUser);
+        if (schwScore(g.hands[currentUser]) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
+        schwimmenNextTurn();
+    }
+
+    function schwimmenSkip() {
+        const g = db.schwimmen;
+        if (currentUser !== g.currentPlayer) return;
+        if (!g.skippedThisRound.includes(currentUser)) g.skippedThisRound.push(currentUser);
+        g.log.unshift(currentUser+' passt.');
+        const alive = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+        if (alive.every(u=>g.skippedThisRound.includes(u))) {
+            if (g.deck.length >= 3) {
+                g.middle = [g.deck.pop(), g.deck.pop(), g.deck.pop()];
+                g.log.unshift('🔄 Alle gepasst – neue Karten in die Mitte!');
+            }
+            g.skippedThisRound = [];
+        }
+        schwimmenNextTurn();
+    }
+
+    function schwimmenClose() {
+        const g = db.schwimmen;
+        if (currentUser !== g.currentPlayer || g.roundClosedBy) return;
+        g.roundClosedBy = currentUser;
+        g.closedPlayersDone = [currentUser];
+        g.log.unshift('🔔 '+currentUser+' klopft! Jeder noch ein Zug.');
+        schwimmenNextTurn();
+    }
+
+    function schwimmenNextTurn() {
+        const g = db.schwimmen;
+        const idx = g.turnOrder.indexOf(g.currentPlayer);
+        if (g.roundClosedBy) {
+            let next = null;
+            for (let i=1; i<=g.turnOrder.length; i++) {
+                const cand = g.turnOrder[(idx+i)%g.turnOrder.length];
+                if (!g.closedPlayersDone.includes(cand)) { next=cand; break; }
+            }
+            if (!next) { schwimmenEndRound(); return; }
+            g.closedPlayersDone.push(next);
+            g.currentPlayer = next;
+        } else {
+            g.currentPlayer = g.turnOrder[(idx+1)%g.turnOrder.length];
+        }
+        saveDB();
+    }
+
+    function schwimmenEndRound() {
+        const g = db.schwimmen;
+        const alive = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+        const scores = {};
+        alive.forEach(u => scores[u] = schwScore(g.hands[u]||[]));
+        g.roundScores = scores;
+        const minScore = Math.min(...Object.values(scores));
+        const losers = Object.keys(scores).filter(u=>scores[u]===minScore);
+
+        losers.forEach(loser => {
+            g.lives[loser] = (g.lives[loser]??3) - 1;
+            if (g.lives[loser] <= 0) {
+                if (g.swimmer === null) {
+                    g.swimmer = loser;
+                    g.lives[loser] = 0;
+                    g.log.unshift('🌊 '+loser+' schwimmt jetzt!');
+                } else if (g.swimmer === loser && g.lives[loser] < 0) {
+                    g.eliminated = g.eliminated||[];
+                    g.eliminated.push(loser);
+                    g.log.unshift('💀 '+loser+' ist raus!');
+                } else if (g.swimmer !== loser) {
+                    g.eliminated = g.eliminated||[];
+                    g.eliminated.push(loser);
+                    g.log.unshift('💀 '+loser+' ist raus!');
+                }
+            }
+        });
+
+        g.log.unshift('📊 Runde '+g.roundNumber+' – Verlierer: '+losers.join(', '));
+        const aliveNow = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+
+        if (aliveNow.length <= 1) {
+            g.status = 'gameEnd';
+            if (aliveNow.length === 1) g.log.unshift('🏆 '+aliveNow[0]+' gewinnt!');
+        } else {
+            const di = aliveNow.indexOf(g.dealer);
+            g.dealer = aliveNow[(di+1)%aliveNow.length];
+            g.status = 'roundEnd';
+        }
+        saveDB();
+    }
+
+    function schwimmenSelectHand(i) {
+        if (!db.schwimmen || currentUser !== db.schwimmen.currentPlayer) return;
+        _schwSelectedHandCard = (_schwSelectedHandCard===i) ? null : i;
+        renderSchwimmen();
+    }
+
+    function schwimmenSelectMiddle(i) {
+        if (_schwSelectedHandCard === null) return;
+        schwimmenSwapOne(_schwSelectedHandCard, i);
+    }
+
+    function renderSchwimmen() {
+        const el = document.getElementById('schw-container');
+        if (!el) return;
+        const g = db.schwimmen;
+
+        if (!g || g.status === 'idle' || !g.status) {
+            el.innerHTML = `<div style="text-align:center;padding:50px 20px;">
+                <div style="font-size:64px;margin-bottom:16px;">🃏</div>
+                <h2 style="background:linear-gradient(135deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:2rem;">Schwimmen</h2>
+                <p style="color:var(--text-muted);margin-bottom:28px;font-size:14px;">Das klassische Kartenspiel für euch alle 4!<br>Werte: A=11, B/D/K=10 • Dreimal gleicher Wert=30,5 • Max=31</p>
+                <button onclick="schwimmenInit()" style="max-width:280px;margin:0 auto;">🎮 Neues Spiel starten</button>
+            </div>`;
+            return;
+        }
+
+        if (g.status === 'choosingMiddle') {
+            const isDealer = currentUser === g.dealer;
+            const livesHtml = schwLives(g);
+            if (isDealer) {
+                el.innerHTML = livesHtml + `<div class="card" style="border-color:rgba(0,212,255,0.3);text-align:center;">
+                    <h3 style="color:var(--primary);">🎴 Du gibst! Wähle deinen Stapel</h3>
+                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px;">Schau dir Stapel A an – behalten oder blind gegen B tauschen?</p>
+                    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
+                        <div>
+                            <div style="color:var(--primary);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Stapel A (sichtbar)</div>
+                            <div style="display:flex;gap:8px;justify-content:center;">${(g.dealerSetA||[]).map(c=>schwCard(c)).join('')}</div>
+                            <div style="margin-top:10px;font-size:15px;font-weight:800;color:var(--primary);">Wert: ${schwScore(g.dealerSetA||[])}</div>
+                        </div>
+                        <div>
+                            <div style="color:var(--text-muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Stapel B (verdeckt)</div>
+                            <div style="display:flex;gap:8px;justify-content:center;">${[0,1,2].map(()=>schwCard(null,true)).join('')}</div>
+                            <div style="margin-top:10px;font-size:15px;font-weight:800;color:var(--text-muted);">???</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;max-width:380px;margin:0 auto;">
+                        <button onclick="schwimmenDealerChoose('A')" style="background:linear-gradient(135deg,#00ffa3,#00c87a);color:#020817;flex:1;font-size:14px;">✅ A behalten</button>
+                        <button onclick="schwimmenDealerChoose('B')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);flex:1;font-size:14px;">🎲 Blind zu B</button>
+                    </div>
+                </div>
+                ${g.hands[currentUser] ? `<div class="card" style="margin-top:12px;border-color:rgba(124,58,237,0.25);">
+                    <h4 style="margin-bottom:12px;font-size:13px;color:var(--text-muted);text-transform:uppercase;">Deine Karten (als Geber)</h4>
+                    <div style="display:flex;gap:8px;justify-content:center;">${(g.hands[currentUser]||[]).map(c=>schwCard(c)).join('')}</div>
+                </div>` : ''}`;
+            } else {
+                const myHand = g.hands[currentUser]||[];
+                el.innerHTML = livesHtml + `<div class="card" style="text-align:center;">
+                    <div style="font-size:40px;margin-bottom:12px;">⏳</div>
+                    <h3 style="color:var(--warning);">${g.dealer} wählt gerade seinen Stapel...</h3>
+                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Das Spiel beginnt gleich!</p>
+                    ${myHand.length ? `<div>
+                        <div style="color:var(--text-muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Deine Karten</div>
+                        <div style="display:flex;gap:8px;justify-content:center;">${myHand.map(c=>schwCard(c)).join('')}</div>
+                        <div style="margin-top:10px;font-size:14px;font-weight:800;color:var(--primary);">Dein Wert: ${schwScore(myHand)}</div>
+                    </div>` : ''}
+                </div>`;
+            }
+            return;
+        }
+
+        if (g.status === 'playing') {
+            const isMyTurn = currentUser === g.currentPlayer;
+            const myHand = g.hands[currentUser]||[];
+            const myScore = schwScore(myHand);
+            const canClose = !g.roundClosedBy;
+            const closeBanner = g.roundClosedBy ? `<div style="background:rgba(255,190,11,0.1);border:1px solid rgba(255,190,11,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--warning);text-align:center;">🔔 <strong>${g.roundClosedBy}</strong> hat geklopft – jeder hat noch einen Zug!</div>` : '';
+            const logItems = (g.log||[]).slice(0,5).map(l=>`<div style="font-size:12px;color:var(--text-muted);padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);">${l}</div>`).join('');
+
+            el.innerHTML = schwLives(g) + closeBanner + `
+            <div class="card" style="margin-bottom:12px;padding:12px 16px;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">📋 Verlauf</div>
+                ${logItems}
+            </div>
+            <div class="card" style="margin-bottom:12px;border-color:rgba(0,212,255,0.18);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <span style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">🎯 Mitte</span>
+                    ${isMyTurn && _schwSelectedHandCard!==null ? '<span style="font-size:12px;color:var(--primary);animation:pulse 1s infinite;">👆 Mittelkarte wählen</span>' : ''}
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;">
+                    ${(g.middle||[]).map((c,i) => schwCard(c, false, false, isMyTurn && _schwSelectedHandCard!==null ? `schwimmenSelectMiddle(${i})` : '')).join('')}
+                </div>
+            </div>
+            <div class="card" style="${isMyTurn?'border-color:rgba(0,255,163,0.45);box-shadow:0 0 24px rgba(0,255,163,0.1);':''}">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <span style="font-size:13px;font-weight:700;${isMyTurn?'color:var(--success);':'color:var(--text-muted);'}text-transform:uppercase;letter-spacing:.04em;">
+                        ${isMyTurn ? '👉 DEIN ZUG!' : '⏳ Warte auf '+g.currentPlayer}
+                    </span>
+                    <span style="font-size:16px;font-weight:900;color:var(--primary);">${myScore} Punkte</span>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;margin-bottom:${isMyTurn?'16':'0'}px;">
+                    ${myHand.map((c,i) => schwCard(c, false, _schwSelectedHandCard===i, isMyTurn ? `schwimmenSelectHand(${i})` : '')).join('')}
+                </div>
+                ${isMyTurn ? `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+                    <button onclick="schwimmenSwapAll()" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);font-size:13px;padding:11px;">🔄 Alle tauschen</button>
+                    <button onclick="schwimmenSkip()" style="background:rgba(255,255,255,0.06);color:var(--text-muted);box-shadow:none;border:1px solid var(--glass-border);font-size:13px;padding:11px;">⏭️ Passen</button>
+                    ${canClose ? `<button onclick="schwimmenClose()" style="grid-column:span 2;background:linear-gradient(135deg,rgba(255,190,11,0.25),rgba(255,140,0,0.2));color:var(--warning);box-shadow:none;border:1px solid rgba(255,190,11,0.4);font-size:13px;padding:11px;">🔔 Klopfen (Runde schließen)</button>` : ''}
+                </div>
+                <p style="color:var(--text-muted);font-size:11px;text-align:center;margin-top:10px;margin-bottom:0;">💡 Handkarte anklicken → dann Mittelkarte für Einzeltausch</p>
+                ` : `<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+                    ${ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u)&&u!==currentUser).map(u=>`<div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--text-muted);">${u}: <span style="filter:blur(3px);">??</span></div>`).join('')}
+                </div>`}
+            </div>`;
+            return;
+        }
+
+        if (g.status === 'roundEnd') {
+            const alive = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+            const scores = g.roundScores||{};
+            const minScore = Math.min(...alive.map(u=>scores[u]??0));
+            const sorted = [...alive].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
+            const canStart = currentUser === g.dealer;
+
+            el.innerHTML = schwLives(g) + `<div class="card" style="border-color:rgba(124,58,237,0.3);margin-bottom:14px;">
+                <h3 style="color:var(--accent);text-align:center;margin-bottom:16px;">📊 Auswertung Runde ${g.roundNumber}</h3>
+                ${sorted.map(u=>{
+                    const isLoser = scores[u]===minScore;
+                    return `<div style="background:${isLoser?'rgba(255,77,109,0.1)':'rgba(0,255,163,0.06)'};border:1px solid ${isLoser?'rgba(255,77,109,0.3)':'rgba(0,255,163,0.15)'};border-radius:12px;padding:14px;margin-bottom:8px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <span style="font-weight:800;font-size:15px;">${isLoser?'💀':'✅'} ${u}${u===currentUser?' (Du)':''}</span>
+                            <span style="font-size:20px;font-weight:900;color:${isLoser?'var(--danger)':'var(--success)'};">${scores[u]??'?'}</span>
+                        </div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">${(g.hands[u]||[]).map(c=>schwCard(c)).join('')}</div>
+                    </div>`;
+                }).join('')}
+            </div>
+            ${(g.eliminated||[]).length?`<div style="background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;text-align:center;font-size:13px;color:var(--danger);">💀 Ausgeschieden: ${(g.eliminated||[]).join(', ')}</div>`:''}
+            ${canStart ? `<button onclick="schwimmenStartRound()" style="max-width:320px;margin:0 auto;display:block;">▶️ Nächste Runde</button>` : `<p style="text-align:center;color:var(--text-muted);font-size:14px;">⏳ Warte auf ${g.dealer}...</p>`}`;
+            return;
+        }
+
+        if (g.status === 'gameEnd') {
+            const alive = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+            const winner = alive[0]||'?';
+            el.innerHTML = `<div style="text-align:center;padding:40px 20px;">
+                <div style="font-size:72px;margin-bottom:16px;">🏆</div>
+                <h2 style="background:linear-gradient(135deg,var(--warning),#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:2.2rem;margin-bottom:6px;">${winner} gewinnt!</h2>
+                <p style="color:var(--text-muted);margin-bottom:24px;">Glückwunsch! 🎉🥂</p>
+                ${schwLives(g)}
+                <button onclick="schwimmenInit()" style="max-width:280px;margin:20px auto 0;display:block;">🎮 Nochmal spielen</button>
+            </div>`;
+        }
+    }
+    // ===================== END SCHWIMMEN =====================
+
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
@@ -1633,6 +2083,7 @@
         if (tabName === 'statistik') updateStatistik();
         if (tabName === 'chat') renderChat();
         if (tabName === 'rangliste') renderRangliste();
+        if (tabName === 'schwimmen') renderSchwimmen();
     }
 
     function showDebtWarningIfNeeded() {
@@ -2401,6 +2852,9 @@
 
         // Kategorie-Auswertung
         renderCategoryBreakdown();
+        // Refresh Schwimmen if tab is active
+        const schwTab = document.getElementById('tab-schwimmen');
+        if (schwTab && schwTab.classList.contains('active')) renderSchwimmen();
 
         // Bewertungen für alle Restaurants laden
         renderAllReviews();
