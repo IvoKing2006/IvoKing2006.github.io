@@ -3047,6 +3047,29 @@
         schwimmenSwapOne(_schwSelectedHandCard, i);
     }
 
+    function schwimmenAdminRestart() {
+        if (currentUser !== 'Ivo') return;
+        if (confirm('Spiel wirklich neu starten? Alle Leben werden zurückgesetzt.')) {
+            schwimmenInit();
+        }
+    }
+
+    function schwimmenAdminEnd() {
+        if (currentUser !== 'Ivo') return;
+        if (confirm('Spiel wirklich beenden?')) {
+            db.schwimmen = null;
+            saveDB();
+        }
+    }
+
+    function schwAdminBar() {
+        if (currentUser !== 'Ivo') return '';
+        return `<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:14px;">
+            <button onclick="schwimmenAdminRestart()" style="width:auto;padding:7px 14px;font-size:12px;background:linear-gradient(135deg,rgba(255,190,11,0.25),rgba(255,140,0,0.2));color:var(--warning);box-shadow:none;border:1px solid rgba(255,190,11,0.35);">🔄 Neustart</button>
+            <button onclick="schwimmenAdminEnd()" style="width:auto;padding:7px 14px;font-size:12px;background:rgba(255,77,109,0.1);color:var(--danger);box-shadow:none;border:1px solid rgba(255,77,109,0.3);">⛔ Spiel beenden</button>
+        </div>`;
+    }
+
     function renderSchwimmen() {
         const el = document.getElementById('schw-container');
         if (!el) return;
@@ -3066,7 +3089,7 @@
             const isDealer = currentUser === g.dealer;
             const livesHtml = schwLives(g);
             if (isDealer) {
-                el.innerHTML = livesHtml + `<div class="card" style="border-color:rgba(0,212,255,0.3);text-align:center;">
+                el.innerHTML = schwAdminBar() + livesHtml + `<div class="card" style="border-color:rgba(0,212,255,0.3);text-align:center;">
                     <h3 style="color:var(--primary);">🎴 Du gibst! Wähle deinen Stapel</h3>
                     <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px;">Schau dir Stapel A an – behalten oder blind gegen B tauschen?</p>
                     <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
@@ -3092,7 +3115,7 @@
                 </div>` : ''}`;
             } else {
                 const myHand = g.hands[currentUser]||[];
-                el.innerHTML = livesHtml + `<div class="card" style="text-align:center;">
+                el.innerHTML = schwAdminBar() + livesHtml + `<div class="card" style="text-align:center;">
                     <div style="font-size:40px;margin-bottom:12px;">⏳</div>
                     <h3 style="color:var(--warning);">${g.dealer} wählt gerade seinen Stapel...</h3>
                     <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Das Spiel beginnt gleich!</p>
@@ -3114,7 +3137,7 @@
             const closeBanner = g.roundClosedBy ? `<div style="background:rgba(255,190,11,0.1);border:1px solid rgba(255,190,11,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--warning);text-align:center;">🔔 <strong>${g.roundClosedBy}</strong> hat geklopft – jeder hat noch einen Zug!</div>` : '';
             const logItems = (g.log||[]).slice(0,5).map(l=>`<div style="font-size:12px;color:var(--text-muted);padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);">${l}</div>`).join('');
 
-            el.innerHTML = schwLives(g) + closeBanner + `
+            el.innerHTML = schwAdminBar() + schwLives(g) + closeBanner + `
             <div class="card" style="margin-bottom:12px;padding:12px 16px;">
                 <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">📋 Verlauf</div>
                 ${logItems}
@@ -3159,7 +3182,7 @@
             const sorted = [...alive].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
             const canStart = currentUser === g.dealer;
 
-            el.innerHTML = schwLives(g) + `<div class="card" style="border-color:rgba(124,58,237,0.3);margin-bottom:14px;">
+            el.innerHTML = schwAdminBar() + schwLives(g) + `<div class="card" style="border-color:rgba(124,58,237,0.3);margin-bottom:14px;">
                 <h3 style="color:var(--accent);text-align:center;margin-bottom:16px;">📊 Auswertung Runde ${g.roundNumber}</h3>
                 ${sorted.map(u=>{
                     const isLoser = scores[u]===minScore;
