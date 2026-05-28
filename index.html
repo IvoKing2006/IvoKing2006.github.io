@@ -2911,8 +2911,11 @@
     function schwimmenSwapOne(hi, mi) {
         const g = db.schwimmen;
         if (currentUser !== g.currentPlayer) return;
-        const h = [...g.hands[currentUser]];
-        const m = [...g.middle];
+        if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
+        if (!Array.isArray(g.log)) g.log = [];
+        if (!Array.isArray(g.skippedThisRound)) g.skippedThisRound = [];
+        const h = [...(g.hands[currentUser]||[])];
+        const m = [...(g.middle||[])];
         [h[hi], m[mi]] = [m[mi], h[hi]];
         g.hands[currentUser] = h; g.middle = m;
         g.log.unshift(currentUser+' tauscht 1 Karte.');
@@ -2925,7 +2928,10 @@
     function schwimmenSwapAll() {
         const g = db.schwimmen;
         if (currentUser !== g.currentPlayer) return;
-        const oldH = [...g.hands[currentUser]];
+        if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
+        if (!Array.isArray(g.log)) g.log = [];
+        if (!Array.isArray(g.skippedThisRound)) g.skippedThisRound = [];
+        const oldH = [...(g.hands[currentUser]||[])];
         g.hands[currentUser] = [...g.middle];
         g.middle = oldH;
         g.log.unshift(currentUser+' tauscht alle 3 Karten.');
@@ -2938,11 +2944,16 @@
     function schwimmenSkip() {
         const g = db.schwimmen;
         if (currentUser !== g.currentPlayer) return;
+        // Firebase gibt leere Arrays als null zurück – absichern
+        if (!Array.isArray(g.skippedThisRound)) g.skippedThisRound = [];
+        if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
+        if (!Array.isArray(g.eliminated)) g.eliminated = [];
+        if (!Array.isArray(g.log)) g.log = [];
         if (!g.skippedThisRound.includes(currentUser)) g.skippedThisRound.push(currentUser);
         g.log.unshift(currentUser+' passt.');
-        const alive = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+        const alive = ALL_USERS.filter(u=>!g.eliminated.includes(u));
         if (alive.every(u=>g.skippedThisRound.includes(u))) {
-            if (g.deck.length >= 3) {
+            if (Array.isArray(g.deck) && g.deck.length >= 3) {
                 g.middle = [g.deck.pop(), g.deck.pop(), g.deck.pop()];
                 g.log.unshift('🔄 Alle gepasst – neue Karten in die Mitte!');
             }
@@ -2954,6 +2965,7 @@
     function schwimmenClose() {
         const g = db.schwimmen;
         if (currentUser !== g.currentPlayer || g.roundClosedBy) return;
+        if (!Array.isArray(g.log)) g.log = [];
         g.roundClosedBy = currentUser;
         g.closedPlayersDone = [currentUser];
         g.log.unshift('🔔 '+currentUser+' klopft! Jeder noch ein Zug.');
@@ -2962,6 +2974,10 @@
 
     function schwimmenNextTurn() {
         const g = db.schwimmen;
+        // Firebase kann Arrays als Objekte zurückgeben
+        if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
+        if (!Array.isArray(g.closedPlayersDone)) g.closedPlayersDone = [];
+        if (!Array.isArray(g.log)) g.log = [];
         const idx = g.turnOrder.indexOf(g.currentPlayer);
         if (g.roundClosedBy) {
             let next = null;
