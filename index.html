@@ -1540,8 +1540,6 @@
     };
 
     // ================= LIVE SYNC: Firebase → local db =================
-    var _dbFirstLoad = true; // Flag: erster Firebase-Load noch nicht abgeschlossen
-
     dbRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1554,17 +1552,6 @@
 
         showSyncPulse();
         if (currentUser) updateUI();
-
-        // Wenn der User bereits eingeloggt ist und der erste Firebase-Load gerade abgeschlossen hat,
-        // jetzt erst die Login-Notifications prüfen (damit DB garantiert aktuell ist)
-        if (_dbFirstLoad && currentUser) {
-            _dbFirstLoad = false;
-            checkNotificationsOnLogin();
-            _liveListenerActive = false;
-            startLiveNotifications();
-        } else {
-            _dbFirstLoad = false;
-        }
     });
 
     function saveDB() {
@@ -1652,10 +1639,11 @@
             updateUI();
             updateCountdown();
 
-            // Notifications + Live-Listener starten sobald Firebase-DB sicher geladen ist
-            // (wird im dbRef.on('value') Callback über _dbFirstLoad-Flag gesteuert)
-            _dbFirstLoad = true;
+            // Notifications beim Login prüfen
+            checkNotificationsOnLogin();
+            // Live-Notifications starten
             _liveListenerActive = false;
+            startLiveNotifications();
 
             // Live-Listener für Online-Status aller User
             watchOnlineStatus();
@@ -1677,26 +1665,9 @@
     function logout() {
         setOnlineStatus(false);
         if (window._heartbeat) clearInterval(window._heartbeat);
-        // Live-Listener zurücksetzen, damit er beim nächsten Login sauber neu startet
-        _liveListenerActive = false;
-        _liveSkipFirst = true;
-        dbRef.off('value'); // alle alten Value-Listener entfernen
         currentUser = null;
         document.getElementById('login-screen').classList.remove('hidden');
         document.getElementById('app-screen').classList.add('hidden');
-
-        // Den globalen DB-Sync-Listener wieder registrieren (der läuft immer)
-        dbRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                db = data;
-                if (!db.food_diary) db.food_diary = [];
-                if (!db.packing) db.packing = { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] };
-            }
-            isDbReady = true;
-            normalizeDB();
-            showSyncPulse();
-        });
     }
 
     function setOnlineStatus(isOnline) {
@@ -1824,39 +1795,23 @@
 
     // Live-Listener: feuert bei DB-Änderungen WÄHREND ich eingeloggt bin
     var _liveListenerActive = false;
-    var _liveSkipFirst = true; // ersten Feuern (sofortiger onValue-Call) ignorieren
     var _knownDebtIds = [];
     var _knownExpenseIds = [];
     var _knownChatCount = 0;
-    var _knownResolvedIds = [];
 
     function startLiveNotifications() {
         if (_liveListenerActive) return;
         _liveListenerActive = true;
-        _liveSkipFirst = true; // ersten sofortigen Aufruf überspringen
-
-        // Snapshot der aktuellen Lage setzen
         _knownDebtIds = (db.debts || []).map(d => d.id);
-        _knownResolvedIds = (db.debts || []).filter(d => d.resolved).map(d => d.id);
         _knownExpenseIds = (db.expenses || []).map(e => e.id);
         _knownChatCount = Array.isArray(db.chat) ? db.chat.length : (db.chat ? Object.keys(db.chat).length : 0);
 
         dbRef.on('value', () => {
             if (!currentUser) return;
 
-            // Ersten sofortigen Call ignorieren (zeigt sonst "neue" Daten beim Registrieren)
-            if (_liveSkipFirst) { _liveSkipFirst = false; return; }
-
             // Neue Schulden live
             (db.debts || []).filter(d => d.to === currentUser && !d.resolved && !_knownDebtIds.includes(d.id))
                 .forEach(d => showNotif(`🚨 Neue Schuld!`, `${d.from} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen.`, 'danger', 8000));
-
-            // Schulden beglichen (live)
-            (db.debts || []).filter(d => d.from === currentUser && d.resolved && !_knownResolvedIds.includes(d.id))
-                .forEach(d => {
-                    const method = d.resolvedMethod ? ` (${d.resolvedMethod})` : '';
-                    showNotif(`✅ Schuld beglichen!`, `${d.to} hat deine ${d.amount.toFixed(2)}€ für „${d.purpose}"${method} als bezahlt markiert.`, 'success', 7000);
-                });
 
             // Neue Ausgaben live
             (db.expenses || []).filter(e => e.payer !== currentUser && e.participants && e.participants.includes(currentUser) && !_knownExpenseIds.includes(e.id))
@@ -1871,7 +1826,6 @@
 
             // Snapshots updaten
             _knownDebtIds = (db.debts || []).map(d => d.id);
-            _knownResolvedIds = (db.debts || []).filter(d => d.resolved).map(d => d.id);
             _knownExpenseIds = (db.expenses || []).map(e => e.id);
             _knownChatCount = chatArr.length;
         });
