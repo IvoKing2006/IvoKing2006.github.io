@@ -2848,14 +2848,36 @@
     }
 
     function schwimmenInit() {
+        // Öffne Lobby – jeder kann sich eintragen
+        db.schwimmen = { status: 'lobby', joinedPlayers: [currentUser] };
+        saveDB();
+    }
+
+    function schwimmenJoinLeave() {
+        const g = db.schwimmen;
+        if (!Array.isArray(g.joinedPlayers)) g.joinedPlayers = [];
+        if (g.joinedPlayers.includes(currentUser)) {
+            g.joinedPlayers = g.joinedPlayers.filter(u => u !== currentUser);
+        } else {
+            g.joinedPlayers.push(currentUser);
+        }
+        saveDB();
+    }
+
+    function schwimmenStartFromLobby() {
+        const g = db.schwimmen;
+        if (!Array.isArray(g.joinedPlayers)) g.joinedPlayers = [];
+        if (g.joinedPlayers.length < 2) { alert('Mindestens 2 Spieler müssen mitmachen!'); return; }
+        const players = [...g.joinedPlayers];
         const lives = {};
-        ALL_USERS.forEach(u => lives[u] = 3);
+        players.forEach(u => lives[u] = 3);
         db.schwimmen = {
             status: 'idle',
+            players: players,
             lives: lives,
             swimmer: null,
             eliminated: [],
-            dealer: ALL_USERS[Math.floor(Math.random()*ALL_USERS.length)],
+            dealer: players[Math.floor(Math.random()*players.length)],
             hands: {}, dealerSetA: [], dealerSetB: [],
             middle: [], deck: [],
             currentPlayer: null, turnOrder: [],
@@ -2874,7 +2896,8 @@
         g.hands = {}; g.log = [];
 
         const deck = schwDeck();
-        const alive = ALL_USERS.filter(u => !(g.eliminated||[]).includes(u));
+        const gamePlayers = Array.isArray(g.players) ? g.players : ALL_USERS;
+        const alive = gamePlayers.filter(u => !(g.eliminated||[]).includes(u));
 
         g.dealerSetA = [deck.pop(), deck.pop(), deck.pop()];
         g.dealerSetB = [deck.pop(), deck.pop(), deck.pop()];
@@ -3000,7 +3023,8 @@
 
     function schwimmenEndRound() {
         const g = db.schwimmen;
-        const alive = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+        const gamePlayers = Array.isArray(g.players) ? g.players : ALL_USERS;
+        const alive = gamePlayers.filter(u=>!(g.eliminated||[]).includes(u));
         const scores = {};
         alive.forEach(u => scores[u] = schwScore(g.hands[u]||[]));
         g.roundScores = scores;
@@ -3027,7 +3051,7 @@
         });
 
         g.log.unshift('📊 Runde '+g.roundNumber+' – Verlierer: '+losers.join(', '));
-        const aliveNow = ALL_USERS.filter(u=>!(g.eliminated||[]).includes(u));
+        const aliveNow = gamePlayers.filter(u=>!(g.eliminated||[]).includes(u));
 
         if (aliveNow.length <= 1) {
             g.status = 'gameEnd';
@@ -3053,7 +3077,7 @@
 
     function schwimmenAdminRestart() {
         if (currentUser !== 'Ivo') return;
-        if (confirm('Spiel wirklich neu starten? Alle Leben werden zurückgesetzt.')) {
+        if (confirm('Spiel wirklich neu starten? Zurück zur Lobby.')) {
             schwimmenInit();
         }
     }
@@ -3079,13 +3103,39 @@
         if (!el) return;
         const g = db.schwimmen;
 
-        if (!g || g.status === 'idle' || !g.status) {
+        if (!g || !g.status) {
             el.innerHTML = `<div style="text-align:center;padding:50px 20px;">
                 <div style="font-size:64px;margin-bottom:16px;">🃏</div>
                 <h2 style="background:linear-gradient(135deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:2rem;">Schwimmen</h2>
-                <p style="color:var(--text-muted);margin-bottom:28px;font-size:14px;">Das klassische Kartenspiel für euch alle 4!<br>Werte: A=11, B/D/K=10 • Dreimal gleicher Wert=30,5 • Max=31</p>
-                <button onclick="schwimmenInit()" style="max-width:280px;margin:0 auto;">🎮 Neues Spiel starten</button>
+                <p style="color:var(--text-muted);margin-bottom:28px;font-size:14px;">Das klassische Kartenspiel!<br>Werte: A=11, B/D/K=10 • Dreimal gleicher Wert=30,5 • Max=31</p>
+                <button onclick="schwimmenInit()" style="max-width:280px;margin:0 auto;">🎮 Lobby erstellen</button>
             </div>`;
+            return;
+        }
+
+        if (g.status === 'lobby') {
+            const joined = Array.isArray(g.joinedPlayers) ? g.joinedPlayers : [];
+            const iJoined = joined.includes(currentUser);
+            el.innerHTML = `<div style="text-align:center;padding:20px 0 10px;">
+                <div style="font-size:48px;margin-bottom:10px;">🃏</div>
+                <h2 style="color:var(--primary);margin-bottom:4px;">Schwimmen – Lobby</h2>
+                <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px;">Wer spielt mit? Drück auf deinen Namen!</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+                ${ALL_USERS.map(u => {
+                    const isIn = joined.includes(u);
+                    const isMe = u === currentUser;
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;background:${isIn?'rgba(0,255,163,0.08)':'rgba(255,255,255,0.03)'};border:1px solid ${isIn?'rgba(0,255,163,0.3)':'var(--glass-border)'};border-radius:14px;padding:14px 18px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:20px;">${isIn?'✅':'⬜'}</span>
+                            <span style="font-weight:700;font-size:15px;color:${isIn?'var(--success)':'var(--text-muted)'};">${u}${isMe?' (Du)':''}</span>
+                        </div>
+                        ${isMe ? `<button onclick="schwimmenJoinLeave()" style="width:auto;padding:8px 16px;font-size:13px;background:${isIn?'rgba(255,77,109,0.15)':'linear-gradient(135deg,#00ffa3,#00c87a)'};color:${isIn?'var(--danger)':'#020817'};box-shadow:none;border:${isIn?'1px solid rgba(255,77,109,0.3)':'none'};border-radius:10px;">${isIn?'Raus':'Mitmachen'}</button>` : ''}
+                    </div>`;
+                }).join('')}
+            </div>
+            <div style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:16px;">${joined.length} von 4 dabei</div>
+            ${joined.length >= 2 ? `<button onclick="schwimmenStartFromLobby()" style="max-width:320px;margin:0 auto;display:block;background:linear-gradient(135deg,#00d4ff,#0090c8);">🚀 Spiel starten (${joined.length} Spieler)</button>` : `<p style="text-align:center;color:var(--text-muted);font-size:13px;">Mindestens 2 Spieler nötig...</p>`}`;
             return;
         }
 
