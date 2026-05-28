@@ -1576,7 +1576,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
@@ -1594,9 +1594,18 @@
     firebase.initializeApp(firebaseConfig);
     var database = firebase.database();
     var dbRef = database.ref('urlaubskasse');
-    var messaging = null;
-    try { messaging = firebase.messaging(); } catch(e) { console.log('Messaging nicht verfügbar:', e); }
-    const VAPID_KEY = "BO4yc8KkG6uYJYI_wVbhYKBFZtYB6KAChRMPYDn-9nFP0mqh_FWwebHjVfAhWTCM5UOLXGZq3KPuijfN2YUIU0A";
+    // ===== ONESIGNAL =====
+    const OS_APP_ID = "f4e514c9-9635-4187-a495-1eeeb31ba168";
+    const OS_REST_KEY = "os_v2_app_6tsrjsmwgvaypjevd3xlgg5bnaeknkzyjcjuvk4cyc5m25jrlfoxf7557bep3gj2w4ft2gamco3mg2dl74nlsd2cnbvjvq3itpws3tq";
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+            appId: OS_APP_ID,
+            notifyButton: { enable: false },
+            allowLocalhostAsSecureOrigin: true,
+            serviceWorkerPath: '/OneSignalSDKWorker.js'
+        });
+    });
 
     var PASSWORDS = {"Ivo": "0511", "Romeo": "2508", "Anton": "1603", "Raul": "2406"};
     var ALL_USERS = ["Ivo", "Romeo", "Anton", "Raul"];
@@ -1687,54 +1696,49 @@
     }
 
 
-    // ================= PUSH NOTIFICATIONS =================
+    // ================= PUSH NOTIFICATIONS (OneSignal) =================
 
-    async function registerPushToken() {
-        if (!messaging || !currentUser) return;
+    async function onesignalLogin() {
         try {
-            const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
-            if (token) {
-                if (!db.pushTokens) db.pushTokens = {};
-                db.pushTokens[currentUser] = token;
-                saveDB();
-                console.log('Push Token gespeichert für', currentUser);
-            }
-        } catch(e) {
-            console.log('Push Token Fehler:', e);
-        }
+            await new Promise(resolve => {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.login(currentUser);
+                    resolve();
+                });
+            });
+        } catch(e) { console.log('OneSignal login fehler:', e); }
     }
 
-    async function requestPushPermission() {
-        if (!messaging) return;
+    async function onesignalLogout() {
         try {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                await registerPushToken();
-                showNotif('🔔 Benachrichtigungen aktiviert!', 'Du bekommst jetzt Push-Benachrichtigungen.', 'success', 4000);
-            }
-        } catch(e) {
-            console.log('Push Permission Fehler:', e);
-        }
+            OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.logout();
+            });
+        } catch(e) {}
     }
 
     async function sendPushToUser(targetUser, title, body) {
-        // Token aus DB holen und via Firebase Database als Nachricht speichern
-        // Der Service Worker schickt die Notification direkt
-        if (!db.pushTokens || !db.pushTokens[targetUser]) return;
-        const pushRef = database.ref('pushQueue/' + Date.now());
-        pushRef.set({ to: targetUser, title: title, body: body, ts: Date.now() });
+        try {
+            await fetch('https://onesignal.com/api/v1/notifications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + OS_REST_KEY
+                },
+                body: JSON.stringify({
+                    app_id: OS_APP_ID,
+                    include_external_user_ids: [targetUser],
+                    contents: { en: body },
+                    headings: { en: '📱 Barcelona Tracker' }
+                })
+            });
+        } catch(e) { console.log('Push Fehler:', e); }
     }
 
     function checkPushPermission() {
-        if (!messaging) return;
-        if (Notification.permission === 'granted') {
-            registerPushToken();
-        } else if (Notification.permission !== 'denied') {
-            // Banner anzeigen
-            setTimeout(() => {
-                showPushBanner();
-            }, 2000);
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'default') {
+            setTimeout(showPushBanner, 2500);
         }
     }
 
@@ -1742,31 +1746,35 @@
         if (document.getElementById('push-banner')) return;
         const banner = document.createElement('div');
         banner.id = 'push-banner';
-        banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(10,20,40,0.97);backdrop-filter:blur(20px);border:1px solid rgba(0,212,255,0.3);border-radius:16px;padding:16px 20px;z-index:9998;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.5);';
+        banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(10,20,40,0.97);backdrop-filter:blur(20px);border:1px solid rgba(0,212,255,0.3);border-radius:16px;padding:16px 20px;z-index:9998;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:notifSlide 0.35s cubic-bezier(0.34,1.56,0.64,1);';
         banner.innerHTML = `
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
                 <div style="font-size:28px;">🔔</div>
                 <div>
                     <div style="font-weight:700;font-size:14px;color:#f0f6ff;">Benachrichtigungen aktivieren?</div>
-                    <div style="font-size:12px;color:#6b8caf;margin-top:2px;">Erhalte Alerts wenn jemand Schulden einträgt</div>
+                    <div style="font-size:12px;color:#6b8caf;margin-top:2px;">Erhalte Push-Alerts direkt auf dein Handy</div>
                 </div>
             </div>
             <div style="display:flex;gap:8px;">
-                <button onclick="requestPushPermission();document.getElementById('push-banner').remove();" style="flex:1;padding:10px;font-size:13px;background:linear-gradient(135deg,#00d4ff,#0090c8);color:#020817;border:none;border-radius:10px;font-weight:700;cursor:pointer;">✅ Ja, aktivieren</button>
+                <button onclick="enablePush()" style="flex:1;padding:10px;font-size:13px;background:linear-gradient(135deg,#00d4ff,#0090c8);color:#020817;border:none;border-radius:10px;font-weight:700;cursor:pointer;">✅ Ja, aktivieren</button>
                 <button onclick="document.getElementById('push-banner').remove();" style="flex:1;padding:10px;font-size:13px;background:rgba(255,255,255,0.06);color:#6b8caf;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-weight:700;cursor:pointer;">Nein danke</button>
             </div>`;
         document.body.appendChild(banner);
     }
 
-    // Foreground push messages
-    function setupForegroundPush() {
-        if (!messaging) return;
-        messaging.onMessage((payload) => {
-            const title = payload.notification?.title || 'Barcelona Tracker';
-            const body = payload.notification?.body || '';
-            showNotif(title, body, 'info', 6000);
+    function enablePush() {
+        const banner = document.getElementById('push-banner');
+        if (banner) banner.remove();
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.Notifications.requestPermission();
+            showNotif('🔔 Aktiviert!', 'Du bekommst jetzt Push-Benachrichtigungen.', 'success', 4000);
         });
     }
+
+    function setupForegroundPush() {
+        // OneSignal handles foreground notifications automatically
+    }
+
 
     function showDebtWarningIfNeeded() {
         const myDebts = (db.debts || []).filter(d => d.from === currentUser && !d.resolved);
@@ -1825,9 +1833,9 @@
             updateUI();
             updateCountdown();
 
-            // Push Notifications
+            // Push Notifications (OneSignal)
+            onesignalLogin();
             checkPushPermission();
-            setupForegroundPush();
             // Schulden-Vollbild-Reminder beim Login
             showDebtWarningIfNeeded();
             // Notifications beim Login prüfen
@@ -1855,6 +1863,7 @@
 
     function logout() {
         setOnlineStatus(false);
+        onesignalLogout();
         if (window._heartbeat) clearInterval(window._heartbeat);
         currentUser = null;
         document.getElementById('login-screen').classList.remove('hidden');
