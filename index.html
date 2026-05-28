@@ -595,6 +595,7 @@
             <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">💬 Chat</button>
             <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">🏆 Rangliste</button>
             <button id="tab-schwimmen" class="nav-btn" onclick="switchTab('schwimmen')">🃏 Schwimmen</button>
+            <button id="tab-notizen" class="nav-btn" onclick="switchTab('notizen')">📝 Notizen</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -1530,6 +1531,24 @@
             </div>
         </div>
 
+                <div id="content-notizen" class="tab-content hidden">
+            <div class="grid">
+                <div class="card" style="border-left:4px solid var(--accent);">
+                    <h3 style="color:var(--accent);">🔒 Meine privaten Notizen</h3>
+                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;">Nur du siehst diese Notizen.</p>
+                    <textarea id="private-notes-input" placeholder="Schreib hier deine privaten Notizen..." style="width:100%;min-height:180px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:12px;color:var(--text-main);font-family:Inter,sans-serif;font-size:14px;resize:vertical;line-height:1.6;"></textarea>
+                    <button onclick="savePrivateNote()" style="margin-top:12px;background:linear-gradient(135deg,#7c3aed,#5b21b6);box-shadow:0 4px 16px rgba(124,58,237,0.3);">💾 Speichern</button>
+                </div>
+                <div class="card" style="border-left:4px solid var(--primary);">
+                    <h3 style="color:var(--primary);">👥 Gruppen-Notizen</h3>
+                    <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;">Alle können lesen und schreiben.</p>
+                    <textarea id="group-notes-input" placeholder="Gemeinsame Notizen, Infos, Pläne..." style="width:100%;min-height:180px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:12px;color:var(--text-main);font-family:Inter,sans-serif;font-size:14px;resize:vertical;line-height:1.6;"></textarea>
+                    <div id="group-note-info" style="font-size:11px;color:var(--text-muted);margin-top:10px;min-height:16px;"></div>
+                    <button onclick="saveGroupNote()" style="margin-top:8px;">💾 Speichern</button>
+                </div>
+            </div>
+        </div>
+
                 <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
@@ -1574,7 +1593,49 @@
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+    // ====================== NOTIZEN ======================
+
+    function savePrivateNote() {
+        const text = document.getElementById('private-notes-input').value;
+        if (!db.privateNotes) db.privateNotes = {};
+        db.privateNotes[currentUser] = text;
+        saveDB();
+        showNotif('💾 Gespeichert', 'Deine privaten Notizen wurden gespeichert.', 'success', 3000);
+    }
+
+    function saveGroupNote() {
+        const text = document.getElementById('group-notes-input').value;
+        if (!db.groupNotes) db.groupNotes = {};
+        db.groupNotes.text = text;
+        db.groupNotes.lastEditedBy = currentUser;
+        db.groupNotes.lastEditedAt = new Date().toLocaleString('de-DE');
+        saveDB();
+        showNotif('💾 Gespeichert', 'Gruppen-Notizen wurden gespeichert.', 'success', 3000);
+    }
+
+    function renderNotizen() {
+        // Private Notizen laden
+        const privateInput = document.getElementById('private-notes-input');
+        if (privateInput) {
+            const myNote = (db.privateNotes && db.privateNotes[currentUser]) || '';
+            privateInput.value = myNote;
+        }
+        // Gruppen-Notizen laden
+        const groupInput = document.getElementById('group-notes-input');
+        if (groupInput) {
+            const groupNote = (db.groupNotes && db.groupNotes.text) || '';
+            groupInput.value = groupNote;
+            // Zeige wer zuletzt bearbeitet hat
+            const info = document.getElementById('group-note-info');
+            if (info && db.groupNotes && db.groupNotes.lastEditedBy) {
+                info.innerText = 'Zuletzt bearbeitet von ' + db.groupNotes.lastEditedBy + ' um ' + db.groupNotes.lastEditedAt;
+            }
+        }
+    }
+    // ===================== END NOTIZEN ======================
+
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
@@ -1681,6 +1742,7 @@
         if (tabName === 'chat') renderChat();
         if (tabName === 'rangliste') renderRangliste();
         if (tabName === 'schwimmen') renderSchwimmen();
+        if (tabName === 'notizen') renderNotizen();
     }
 
 
