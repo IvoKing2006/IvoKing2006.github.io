@@ -2243,8 +2243,10 @@
 
     function resetAllData() {
         if (currentUser !== "Ivo") return;
-        if (confirm("Möchtest du wirklich ALLE Daten löschen?")) {
-            db = { expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] }, food_diary: [] };
+        if (confirm("Möchtest du wirklich ALLE Daten löschen? (inkl. Push-Tokens)")) {
+            db = { expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] }, food_diary: [], pushTokens: {} };
+            // Auch Push-Tokens direkt in Firebase löschen
+            database.ref('urlaubskasse/pushTokens').remove();
             saveDB(); logout();
         }
     }
