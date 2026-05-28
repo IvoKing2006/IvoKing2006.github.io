@@ -453,7 +453,27 @@
         }
         .hours-info { font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.6; }
 
-        /* SCROLLBAR */
+        /* NOTIFICATIONS */
+        #notif-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
+        .notif-banner {
+            background: rgba(10, 20, 40, 0.97);
+            backdrop-filter: blur(20px);
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid rgba(0,212,255,0.25);
+            box-shadow: 0 0 30px rgba(0,212,255,0.15), 0 8px 32px rgba(0,0,0,0.5);
+            display: flex; align-items: flex-start; gap: 12px;
+            animation: notifSlide 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            cursor: pointer;
+        }
+        .notif-banner.danger { border-color: rgba(255,77,109,0.4); box-shadow: 0 0 30px rgba(255,77,109,0.15), 0 8px 32px rgba(0,0,0,0.5); }
+        .notif-banner.success { border-color: rgba(0,255,163,0.3); box-shadow: 0 0 30px rgba(0,255,163,0.1), 0 8px 32px rgba(0,0,0,0.5); }
+        .notif-banner.warning { border-color: rgba(255,190,11,0.35); box-shadow: 0 0 30px rgba(255,190,11,0.12), 0 8px 32px rgba(0,0,0,0.5); }
+        .notif-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+        .notif-body { flex: 1; }
+        .notif-title { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 3px; }
+        .notif-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        @keyframes notifSlide { from { opacity:0; transform: translateX(60px) scale(0.9); } to { opacity:1; transform: translateX(0) scale(1); } }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); border-radius: 3px; }
@@ -461,6 +481,8 @@
     </style>
 </head>
 <body>
+
+<div id="notif-container"></div>
 
 <div class="container">
     <div id="login-screen">
@@ -1617,6 +1639,12 @@
             updateUI();
             updateCountdown();
 
+            // Notifications beim Login prüfen
+            checkNotificationsOnLogin();
+            // Live-Notifications starten
+            _liveListenerActive = false;
+            startLiveNotifications();
+
             // Live-Listener für Online-Status aller User
             watchOnlineStatus();
 
@@ -1684,6 +1712,123 @@
         if (diff < 3600) return `vor ${Math.floor(diff/60)} Min.`;
         if (diff < 86400) return `vor ${Math.floor(diff/3600)} Std.`;
         return `vor ${Math.floor(diff/86400)} Tag(en)`;
+    }
+
+    // ================= NOTIFICATION SYSTEM =================
+
+    function showNotif(title, sub, type = 'info', duration = 5000) {
+        const container = document.getElementById('notif-container');
+        const el = document.createElement('div');
+        el.className = `notif-banner ${type}`;
+        const icons = { danger: '🚨', success: '✅', warning: '⚠️', info: '💬', chat: '💬', debt: '🚨', resolved: '✅', expense: '💸' };
+        el.innerHTML = `
+            <div class="notif-icon">${icons[type] || 'ℹ️'}</div>
+            <div class="notif-body">
+                <div class="notif-title">${title}</div>
+                <div class="notif-sub">${sub}</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:16px;margin-left:4px;">✕</div>`;
+        el.onclick = () => el.remove();
+        container.appendChild(el);
+        setTimeout(() => { if (el.parentNode) { el.style.opacity='0'; el.style.transform='translateX(60px)'; el.style.transition='all 0.3s'; setTimeout(()=>el.remove(), 300); } }, duration);
+    }
+
+    function saveLastLoginSnapshot() {
+        // Speichert Snapshot der aktuellen DB-Lage beim Login in localStorage
+        const snap = {
+            ts: Date.now(),
+            debtIds: (db.debts || []).map(d => d.id),
+            resolvedIds: (db.debts || []).filter(d => d.resolved).map(d => d.id),
+            expenseIds: (db.expenses || []).map(e => e.id),
+            chatCount: Array.isArray(db.chat) ? db.chat.length : (db.chat ? Object.keys(db.chat).length : 0)
+        };
+        localStorage.setItem('lastLogin_' + currentUser, JSON.stringify(snap));
+    }
+
+    function checkNotificationsOnLogin() {
+        const raw = localStorage.getItem('lastLogin_' + currentUser);
+        if (!raw) { saveLastLoginSnapshot(); return; }
+        const snap = JSON.parse(raw);
+
+        // 1. Neue Schulden für mich
+        const newDebtsForMe = (db.debts || []).filter(d =>
+            d.to === currentUser &&
+            !d.resolved &&
+            !snap.debtIds.includes(d.id)
+        );
+        newDebtsForMe.forEach(d => {
+            showNotif(`⚠️ Neue Schuld eingetragen!`, `${d.from} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen — du schuldest es ${d.to}.`, 'danger', 8000);
+        });
+
+        // 2. Jemand hat meine Schuld als beglichen markiert
+        const newResolved = (db.debts || []).filter(d =>
+            d.from === currentUser &&
+            d.resolved &&
+            !snap.resolvedIds.includes(d.id)
+        );
+        newResolved.forEach(d => {
+            const method = d.resolvedMethod ? ` (${d.resolvedMethod})` : '';
+            showNotif(`✅ Schuld beglichen!`, `${d.to} hat deine Schuld von ${d.amount.toFixed(2)}€ für „${d.purpose}"${method} als bezahlt markiert.`, 'success', 7000);
+        });
+
+        // 3. Neue Ausgaben wo ich dabei bin
+        const newExpenses = (db.expenses || []).filter(e =>
+            e.payer !== currentUser &&
+            e.participants && e.participants.includes(currentUser) &&
+            !snap.expenseIds.includes(e.id)
+        );
+        newExpenses.forEach(e => {
+            showNotif(`💸 Neue Ausgabe!`, `${e.payer} hat ${e.totalAmount.toFixed(2)}€ für „${e.purpose}" eingetragen — dein Anteil: ${e.shareAmount.toFixed(2)}€.`, 'warning', 7000);
+        });
+
+        // 4. Neue Chat-Nachrichten (nicht von mir)
+        const chatArr = Array.isArray(db.chat) ? db.chat : (db.chat ? Object.values(db.chat) : []);
+        const newMsgs = chatArr.filter((m, i) => i >= snap.chatCount && m.author !== currentUser);
+        if (newMsgs.length === 1) {
+            showNotif(`💬 Neue Nachricht von ${newMsgs[0].author}`, `„${newMsgs[0].text.substring(0, 60)}${newMsgs[0].text.length > 60 ? '…' : ''}"`, 'info', 6000);
+        } else if (newMsgs.length > 1) {
+            showNotif(`💬 ${newMsgs.length} neue Nachrichten im Chat`, newMsgs.map(m => `${m.author}: ${m.text.substring(0,30)}…`).join('<br>'), 'info', 7000);
+        }
+
+        saveLastLoginSnapshot();
+    }
+
+    // Live-Listener: feuert bei DB-Änderungen WÄHREND ich eingeloggt bin
+    var _liveListenerActive = false;
+    var _knownDebtIds = [];
+    var _knownExpenseIds = [];
+    var _knownChatCount = 0;
+
+    function startLiveNotifications() {
+        if (_liveListenerActive) return;
+        _liveListenerActive = true;
+        _knownDebtIds = (db.debts || []).map(d => d.id);
+        _knownExpenseIds = (db.expenses || []).map(e => e.id);
+        _knownChatCount = Array.isArray(db.chat) ? db.chat.length : (db.chat ? Object.keys(db.chat).length : 0);
+
+        dbRef.on('value', () => {
+            if (!currentUser) return;
+
+            // Neue Schulden live
+            (db.debts || []).filter(d => d.to === currentUser && !d.resolved && !_knownDebtIds.includes(d.id))
+                .forEach(d => showNotif(`🚨 Neue Schuld!`, `${d.from} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen.`, 'danger', 8000));
+
+            // Neue Ausgaben live
+            (db.expenses || []).filter(e => e.payer !== currentUser && e.participants && e.participants.includes(currentUser) && !_knownExpenseIds.includes(e.id))
+                .forEach(e => showNotif(`💸 Neue Ausgabe!`, `${e.payer}: ${e.totalAmount.toFixed(2)}€ für „${e.purpose}" — dein Anteil: ${e.shareAmount.toFixed(2)}€`, 'warning', 7000));
+
+            // Neue Chat-Nachrichten live
+            const chatArr = Array.isArray(db.chat) ? db.chat : (db.chat ? Object.values(db.chat) : []);
+            if (chatArr.length > _knownChatCount) {
+                chatArr.slice(_knownChatCount).filter(m => m.author !== currentUser)
+                    .forEach(m => showNotif(`💬 ${m.author}`, `„${m.text.substring(0,80)}${m.text.length>80?'…':''}"`, 'info', 5000));
+            }
+
+            // Snapshots updaten
+            _knownDebtIds = (db.debts || []).map(d => d.id);
+            _knownExpenseIds = (db.expenses || []).map(e => e.id);
+            _knownChatCount = chatArr.length;
+        });
     }
 
     function setupShareCheckboxes() {
