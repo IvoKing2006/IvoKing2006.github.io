@@ -2049,7 +2049,25 @@
                 totalOwnCost += myPart;
                 const hasReceipt = exp.personalNote || exp.personalImage;
                 const receiptButton = hasReceipt ? `<button class="btn-receipt-view" onclick="openReceiptModal('${exp.id}')">📄 Beleg</button>` : '';
-                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
+
+                // Rückzahlungen der anderen anzeigen
+                const othersInfo = exp.participants
+                    .filter(p => p !== currentUser)
+                    .map(p => {
+                        const debt = db.debts.find(d => d.expenseId === exp.id && d.from === p);
+                        if (debt && debt.resolved) {
+                            const icon = debt.resolvedMethod === 'Karte' ? '💳' : '💵';
+                            return `<span style="color:var(--success);">${icon} ${p} (${debt.resolvedMethod})</span>`;
+                        } else if (debt) {
+                            return `<span style="color:var(--warning);">⏳ ${p} (offen)</span>`;
+                        }
+                        return null;
+                    })
+                    .filter(Boolean)
+                    .join(' · ');
+
+                const rueckInfo = othersInfo ? `<span class="meta-info">Zurückbekommen: ${othersInfo}</span>` : '';
+                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
