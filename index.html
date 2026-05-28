@@ -1750,14 +1750,14 @@
         if (!raw) { saveLastLoginSnapshot(); return; }
         const snap = JSON.parse(raw);
 
-        // 1. Neue Schulden für mich
+        // 1. Neue Schulden für mich (ich bin der Schuldner = d.from)
         const newDebtsForMe = (db.debts || []).filter(d =>
-            d.to === currentUser &&
+            d.from === currentUser &&
             !d.resolved &&
             !snap.debtIds.includes(d.id)
         );
         newDebtsForMe.forEach(d => {
-            showNotif(`⚠️ Neue Schuld eingetragen!`, `${d.from} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen — du schuldest es ${d.to}.`, 'danger', 8000);
+            showNotif(`⚠️ Neue Schuld eingetragen!`, `${d.to} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen — du schuldest ${d.to} diesen Betrag.`, 'danger', 8000);
         });
 
         // 2. Jemand hat meine Schuld als beglichen markiert
@@ -1809,9 +1809,9 @@
         dbRef.on('value', () => {
             if (!currentUser) return;
 
-            // Neue Schulden live
-            (db.debts || []).filter(d => d.to === currentUser && !d.resolved && !_knownDebtIds.includes(d.id))
-                .forEach(d => showNotif(`🚨 Neue Schuld!`, `${d.from} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen.`, 'danger', 8000));
+            // Neue Schulden live (ich bin der Schuldner = d.from)
+            (db.debts || []).filter(d => d.from === currentUser && !d.resolved && !_knownDebtIds.includes(d.id))
+                .forEach(d => showNotif(`🚨 Neue Schuld!`, `${d.to} hat ${d.amount.toFixed(2)}€ für „${d.purpose}" eingetragen — du schuldest ${d.to} diesen Betrag.`, 'danger', 8000));
 
             // Neue Ausgaben live
             (db.expenses || []).filter(e => e.payer !== currentUser && e.participants && e.participants.includes(currentUser) && !_knownExpenseIds.includes(e.id))
