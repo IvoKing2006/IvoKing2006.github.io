@@ -517,6 +517,32 @@
             font-size: 26px;
             line-height: 1;
         }
+
+        /* SUB-NAV TABS */
+        .sub-nav-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            flex-wrap: wrap;
+        }
+        .subnav-btn {
+            background: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.2s;
+            width: auto;
+            flex: 0 0 auto;
+        }
+        .subnav-btn:hover { background: rgba(0,212,255,0.08); color: var(--primary); border-color: rgba(0,212,255,0.25); }
+        .subnav-btn.active { background: rgba(0,212,255,0.12); color: var(--primary); border-color: rgba(0,212,255,0.35); }
+        .subtab-content.hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -583,19 +609,12 @@
         <div class="nav-tabs">
             <button id="tab-finanzen" class="nav-btn active" onclick="switchTab('finanzen')">💸 Finanzen</button>
             <button id="tab-packliste" class="nav-btn" onclick="switchTab('packliste')">🎒 Packliste</button>
-            <button id="tab-restaurants" class="nav-btn" onclick="switchTab('restaurants')">🍔 Restaurants</button>
-            <button id="tab-tabak" class="nav-btn" onclick="switchTab('tabak')">🚬 Tabakläden</button>
-            <button id="tab-apotheke" class="nav-btn" onclick="switchTab('apotheke')">💊 Apotheken</button>
-            <button id="tab-orte" class="nav-btn" onclick="switchTab('orte')">🧭 Orte & Pläne</button>
-            <button id="tab-zufall" class="nav-btn" onclick="switchTab('zufall')">🎲 Zufall</button>
+            <button id="tab-entdecken" class="nav-btn" onclick="switchTab('entdecken')">🗺️ Entdecken</button>
+            <button id="tab-spiele" class="nav-btn" onclick="switchTab('spiele')">🎮 Spiele</button>
+            <button id="tab-kommunikation" class="nav-btn" onclick="switchTab('kommunikation')">💬 Soziales</button>
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
-            <button id="tab-tipps" class="nav-btn" onclick="switchTab('tipps')">💡 Tipps</button>
             <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">📊 Statistik</button>
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
-            <button id="tab-chat" class="nav-btn" onclick="switchTab('chat')">💬 Chat</button>
-            <button id="tab-rangliste" class="nav-btn" onclick="switchTab('rangliste')">🏆 Rangliste</button>
-            <button id="tab-schwimmen" class="nav-btn" onclick="switchTab('schwimmen')">🃏 Schwimmen</button>
-            <button id="tab-notizen" class="nav-btn" onclick="switchTab('notizen')">📝 Notizen</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -690,7 +709,89 @@
             </div>
         </div>
 
-        <div id="content-restaurants" class="tab-content hidden">
+        
+        
+        
+        
+        
+        <div id="content-regeln" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--warning);">
+                <h3 style="color: var(--warning);">📜 Barcelona Bußgeld-Katalog & Gesetze</h3>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                    Die lokale Polizei (*Guardia Urbana* & *Mossos*) zieht bei Touristen extrem streng durch. Merkt euch diese Regeln, um die Urlaubskasse zu schonen:
+                </p>
+                
+                <div class="law-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <strong>🚨 Taschendiebe (Extrem wichtig):</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
+                        In Barcelona wird geklaut wie nirgendwo sonst. Trickdiebe arbeiten oft zu dritt. Handys NIEMALS auf den Tisch legen im Café. Rucksäcke in der Metro und auf den Ramblas vor dem Bauch tragen!
+                    </p>
+                </div>
+
+                <div class="law-box">
+                    <strong>🍺 Alkoholverbot im Freien (Botellón):</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
+                        Dosenbier oder Mixgetränke auf Plätzen, Straßen oder direkt am Strand zu trinken ist streng verboten. Wer von Zivilpolizisten mit offenem Alkohol erwischt wird, zahlt sofort zwischen <b>100 € und 600 €</b> Strafe.
+                    </p>
+                </div>
+
+                <div class="law-box" style="border-left-color: #38bdf8; background: rgba(56, 189, 248, 0.05);">
+                    <strong>🩲 Kleiderordnung (Kein "Oben-Ohne" in der Stadt):</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
+                        Nackte Oberkörper oder herumlaufen in reiner Badekleidung ist nur direkt am Strand erlaubt. Sobald ihr in die Stadt geht: T-Shirt an! Bußgeld: bis zu <b>300 €</b>.
+                    </p>
+                </div>
+
+                <div class="law-box" style="border-left-color: #a855f7; background: rgba(168, 85, 247, 0.05);">
+                    <strong>🛴 E-Scooter / E-Roller Regeln:</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
+                        Fahren auf dem Gehweg ist verboten. Kopfhörer während der Fahrt im Ohr kosten <b>200 €</b> Strafe. Zu zweit auf einem Roller fahren kostet ebenfalls <b>100 €</b>.
+                    </p>
+                </div>
+
+                <div class="law-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <strong>🚭 Rauchverbot am Strand:</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
+                        An ausnahmslos allen Stränden Barcelonas gilt ein gesetzliches Rauchverbot (Zigaretten, E-Zigaretten, Vapes). Wer im Sand raucht und erwischt wird, zahlt <b>30 €</b>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="content-statistik" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>📊 Gesamtausgaben – Wer hat am meisten ausgegeben?</h3>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Alle bestätigten Ausgaben pro Person zusammengezählt.</p>
+                <div id="stats-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
+            </div>
+            <div class="card" style="border-top: 4px solid var(--accent); margin-top:20px;">
+                <h3>💸 Gesamtausgaben der Gruppe</h3>
+                <div class="stats-box" style="margin-bottom:0;">Insgesamt ausgegeben: <span id="stats-total-all">0.00</span> €</div>
+            </div>
+        </div>
+
+        <div id="content-wetter" class="tab-content hidden">
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>🌤️ Aktuelles Wetter in Barcelona</h3>
+                <div id="wetter-content" style="margin-top:15px; text-align:center;">
+                    <p style="color:var(--text-muted);">Wird geladen...</p>
+                </div>
+            </div>
+        </div>
+
+        
+        
+        
+                
+                <div id="content-entdecken" class="tab-content hidden">
+            <div class="sub-nav-tabs">
+                <button id="subtab-restaurants" class="subnav-btn active" onclick="switchSubTab('entdecken', 'restaurants')">🍔 Restaurants</button>
+                <button id="subtab-tabak" class="subnav-btn" onclick="switchSubTab('entdecken', 'tabak')">🚬 Tabak</button>
+                <button id="subtab-apotheke" class="subnav-btn" onclick="switchSubTab('entdecken', 'apotheke')">💊 Apotheke</button>
+                <button id="subtab-orte" class="subnav-btn" onclick="switchSubTab('entdecken', 'orte')">🧭 Orte</button>
+            </div>
+        <div id="content-restaurants" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent);">
                 <h3>🍔 Live Restaurant-Entfernungen & Tagebuch</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
@@ -891,8 +992,7 @@
                 <div id="map-restaurants" class="map-container"></div>
             </div>
         </div>
-
-        <div id="content-tabak" class="tab-content hidden">
+        <div id="content-tabak" class="subtab-content hidden">
             <div class="card" style="border-top: 4px solid var(--warning);">
                 <h3>🚬 Tabakläden in Barcelona</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
@@ -1221,8 +1321,7 @@
                 <div id="map-tabak" class="map-container"></div>
             </div>
         </div>
-
-        <div id="content-apotheke" class="tab-content hidden">
+        <div id="content-apotheke" class="subtab-content hidden">
             <div class="card" style="border-top: 4px solid var(--success);">
                 <h3>💊 Apotheken in Barcelona</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
@@ -1306,8 +1405,7 @@
                 <div id="map-apotheke" class="map-container"></div>
             </div>
         </div>
-
-        <div id="content-orte" class="tab-content hidden">
+        <div id="content-orte" class="subtab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🧭 Wichtige Orte & Aktivitäten</h3>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
@@ -1374,8 +1472,14 @@
                 <div id="map-orte" class="map-container"></div>
             </div>
         </div>
+        </div>
 
-        <div id="content-zufall" class="tab-content hidden">
+        <div id="content-spiele" class="tab-content hidden">
+            <div class="sub-nav-tabs">
+                <button id="subtab-zufall" class="subnav-btn active" onclick="switchSubTab('spiele', 'zufall')">🎲 Zufall</button>
+                <button id="subtab-schwimmen" class="subnav-btn" onclick="switchSubTab('spiele', 'schwimmen')">🃏 Schwimmen</button>
+            </div>
+        <div id="content-zufall" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent); text-align: center; padding: 40px 20px;">
                 <h3 style="font-size: 24px; margin-bottom: 10px;">🎲 Allgemeiner Zufallsgenerator</h3>
                 <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px;">
@@ -1387,110 +1491,19 @@
                 <button id="btn-roulette" onclick="runRoulette()" style="max-width: 300px; margin: 0 auto; background: linear-gradient(135deg, var(--accent), #7e22ce); font-size: 18px; padding: 15px;">🎯 Zufall wählen!</button>
             </div>
         </div>
-
-        <div id="content-regeln" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--warning);">
-                <h3 style="color: var(--warning);">📜 Barcelona Bußgeld-Katalog & Gesetze</h3>
-                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-                    Die lokale Polizei (*Guardia Urbana* & *Mossos*) zieht bei Touristen extrem streng durch. Merkt euch diese Regeln, um die Urlaubskasse zu schonen:
-                </p>
-                
-                <div class="law-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
-                    <strong>🚨 Taschendiebe (Extrem wichtig):</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        In Barcelona wird geklaut wie nirgendwo sonst. Trickdiebe arbeiten oft zu dritt. Handys NIEMALS auf den Tisch legen im Café. Rucksäcke in der Metro und auf den Ramblas vor dem Bauch tragen!
-                    </p>
-                </div>
-
-                <div class="law-box">
-                    <strong>🍺 Alkoholverbot im Freien (Botellón):</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Dosenbier oder Mixgetränke auf Plätzen, Straßen oder direkt am Strand zu trinken ist streng verboten. Wer von Zivilpolizisten mit offenem Alkohol erwischt wird, zahlt sofort zwischen <b>100 € und 600 €</b> Strafe.
-                    </p>
-                </div>
-
-                <div class="law-box" style="border-left-color: #38bdf8; background: rgba(56, 189, 248, 0.05);">
-                    <strong>🩲 Kleiderordnung (Kein "Oben-Ohne" in der Stadt):</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Nackte Oberkörper oder herumlaufen in reiner Badekleidung ist nur direkt am Strand erlaubt. Sobald ihr in die Stadt geht: T-Shirt an! Bußgeld: bis zu <b>300 €</b>.
-                    </p>
-                </div>
-
-                <div class="law-box" style="border-left-color: #a855f7; background: rgba(168, 85, 247, 0.05);">
-                    <strong>🛴 E-Scooter / E-Roller Regeln:</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Fahren auf dem Gehweg ist verboten. Kopfhörer während der Fahrt im Ohr kosten <b>200 €</b> Strafe. Zu zweit auf einem Roller fahren kostet ebenfalls <b>100 €</b>.
-                    </p>
-                </div>
-
-                <div class="law-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
-                    <strong>🚭 Rauchverbot am Strand:</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        An ausnahmslos allen Stränden Barcelonas gilt ein gesetzliches Rauchverbot (Zigaretten, E-Zigaretten, Vapes). Wer im Sand raucht und erwischt wird, zahlt <b>30 €</b>.
-                    </p>
-                </div>
+        <div id="content-schwimmen" class="subtab-content hidden">
+            <div id="schw-container" style="min-height:300px;">
+                <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">🃏 Lade Spiel...</div>
             </div>
         </div>
-
-        <div id="content-tipps" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--success);">
-                <h3 style="color: var(--success);">💡 Barcelona Survival- & Insider-Tipps</h3>
-                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
-                    Wie ihr als Truppe am besten spart, richtig feiert und die Touristenfallen umgeht:
-                </p>
-
-                <div class="tip-box">
-                    <strong>🚇 Nahverkehr: Holt euch das "T-Usual" oder "T-Casual" Ticket</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Kauft NIEMALS Einzeltickets für die Metro (viel zu teuer). Holt euch am Automaten das <b>T-Casual</b> (10 Fahrten) oder prüft, ob das unbegrenzte Monatsticket <b>T-Usual</b> für euch billiger ist.
-                    </p>
-                </div>
-
-                <div class="tip-box" style="border-left-color: #a855f7; background: rgba(168, 85, 247, 0.05);">
-                    <strong>🎫 Tickets für Sagrada Família / Park Güell:</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Ihr müsst die Tickets Wochen im Voraus online buchen. Vor Ort gibt es absolut keine Tageskasse mehr.
-                    </p>
-                </div>
-
-                <div class="tip-box" style="border-left-color: #38bdf8; background: rgba(56, 189, 248, 0.05);">
-                    <strong>🍽️ Restaurant-Regel: Las Ramblas meiden!</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Esst niemals direkt auf der Hauptpromenade "Las Ramblas". Das Essen ist minderwertig und teuer. Geht zwei Straßen weiter in die Viertel <b>El Born</b> oder <b>Gràcia</b>.
-                    </p>
-                </div>
-
-                <div class="tip-box">
-                    <strong>🏖️ Der bessere Strand:</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 13px; color: var(--text-main);">
-                        Der Hauptstrand "Barceloneta" ist meist komplett überlaufen. Fahrt mit der Metro lieber ein paar Stationen weiter hoch zum Strand <b>Bogatell</b> oder <b>Mar Bella</b>.
-                    </p>
-                </div>
-            </div>
         </div>
 
-        <div id="content-statistik" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>📊 Gesamtausgaben – Wer hat am meisten ausgegeben?</h3>
-                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Alle bestätigten Ausgaben pro Person zusammengezählt.</p>
-                <div id="stats-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
+        <div id="content-kommunikation" class="tab-content hidden">
+            <div class="sub-nav-tabs">
+                <button id="subtab-chat" class="subnav-btn active" onclick="switchSubTab('kommunikation', 'chat')">💬 Chat</button>
+                <button id="subtab-notizen" class="subnav-btn" onclick="switchSubTab('kommunikation', 'notizen')">📝 Notizen</button>
             </div>
-            <div class="card" style="border-top: 4px solid var(--accent); margin-top:20px;">
-                <h3>💸 Gesamtausgaben der Gruppe</h3>
-                <div class="stats-box" style="margin-bottom:0;">Insgesamt ausgegeben: <span id="stats-total-all">0.00</span> €</div>
-            </div>
-        </div>
-
-        <div id="content-wetter" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>🌤️ Aktuelles Wetter in Barcelona</h3>
-                <div id="wetter-content" style="margin-top:15px; text-align:center;">
-                    <p style="color:var(--text-muted);">Wird geladen...</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="content-chat" class="tab-content hidden">
+        <div id="content-chat" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent);">
                 <h3>💬 Gruppen-Chat</h3>
                 <div id="chat-messages" style="height:350px; overflow-y:auto; background:#0f172a; border-radius:10px; border:1px solid var(--border); padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;"></div>
@@ -1500,38 +1513,7 @@
                 </div>
             </div>
         </div>
-
-        <div id="content-rangliste" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--warning);">
-                <h3>🏆 Rangliste – Wer ist der King?</h3>
-                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Jeder trägt seine eigenen Werte ein. Ehrlichkeit Pflicht! 😄</p>
-                <div id="rangliste-content"></div>
-                <div class="card" style="margin-top:20px; background:#0f172a;">
-                    <h4 style="margin-bottom:15px; color:var(--warning);">Deine Werte eintragen:</h4>
-                    <div class="form-group">
-                        <label>🍺 Getränke heute:</label>
-                        <input type="number" id="rl-drinks" min="0" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label>🌙 Schlafen gegangen um (Uhr):</label>
-                        <input type="number" id="rl-sleep" min="0" max="30" placeholder="z.B. 3 für 3 Uhr">
-                    </div>
-                    <div class="form-group">
-                        <label>🏃 Schritte heute (vom Handy):</label>
-                        <input type="number" id="rl-steps" min="0" placeholder="0">
-                    </div>
-                    <button onclick="saveRangliste()" style="background: linear-gradient(135deg, var(--warning), #d97706); box-shadow: 0 4px 10px rgba(245,158,11,0.3);">💾 Speichern</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="content-schwimmen" class="tab-content hidden">
-            <div id="schw-container" style="min-height:300px;">
-                <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">🃏 Lade Spiel...</div>
-            </div>
-        </div>
-
-                <div id="content-notizen" class="tab-content hidden">
+        <div id="content-notizen" class="subtab-content hidden">
             <div class="grid">
                 <div class="card" style="border-left:4px solid var(--accent);">
                     <h3 style="color:var(--accent);">🔒 Meine privaten Notizen</h3>
@@ -1548,8 +1530,9 @@
                 </div>
             </div>
         </div>
+        </div>
 
-                <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
+        <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
 
@@ -1723,6 +1706,31 @@
         }, 80);
     }
 
+
+    function switchSubTab(group, tabName) {
+        const wrapper = document.getElementById('content-' + group);
+        if (!wrapper) return;
+        // Hide all subtabs in this group
+        wrapper.querySelectorAll('.subtab-content').forEach(el => el.classList.add('hidden'));
+        wrapper.querySelectorAll('.subnav-btn').forEach(btn => btn.classList.remove('active'));
+        // Show selected
+        const target = document.getElementById('content-' + tabName);
+        if (target) target.classList.remove('hidden');
+        const btn = document.getElementById('subtab-' + tabName);
+        if (btn) btn.classList.add('active');
+        // Special handlers
+        if (tabName === 'restaurants' || tabName === 'tabak' || tabName === 'apotheke' || tabName === 'orte') {
+            startLiveTracking();
+        }
+        if (tabName === 'restaurants') setTimeout(() => initMap('map-restaurants', 'restaurants'), 100);
+        if (tabName === 'orte') setTimeout(() => initMap('map-orte', 'orte'), 100);
+        if (tabName === 'tabak') setTimeout(() => initMap('map-tabak', 'tabak'), 100);
+        if (tabName === 'apotheke') setTimeout(() => initMap('map-apotheke', 'apotheke'), 100);
+        if (tabName === 'chat') renderChat();
+        if (tabName === 'schwimmen') renderSchwimmen();
+        if (tabName === 'notizen') renderNotizen();
+    }
+
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -1730,19 +1738,11 @@
         document.getElementById(`content-${tabName}`).classList.remove('hidden');
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
-        if (tabName === 'restaurants' || tabName === 'orte' || tabName === 'tabak' || tabName === 'apotheke') {
-            startLiveTracking();
-        }
-        if (tabName === 'restaurants') setTimeout(() => initMap('map-restaurants', 'restaurants'), 100);
-        if (tabName === 'orte') setTimeout(() => initMap('map-orte', 'orte'), 100);
-        if (tabName === 'tabak') setTimeout(() => initMap('map-tabak', 'tabak'), 100);
-        if (tabName === 'apotheke') setTimeout(() => initMap('map-apotheke', 'apotheke'), 100);
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
-        if (tabName === 'chat') renderChat();
-        if (tabName === 'rangliste') renderRangliste();
-        if (tabName === 'schwimmen') renderSchwimmen();
-        if (tabName === 'notizen') renderNotizen();
+        if (tabName === 'entdecken') switchSubTab('entdecken', 'restaurants');
+        if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
+        if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
     }
 
 
@@ -2515,7 +2515,7 @@
         // Kategorie-Auswertung
         renderCategoryBreakdown();
         // Refresh Schwimmen if tab is active
-        const schwTab = document.getElementById('tab-schwimmen');
+        const schwTab = document.getElementById('subtab-schwimmen');
         if (schwTab && schwTab.classList.contains('active')) renderSchwimmen();
 
         // Bewertungen für alle Restaurants laden
