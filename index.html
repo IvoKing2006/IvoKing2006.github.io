@@ -490,6 +490,11 @@
             </div>
         </div>
 
+        <!-- ONLINE STATUS BAR -->
+        <div id="online-bar" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+            <!-- filled by JS -->
+        </div>
+
         <div id="countdown-banner" style="background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(56,189,248,0.15)); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
             <span style="font-size:14px; color:var(--text-muted);">✈️ Barcelona in:</span>
             <span id="countdown-banner-text" style="font-size:16px; font-weight:800; color:var(--primary); letter-spacing:1px;">...</span>
@@ -1604,19 +1609,81 @@
             if (currentUser === "Ivo") { document.getElementById('admin-reset-btn').classList.remove('hidden'); } 
             else { document.getElementById('admin-reset-btn').classList.add('hidden'); }
             
+            // Online-Status setzen
+            setOnlineStatus(true);
+
             setupShareCheckboxes();
             switchTab('finanzen'); 
             updateUI();
             updateCountdown();
+
+            // Live-Listener für Online-Status aller User
+            watchOnlineStatus();
+
+            // Heartbeat alle 60s damit "zuletzt online" aktuell bleibt
+            if (window._heartbeat) clearInterval(window._heartbeat);
+            window._heartbeat = setInterval(() => setOnlineStatus(true), 60000);
+
+            // Bei Tab-Wechsel / Schließen offline setzen
+            window.addEventListener('beforeunload', () => setOnlineStatus(false));
+            document.addEventListener('visibilitychange', () => {
+                setOnlineStatus(!document.hidden);
+            });
         } else {
             alert('Falsches Passwort!');
         }
     }
 
     function logout() {
+        setOnlineStatus(false);
+        if (window._heartbeat) clearInterval(window._heartbeat);
         currentUser = null;
         document.getElementById('login-screen').classList.remove('hidden');
         document.getElementById('app-screen').classList.add('hidden');
+    }
+
+    function setOnlineStatus(isOnline) {
+        if (!currentUser || !database) return;
+        const ref = database.ref('online/' + currentUser);
+        ref.set({
+            online: isOnline,
+            lastSeen: Date.now()
+        });
+    }
+
+    function watchOnlineStatus() {
+        if (!database) return;
+        database.ref('online').on('value', snapshot => {
+            const data = snapshot.val() || {};
+            renderOnlineBar(data);
+        });
+    }
+
+    function renderOnlineBar(data) {
+        const bar = document.getElementById('online-bar');
+        if (!bar) return;
+        bar.innerHTML = ALL_USERS.map(user => {
+            const info = data[user];
+            const isOnline = info && info.online;
+            const lastSeen = info && info.lastSeen ? timeAgo(info.lastSeen) : 'Noch nie';
+            const dot = isOnline
+                ? '<span style="width:9px;height:9px;border-radius:50%;background:#00ffa3;display:inline-block;box-shadow:0 0 8px #00ffa3;margin-right:6px;flex-shrink:0;"></span>'
+                : '<span style="width:9px;height:9px;border-radius:50%;background:#6b8caf;display:inline-block;margin-right:6px;flex-shrink:0;"></span>';
+            const label = isOnline
+                ? `<span style="color:#00ffa3;font-weight:700;">Online</span>`
+                : `<span style="color:var(--text-muted);font-size:11px;">zuletzt ${lastSeen}</span>`;
+            return `<div style="display:flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:10px;padding:6px 12px;gap:4px;font-size:13px;">
+                ${dot}<strong style="margin-right:5px;">${user}</strong>${label}
+            </div>`;
+        }).join('');
+    }
+
+    function timeAgo(ts) {
+        const diff = Math.floor((Date.now() - ts) / 1000);
+        if (diff < 60) return 'gerade eben';
+        if (diff < 3600) return `vor ${Math.floor(diff/60)} Min.`;
+        if (diff < 86400) return `vor ${Math.floor(diff/3600)} Std.`;
+        return `vor ${Math.floor(diff/86400)} Tag(en)`;
     }
 
     function setupShareCheckboxes() {
