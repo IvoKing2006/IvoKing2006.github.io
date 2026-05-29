@@ -2938,8 +2938,9 @@
     }
 
     function schwLives(g) {
+        const livePlayers = Array.isArray(g.joinedPlayers) && g.joinedPlayers.length ? g.joinedPlayers : ALL_USERS;
         return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;justify-content:center;">
-            ${ALL_USERS.map(u => {
+            ${livePlayers.map(u => {
                 const lives = g.lives[u] ?? 3;
                 const isSwim = g.swimmer === u;
                 const isElim = (g.eliminated||[]).includes(u);
@@ -2983,7 +2984,7 @@
         players.forEach(u => lives[u] = 3);
         db.schwimmen = {
             status: 'idle',
-            players: players,
+            joinedPlayers: players,
             lives: lives,
             swimmer: null,
             eliminated: [],
@@ -3252,7 +3253,7 @@
                     </div>`;
                 }).join('')}
             </div>
-            <div style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:16px;">${joined.length} von 4 dabei</div>
+            <div style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:16px;">${joined.length} von ${ALL_USERS.length} dabei</div>
             ${joined.length >= 2 ? `<button onclick="schwimmenStartFromLobby()" style="max-width:320px;margin:0 auto;display:block;background:linear-gradient(135deg,#00d4ff,#0090c8);">🚀 Spiel starten (${joined.length} Spieler)</button>` : `<p style="text-align:center;color:var(--text-muted);font-size:13px;">Mindestens 2 Spieler nötig...</p>`}`;
             return;
         }
