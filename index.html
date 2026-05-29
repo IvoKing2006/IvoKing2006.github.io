@@ -3062,7 +3062,7 @@
         g.hands[currentUser] = h; g.middle = m;
         g.log.unshift(currentUser+' tauscht 1 Karte.');
         _schwSelectedHandCard = null;
-        if (g.skippedThisRound) g.skippedThisRound = g.skippedThisRound.filter(u=>u!==currentUser);
+        g.skippedThisRound = [];
         if (schwIstFeuer(h)) { schwimmenEndRoundFeuer(currentUser); return; }
         if (schwScore(h) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
         schwimmenNextTurn();
@@ -3079,7 +3079,7 @@
         g.middle = oldH;
         g.log.unshift(currentUser+' tauscht alle 3 Karten.');
         _schwSelectedHandCard = null;
-        if (g.skippedThisRound) g.skippedThisRound = g.skippedThisRound.filter(u=>u!==currentUser);
+        g.skippedThisRound = [];
         if (schwIstFeuer(g.hands[currentUser])) { schwimmenEndRoundFeuer(currentUser); return; }
         if (schwScore(g.hands[currentUser]) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
         schwimmenNextTurn();
@@ -3095,7 +3095,8 @@
         if (!Array.isArray(g.log)) g.log = [];
         if (!g.skippedThisRound.includes(currentUser)) g.skippedThisRound.push(currentUser);
         g.log.unshift(currentUser+' passt.');
-        const alive = ALL_USERS.filter(u=>!g.eliminated.includes(u));
+        const gamePlayers = Array.isArray(g.joinedPlayers) ? g.joinedPlayers : ALL_USERS;
+        const alive = gamePlayers.filter(u=>!g.eliminated.includes(u));
         if (alive.every(u=>g.skippedThisRound.includes(u))) {
             if (Array.isArray(g.deck) && g.deck.length >= 3) {
                 g.middle = [g.deck.pop(), g.deck.pop(), g.deck.pop()];
