@@ -2863,6 +2863,54 @@
         return max;
     }
 
+    function schwIstFeuer(hand) {
+        if (!hand || hand.length !== 3) return false;
+        return hand.every(c => c.value === 'A');
+    }
+
+    function schwimmenEndRoundFeuer(feuerPlayer) {
+        const g = db.schwimmen;
+        if (!Array.isArray(g.log)) g.log = [];
+        if (!Array.isArray(g.eliminated)) g.eliminated = [];
+        const gamePlayers = g.joinedPlayers || ALL_USERS;
+        const alive = gamePlayers.filter(u => !(g.eliminated||[]).includes(u));
+        g.roundScores = {};
+        alive.forEach(u => g.roundScores[u] = schwScore(g.hands[u]||[]));
+        g.log.unshift('🔥 FEUER! '+feuerPlayer+' hat 3 Asse – alle anderen verlieren ein Leben!');
+        g.feuerPlayer = feuerPlayer;
+        // Alle außer feuerPlayer verlieren ein Leben
+        alive.forEach(u => {
+            if (u === feuerPlayer) return;
+            if (!g.lives[u]) g.lives[u] = 3;
+            if (g.lives[u] > 0) {
+                g.lives[u]--;
+                if (g.lives[u] === 0) {
+                    if (!(g.eliminated||[]).includes(u)) {
+                        g.eliminated = g.eliminated || [];
+                        if (g.swimmer === u) {
+                            g.eliminated.push(u);
+                            g.swimmer = null;
+                        } else {
+                            g.swimmer = u;
+                        }
+                    }
+                }
+            }
+        });
+        // Check if game over
+        const aliveNow = gamePlayers.filter(u=>!(g.eliminated||[]).includes(u));
+        if (aliveNow.length <= 1) {
+            g.status = 'gameEnd';
+        } else {
+            g.status = 'roundEnd';
+            g.roundNumber = (g.roundNumber||1);
+            // Rotate dealer
+            const di = gamePlayers.indexOf(g.dealer);
+            g.dealer = gamePlayers[(di+1) % gamePlayers.length];
+        }
+        saveDB();
+    }
+
     function schwDeck() {
         const vals = ['6','7','8','9','10','B','D','K','A'];
         const suits = ['herz','karo','kreuz','pik'];
@@ -2954,6 +3002,7 @@
         const g = db.schwimmen;
         g.roundNumber = (g.roundNumber||0)+1;
         g.roundClosedBy = null; g.closedPlayersDone = [];
+        g.feuerPlayer = null;
         g.skippedThisRound = []; g.roundScores = {};
         g.hands = {}; g.log = [];
 
@@ -2988,6 +3037,10 @@
             g.log.unshift(g.dealer+' wechselt blind zu Stapel B.');
         }
         g.dealerSetA = []; g.dealerSetB = [];
+        if (schwIstFeuer(g.hands[g.dealer])) {
+            g.log.unshift('🔥 FEUER! '+g.dealer+' hat sofort 3 Asse!');
+            schwimmenEndRoundFeuer(g.dealer); return;
+        }
         if (schwScore(g.hands[g.dealer]) === 31) {
             g.log.unshift('🎉 '+g.dealer+' hat sofort 31!');
             schwimmenEndRound(); return;
@@ -3010,6 +3063,7 @@
         g.log.unshift(currentUser+' tauscht 1 Karte.');
         _schwSelectedHandCard = null;
         if (g.skippedThisRound) g.skippedThisRound = g.skippedThisRound.filter(u=>u!==currentUser);
+        if (schwIstFeuer(h)) { schwimmenEndRoundFeuer(currentUser); return; }
         if (schwScore(h) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
         schwimmenNextTurn();
     }
@@ -3026,6 +3080,7 @@
         g.log.unshift(currentUser+' tauscht alle 3 Karten.');
         _schwSelectedHandCard = null;
         if (g.skippedThisRound) g.skippedThisRound = g.skippedThisRound.filter(u=>u!==currentUser);
+        if (schwIstFeuer(g.hands[currentUser])) { schwimmenEndRoundFeuer(currentUser); return; }
         if (schwScore(g.hands[currentUser]) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
         schwimmenNextTurn();
     }
@@ -3298,14 +3353,21 @@
             const sorted = [...alive].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
             const canStart = currentUser === g.dealer;
 
-            el.innerHTML = schwAdminBar() + schwLives(g) + `<div class="card" style="border-color:rgba(124,58,237,0.3);margin-bottom:14px;">
+            el.innerHTML = schwAdminBar() + schwLives(g) + 
+            (g.feuerPlayer ? `<div style="background:linear-gradient(135deg,rgba(255,140,0,0.2),rgba(255,77,109,0.15));border:2px solid rgba(255,140,0,0.5);border-radius:16px;padding:18px;margin-bottom:16px;text-align:center;animation:debtModalIn 0.4s ease;">
+                <div style="font-size:48px;margin-bottom:8px;">🔥</div>
+                <div style="font-size:18px;font-weight:900;color:#ff8c00;margin-bottom:4px;">FEUER!</div>
+                <div style="font-size:14px;color:var(--text-muted);">${g.feuerPlayer} hat 3 Asse – alle anderen verlieren ein Leben!</div>
+            </div>` : '') +
+            `<div class="card" style="border-color:rgba(124,58,237,0.3);margin-bottom:14px;">
                 <h3 style="color:var(--accent);text-align:center;margin-bottom:16px;">📊 Auswertung Runde ${g.roundNumber}</h3>
                 ${sorted.map(u=>{
-                    const isLoser = scores[u]===minScore;
-                    return `<div style="background:${isLoser?'rgba(255,77,109,0.1)':'rgba(0,255,163,0.06)'};border:1px solid ${isLoser?'rgba(255,77,109,0.3)':'rgba(0,255,163,0.15)'};border-radius:12px;padding:14px;margin-bottom:8px;">
+                    const isFeuerWinner = g.feuerPlayer === u;
+                    const isLoser = !isFeuerWinner && (g.feuerPlayer ? true : scores[u]===minScore);
+                    return `<div style="background:${isFeuerWinner?'rgba(255,140,0,0.12)':isLoser?'rgba(255,77,109,0.1)':'rgba(0,255,163,0.06)'};border:1px solid ${isFeuerWinner?'rgba(255,140,0,0.4)':isLoser?'rgba(255,77,109,0.3)':'rgba(0,255,163,0.15)'};border-radius:12px;padding:14px;margin-bottom:8px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                            <span style="font-weight:800;font-size:15px;">${isLoser?'💀':'✅'} ${u}${u===currentUser?' (Du)':''}</span>
-                            <span style="font-size:20px;font-weight:900;color:${isLoser?'var(--danger)':'var(--success)'};">${scores[u]??'?'}</span>
+                            <span style="font-weight:800;font-size:15px;">${isFeuerWinner?'🔥':isLoser?'💀':'✅'} ${u}${u===currentUser?' (Du)':''}</span>
+                            <span style="font-size:20px;font-weight:900;color:${isFeuerWinner?'#ff8c00':isLoser?'var(--danger)':'var(--success)'};">${isFeuerWinner?'🃏 3 Asse':scores[u]??'?'}</span>
                         </div>
                         <div style="display:flex;gap:6px;flex-wrap:wrap;">${(g.hands[u]||[]).map(c=>schwCard(c)).join('')}</div>
                     </div>`;
