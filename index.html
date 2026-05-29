@@ -3007,7 +3007,7 @@
         g.hands = {}; g.log = [];
 
         const deck = schwDeck();
-        const gamePlayers = Array.isArray(g.players) ? g.players : ALL_USERS;
+        const gamePlayers = Array.isArray(g.joinedPlayers) ? g.joinedPlayers : ALL_USERS;
         const alive = gamePlayers.filter(u => !(g.eliminated||[]).includes(u));
 
         g.dealerSetA = [deck.pop(), deck.pop(), deck.pop()];
@@ -3141,7 +3141,7 @@
 
     function schwimmenEndRound() {
         const g = db.schwimmen;
-        const gamePlayers = Array.isArray(g.players) ? g.players : ALL_USERS;
+        const gamePlayers = Array.isArray(g.joinedPlayers) ? g.joinedPlayers : ALL_USERS;
         const alive = gamePlayers.filter(u=>!(g.eliminated||[]).includes(u));
         const scores = {};
         alive.forEach(u => scores[u] = schwScore(g.hands[u]||[]));
