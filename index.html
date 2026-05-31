@@ -1983,7 +1983,6 @@
                 </div>
             `;
         });
-        });
     }
 
     function addExpense() {
@@ -2002,9 +2001,6 @@
         const id = Date.now().toString();
         const shareAmount = parseFloat((amount / checkedPeople.length).toFixed(2));
         let note = "";
-        if (checkedPeople.length === 1 && checkedPeople[0] === currentUser) {
-            note = document.getElementById('exp-note').value.trim();
-        }
 
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
