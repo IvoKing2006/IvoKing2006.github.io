@@ -148,6 +148,7 @@
         .checkbox-item:last-child { margin-bottom: 0; }
         .checkbox-item input { margin-right: 12px; width: 18px; height: 18px; accent-color: var(--primary); }
 
+
         /* BUTTONS */
         button {
             width: 100%;
@@ -1984,7 +1985,6 @@
                 </div>
             `;
         });
-        checkSharingState();
     }
 
 
@@ -2007,6 +2007,9 @@
         const id = Date.now().toString();
         const shareAmount = parseFloat((amount / checkedPeople.length).toFixed(2));
         let note = "";
+        if (checkedPeople.length === 1 && checkedPeople[0] === currentUser) {
+            note = document.getElementById('exp-note').value.trim();
+        }
 
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
@@ -2364,20 +2367,24 @@
         if(debtsList.innerHTML === '') debtsList.innerHTML = '<li>Keine offenen Schulden! 🎉</li>';
         if(historyList.innerHTML === '') historyList.innerHTML = '<li>Keine Ausgaben im Verlauf.</li>';
 
-        // Karte vs Bar Summe - nur wenn bereits bezahlt/erledigt
+        // Karte vs Bar Summe
         var sumKarte = 0; var sumBar = 0;
         db.expenses.forEach(exp => {
+            var myPart = 0;
             if (exp.payer === currentUser && exp.participants.includes(currentUser)) {
-                // Eigene Ausgabe: eigener Anteil immer zaehlen
-                const myPart = exp.totalAmount / exp.participants.length;
-                if (exp.method === 'Karte') sumKarte += myPart;
-                else sumBar += myPart;
+                myPart = exp.totalAmount / exp.participants.length;
             } else if (exp.payer !== currentUser && exp.participants.includes(currentUser)) {
-                // Fremde Ausgabe: NUR zaehlen wenn Schuld als erledigt markiert
-                const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
-                if (debt && debt.resolved) {
-                    const myPart = exp.shareAmount || (exp.totalAmount / exp.participants.length);
-                    const method = debt.resolvedMethod ? debt.resolvedMethod : exp.method;
+                myPart = exp.shareAmount || (exp.totalAmount / exp.participants.length);
+            }
+            if (myPart > 0) {
+                if (exp.payer === currentUser) {
+                    // Eigene Ausgabe: eigene Zahlungsmethode
+                    if (exp.method === 'Karte') sumKarte += myPart;
+                    else sumBar += myPart;
+                } else {
+                    // Schuld beglichen: resolvedMethod des Schuldners verwenden
+                    const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
+                    const method = (debt && debt.resolvedMethod) ? debt.resolvedMethod : exp.method;
                     if (method === 'Karte') sumKarte += myPart;
                     else sumBar += myPart;
                 }
