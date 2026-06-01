@@ -2703,28 +2703,31 @@
     function renderCustomInTabs() {
         const cats = ['restaurants','tabak','apotheke','orte'];
         cats.forEach(cat => {
-            const existing = document.getElementById('custom-in-'+cat);
-            if (existing) existing.remove();
-            const gridId = cat === 'restaurants' ? '.restaurant-grid' : (cat === 'tabak' ? '#tabak-grid' : (cat === 'apotheke' ? '#apotheke-grid' : '.restaurant-grid'));
+            document.querySelectorAll('.custom-place-card[data-cat="'+cat+'"]').forEach(el => el.remove());
             const subtab = document.getElementById('content-'+cat);
             if (!subtab) return;
             const items = (db.customPlaces || []).filter(p => p.cat === cat);
             if (items.length === 0) return;
-            const wrapper = document.createElement('div');
-            wrapper.id = 'custom-in-'+cat;
-            wrapper.style.marginTop = '16px';
-            wrapper.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">➕ Von euch hinzugefügt</div>'
-                + '<div class="restaurant-grid">'
-                + items.map(p => `
-                <div class="card" style="background:#0f172a;margin-bottom:0;">
-                    <h4 style="font-size:16px;margin-bottom:4px;">${p.name}</h4>
-                    <div class="meta-info">${p.addr}</div>
-                    <div class="distance-live">📍 Eigener Eintrag von ${p.addedBy}</div>
-                    ${cat !== 'apotheke' ? `<button class="btn-check" style="margin-top:8px;font-size:12px;" onclick="toggleVisited('${p.id}','${cat}')" id="vis-${p.id}">${(db.visited||{})[p.id] ? '✅ Besucht am '+(db.visited[p.id]) : '☐ Als besucht markieren'}</button>` : ''}
-                    <button class="btn-nav-link" style="margin-top:6px;" onclick="openMap('${p.name.replace(/'/g,"\'")}','${p.addr.replace(/'/g,"\'")}')">🗺️ Route öffnen</button>
-                </div>`).join('')
-                + '</div>';
-            subtab.querySelector('.card').appendChild(wrapper);
+            const grid = subtab.querySelector('.restaurant-grid');
+            if (!grid) return;
+            items.forEach(p => {
+                const visited = (db.visited||{})[p.id];
+                const card = document.createElement('div');
+                card.className = 'card custom-place-card';
+                card.setAttribute('data-cat', cat);
+                card.style.cssText = 'background:#0f172a;margin-bottom:0;';
+                const safeName = p.name.replace(/'/g, "\\'");
+                const safeAddr = p.addr.replace(/'/g, "\\'");
+                card.innerHTML =
+                    '<h4 style="font-size:17px;margin-bottom:5px;">'+p.name+'</h4>'
+                    +'<div class="cuisine-tag">📍 Eigener Eintrag</div>'
+                    +'<div class="meta-info" style="margin-bottom:10px;">'+p.addr+'</div>'
+                    +'<div class="distance-live">von '+p.addedBy+' hinzugefügt</div>'
+                    +(cat !== 'apotheke' ? '<button class="btn-check" style="margin-top:8px;font-size:12px;" data-place-id="'+p.id+'" onclick="toggleVisited(''+p.id+'',''+cat+'')">'+(visited ? '✅ Besucht am '+visited : '☐ Als besucht markieren')+'</button>' : '')
+                    +'<button class="btn-nav-link" style="margin-top:6px;" onclick="openMap(''+safeName+'',''+safeAddr+'')">🗺️ Route öffnen</button>'
+                    +'<button onclick="deleteCustomPlace(''+p.id+'')" style="margin-top:6px;background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:7px;font-size:12px;width:100%;border-radius:8px;cursor:pointer;">🗑️ Entfernen</button>';
+                grid.appendChild(card);
+            });
         });
     }
 
