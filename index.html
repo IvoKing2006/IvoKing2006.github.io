@@ -1991,6 +1991,13 @@
 
 
 
+    function deleteExpense(expId) {
+        if (!confirm('Ausgabe wirklich löschen? Alle zugehörigen Schulden werden ebenfalls entfernt.')) return;
+        db.expenses = db.expenses.filter(e => e.id !== expId);
+        db.debts = db.debts.filter(d => d.expenseId !== expId);
+        saveDB();
+    }
+
     function addExpense() {
         const amount = parseFloat(document.getElementById('exp-amount').value);
         const purpose = document.getElementById('exp-purpose').value.trim();
@@ -2329,7 +2336,7 @@
                     .join(' · ');
 
                 const rueckInfo = othersInfo ? `<span class="meta-info">Zurückbekommen: ${othersInfo}</span>` : '';
-                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
+                historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
