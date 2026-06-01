@@ -101,20 +101,6 @@
             transition: all 0.2s;
             letter-spacing: 0.01em;
         }
-        .nav-btn .badge {
-            display: inline-block;
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            font-weight: 800;
-            border-radius: 99px;
-            padding: 1px 6px;
-            margin-left: 4px;
-            vertical-align: middle;
-            line-height: 16px;
-            min-width: 16px;
-            text-align: center;
-        }
         .nav-btn:hover {
             background: rgba(0, 212, 255, 0.08);
             color: var(--primary);
@@ -162,6 +148,14 @@
         .checkbox-item:last-child { margin-bottom: 0; }
         .checkbox-item input { margin-right: 12px; width: 18px; height: 18px; accent-color: var(--primary); }
 
+        .personal-receipt-box {
+            background: rgba(124, 58, 237, 0.06);
+            border: 1px dashed rgba(124, 58, 237, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        .file-preview { max-width: 100px; max-height: 100px; border-radius: 8px; margin-top: 10px; display: block; border: 1px solid var(--glass-border); }
 
         /* BUTTONS */
         button {
@@ -651,6 +645,22 @@
                         <div class="checkbox-group" id="share-with-list"></div>
                     </div>
 
+                    <div id="personal-receipt-section" class="personal-receipt-box hidden">
+                        <h4 style="margin: 0 0 10px 0; color: var(--accent);">📄 Eigener Beleg (Optional)</h4>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="exp-note">Spezielle Notiz / Details:</label>
+                            <input type="text" id="exp-note" placeholder="z.B. Souvenir, Kleidung...">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="exp-image">Foto vom Kassenbon:</label>
+                            <input type="file" id="exp-image" accept="image/*" onchange="previewImage(event)">
+                            <img id="image-preview" class="file-preview hidden">
+                            <div id="scan-status" style="margin-top:10px; font-size:13px; color:var(--accent); display:none;">
+                                🔍 Kassenbon wird ausgelesen...
+                            </div>
+                            <div id="scan-result" style="margin-top:8px; font-size:13px; color:var(--success); display:none;"></div>
+                        </div>
+                    </div>
                     <button onclick="addExpense()" style="margin-top:15px;">Ausgabe speichern</button>
                 </div>
 
@@ -668,8 +678,7 @@
 
             <div class="card" style="margin-top: 25px;">
                 <h3>Dein Ausgaben-Verlauf (Bestätigte Posten)</h3>
-                <input type="text" id="expense-search" placeholder="🔍 Ausgaben durchsuchen..." oninput="filterExpenses()" style="margin-bottom:12px;padding:9px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--text-main);width:100%;">
-                <ul id="personal-history" style="max-height:340px;overflow-y:auto;padding-right:4px;margin:0;"></ul>
+                <ul id="personal-history"></ul>
                 <div id="payment-summary" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
                     <div style="flex:1; background:#0f172a; border-radius:10px; padding:12px 16px; border:1px solid var(--border); text-align:center;">
                         💳 <span style="color:var(--text-muted); font-size:13px;">Karte gesamt</span><br>
@@ -682,55 +691,20 @@
                 </div>
             </div>
 
-            <!-- Kategorie -->
-            <div class="card" style="margin-top:20px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                    <span style="font-size:16px;">📊</span>
-                    <h3 style="margin:0;font-size:15px;">Kategorien</h3>
-                </div>
-                <p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;">Gleiche Begriffe werden zusammengefasst.</p>
-                <ul id="category-breakdown" style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;"></ul>
-            </div>
-
-            <!-- Gruppenrangliste -->
-            <div class="card" style="margin-top:14px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <span style="font-size:16px;">🏆</span>
-                        <h3 style="margin:0;font-size:15px;">Wer hat am meisten ausgegeben?</h3>
-                    </div>
-                    <span style="font-size:12px;color:var(--text-muted);">Gesamt: <span id="fin-stats-total" style="color:var(--text-main);font-weight:700;">0.00 €</span></span>
-                </div>
-                <div id="fin-stats-bars" style="display:flex;flex-direction:column;gap:10px;"></div>
-            </div>
-
-            <!-- Tagesausgaben -->
-            <div class="card" style="margin-top:14px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                    <span style="font-size:16px;">📅</span>
-                    <h3 style="margin:0;font-size:15px;">Meine Ausgaben pro Tag</h3>
-                </div>
-                <div id="fin-daily-bars" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <div class="card" style="margin-top: 25px; border-left: 4px solid var(--warning);">
+                <h3 style="color: var(--warning);">📊 Ausgaben nach Kategorie</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Gleiche Begriffe werden automatisch zusammengefasst (egal ob groß oder klein geschrieben).</p>
+                <ul id="category-breakdown"></ul>
             </div>
         </div>
 
         <div id="content-packliste" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🎒 Truppen-Packliste & Checkliste</h3>
-                <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-                    <input type="text" id="new-pack-item" placeholder="Gegenstand hinzufügen..." style="flex:2;min-width:120px;">
-                    <select id="new-pack-cat" style="flex:1;min-width:110px;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;font-size:13px;color:var(--text-main);">
-                        <option value="Sonstiges">📦 Sonstiges</option>
-                        <option value="Kleidung">👕 Kleidung</option>
-                        <option value="Hygiene">🧴 Hygiene</option>
-                        <option value="Dokumente">📄 Dokumente</option>
-                        <option value="Elektronik">🔌 Elektronik</option>
-                        <option value="Apotheke">💊 Apotheke</option>
-                        <option value="Strand">🏖️ Strand</option>
-                    </select>
-                    <button onclick="addPackItem()" style="width:auto;padding:0 20px;white-space:nowrap;">Hinzufügen</button>
+                <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="new-pack-item" placeholder="Gegenstand für DEINE Liste hinzufügen...">
+                    <button onclick="addPackItem()" style="width: auto; padding: 0 25px; white-space: nowrap;">Hinzufügen</button>
                 </div>
-                <input type="text" id="pack-search" placeholder="🔍 Packliste durchsuchen..." oninput="filterPackList()" style="margin-bottom:16px;padding:9px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--text-main);width:100%;">
                 <div class="packing-grid" id="all-packing-lists"></div>
             </div>
         </div>
@@ -1500,11 +1474,10 @@
             </div>
         </div>
 
-        <!-- Ort hinzufügen Subtab -->
         <div id="content-hinzufuegen" class="subtab-content hidden">
             <div class="card" style="border-top:4px solid var(--success);">
                 <h3>➕ Eigenen Ort hinzufügen</h3>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Trag Name und Adresse ein – der Ort erscheint automatisch im richtigen Tab mit Route öffnen Button.</p>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Trag Name und Adresse ein – erscheint direkt bei den anderen im richtigen Tab.</p>
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" id="custom-place-name" placeholder="z.B. La Cerveceria">
@@ -1524,7 +1497,6 @@
                 </div>
                 <button onclick="addCustomPlace()" style="background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">➕ Ort hinzufügen</button>
             </div>
-            <div id="custom-places-list" style="margin-top:14px;"></div>
         </div>
         </div>
 
@@ -1696,6 +1668,7 @@
     var PASSWORDS = {"Ivo": "0511", "Romeo": "2508", "Anton": "1603", "Raul": "2406"};
     var ALL_USERS = ["Ivo", "Romeo", "Anton", "Raul"];
     var currentUser = null;
+    var currentBase64Image = "";
     var isDbReady = false;
 
     var db = {
@@ -1793,7 +1766,7 @@
 
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
-        if (tabName === 'entdecken') { switchSubTab('entdecken', 'restaurants'); setTimeout(() => { initVisitedButtons(); renderCustomInTabs(); renderCustomPlaces(); }, 100); }
+        if (tabName === 'entdecken') { switchSubTab('entdecken', 'restaurants'); setTimeout(function(){ renderCustomInTabs(); }, 150); }
         if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
         if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
     }
@@ -2047,7 +2020,6 @@
 
             // Snapshots updaten
             _knownDebtIds = (db.debts || []).map(d => d.id);
-            updateBadges();
             _knownExpenseIds = (db.expenses || []).map(e => e.id);
             _knownChatCount = chatArr.length;
         });
@@ -2059,22 +2031,106 @@
         ALL_USERS.forEach(user => {
             container.innerHTML += `
                 <div class="checkbox-item">
-                    <input type="checkbox" id="share-${user}" value="${user}" ${user === currentUser ? 'checked' : ''}>
+                    <input type="checkbox" id="share-${user}" value="${user}" ${user === currentUser ? 'checked' : ''} onchange="checkSharingState()">
                     <label for="share-${user}" style="margin:0; color: var(--text-main); cursor:pointer;">${user}</label>
                 </div>
             `;
         });
+        checkSharingState();
     }
 
+    function checkSharingState() {
+        const checkedPeople = [];
+        ALL_USERS.forEach(user => {
+            if (document.getElementById(`share-${user}`).checked) checkedPeople.push(user);
+        });
+        const receiptSection = document.getElementById('personal-receipt-section');
+        if (checkedPeople.length === 1 && checkedPeople[0] === currentUser) {
+            receiptSection.classList.remove('hidden');
+        } else {
+            receiptSection.classList.add('hidden');
+            clearReceiptForm();
+        }
+    }
 
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentBase64Image = e.target.result;
+            const preview = document.getElementById('image-preview');
+            preview.src = currentBase64Image;
+            preview.classList.remove('hidden');
+            scanReceipt(currentBase64Image);
+        }
+        reader.readAsDataURL(file);
+    }
 
+    async function scanReceipt(base64DataUrl) {
+        const statusEl = document.getElementById("scan-status");
+        const resultEl = document.getElementById("scan-result");
+        const amountField = document.getElementById("exp-amount");
 
+        statusEl.style.display = "block";
+        resultEl.style.display = "none";
 
-    function deleteExpense(expId) {
-        if (!confirm('Ausgabe wirklich löschen? Alle zugehörigen Schulden werden ebenfalls entfernt.')) return;
-        db.expenses = db.expenses.filter(e => e.id !== expId);
-        db.debts = db.debts.filter(d => d.expenseId !== expId);
-        saveDB();
+        try {
+            // Extract base64 data without the data URL prefix
+            const base64Data = base64DataUrl.split(",")[1];
+            const mediaType = base64DataUrl.split(";")[0].split(":")[1];
+
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "claude-sonnet-4-20250514",
+                    max_tokens: 200,
+                    messages: [{
+                        role: "user",
+                        content: [
+                            {
+                                type: "image",
+                                source: { type: "base64", media_type: mediaType, data: base64Data }
+                            },
+                            {
+                                type: "text",
+                                text: "This is a receipt. Find the total amount to pay. Reply with ONLY the number, no currency symbol, no text. Use a dot as decimal separator. Example: 12.50"
+                            }
+                        ]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const text = data.content[0].text.trim();
+            const amount = parseFloat(text);
+
+            statusEl.style.display = "none";
+
+            if (!isNaN(amount) && amount > 0) {
+                amountField.value = amount.toFixed(2);
+                resultEl.style.display = "block";
+                resultEl.innerHTML = `✅ Betrag erkannt: <strong>${amount.toFixed(2)} €</strong> — automatisch eingetragen!`;
+            } else {
+                resultEl.style.display = "block";
+                resultEl.style.color = "var(--warning)";
+                resultEl.innerHTML = "⚠️ Betrag konnte nicht erkannt werden. Bitte manuell eintragen.";
+            }
+        } catch(err) {
+            statusEl.style.display = "none";
+            resultEl.style.display = "block";
+            resultEl.style.color = "var(--danger)";
+            resultEl.innerHTML = "❌ Scan fehlgeschlagen. Bitte Betrag manuell eintragen.";
+        }
+    }
+
+    function clearReceiptForm() {
+        document.getElementById('exp-note').value = "";
+        document.getElementById('exp-image').value = "";
+        const preview = document.getElementById('image-preview');
+        preview.src = ""; preview.classList.add('hidden');
+        currentBase64Image = "";
     }
 
     function addExpense() {
@@ -2092,7 +2148,11 @@
 
         const id = Date.now().toString();
         const shareAmount = parseFloat((amount / checkedPeople.length).toFixed(2));
-        let note = "";
+        let note = "", img = "";
+        if (checkedPeople.length === 1 && checkedPeople[0] === currentUser) {
+            note = document.getElementById('exp-note').value.trim();
+            img = currentBase64Image;
+        }
 
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
@@ -2100,7 +2160,7 @@
         db.expenses.push({
             id: id, payer: currentUser, totalAmount: amount, shareAmount: shareAmount, 
             purpose: purpose, method: method, timestamp: ts,
-            participants: checkedPeople, personalNote: note
+            participants: checkedPeople, personalNote: note, personalImage: img
         });
 
         checkedPeople.forEach(person => {
@@ -2114,6 +2174,7 @@
 
         document.getElementById('exp-amount').value = '';
         document.getElementById('exp-purpose').value = '';
+        clearReceiptForm();
         saveDB();
     }
 
@@ -2148,23 +2209,15 @@
         modal.remove();
     }
 
-    function filterPackList() {
-        const q = document.getElementById('pack-search').value.toLowerCase().trim();
-        document.querySelectorAll('#all-packing-lists .pack-item').forEach(el => {
-            const name = el.getAttribute('data-name') || el.textContent.toLowerCase();
-            el.style.display = q === '' || name.includes(q) ? '' : 'none';
-        });
-    }
-
     function addPackItem() {
         const input = document.getElementById('new-pack-item');
         const text = input.value.trim();
-        const cat = document.getElementById('new-pack-cat').value;
         if (!text) return;
+
         if (!db.packing) db.packing = {};
         if (!Array.isArray(db.packing[currentUser])) db.packing[currentUser] = [];
-        db.packing[currentUser].push({ id: Date.now().toString(), name: text, checked: false, cat: cat || 'Sonstiges' });
-        input.value = '';
+        db.packing[currentUser].push({ id: Date.now().toString(), name: text, checked: false });
+        input.value = "";
         saveDB();
     }
 
@@ -2375,9 +2428,9 @@
             if (!db.packing[u]) db.packing[u] = [];
             else if (!Array.isArray(db.packing[u])) db.packing[u] = Object.values(db.packing[u]);
         });
-        if (!db.visited) db.visited = {};
         if (!db.customPlaces) db.customPlaces = [];
         else if (!Array.isArray(db.customPlaces)) db.customPlaces = Object.values(db.customPlaces);
+        if (!db.visited) db.visited = {};
     }
 
     function updateUI() {
@@ -2423,7 +2476,7 @@
                     .join(' · ');
 
                 const rueckInfo = othersInfo ? `<span class="meta-info">Zurückbekommen: ${othersInfo}</span>` : '';
-                historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
+                historyList.innerHTML += `<li><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
@@ -2437,74 +2490,48 @@
 
         const packingGrid = document.getElementById('all-packing-lists');
         packingGrid.innerHTML = '';
-        const catIcons = { 'Kleidung':'👕', 'Hygiene':'🧴', 'Dokumente':'📄', 'Elektronik':'🔌', 'Apotheke':'💊', 'Strand':'🏖️', 'Sonstiges':'📦' };
-        const catOrder = ['Dokumente','Elektronik','Kleidung','Hygiene','Strand','Apotheke','Sonstiges'];
         ALL_USERS.forEach(user => {
             const isMe = (user === currentUser);
-            const list = db.packing[user] || [];
             let itemsHTML = '';
-            if (list.length === 0) {
-                itemsHTML = `<p style="font-size:12px;color:var(--text-muted);margin:5px 0;">Liste ist leer... 🧳</p>`;
-            } else {
-                // Group by category
-                const grouped = {};
+            const list = db.packing[user] || [];
+            if (list.length === 0) { itemsHTML = `<p style="font-size:12px; color:var(--text-muted); margin:5px 0;">Liste ist leer... 🧳</p>`; } 
+            else {
                 list.forEach(item => {
-                    const c = item.cat || 'Sonstiges';
-                    if (!grouped[c]) grouped[c] = [];
-                    grouped[c].push(item);
-                });
-                const usedCats = catOrder.filter(c => grouped[c]);
-                // Add any unknown cats
-                Object.keys(grouped).forEach(c => { if (!usedCats.includes(c)) usedCats.push(c); });
-
-                usedCats.forEach(cat => {
-                    const items = grouped[cat];
-                    itemsHTML += `<div style="margin-bottom:10px;">
-                        <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">${catIcons[cat]||'📦'} ${cat}</div>`;
-                    items.forEach(item => {
-                        itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}">
-                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;">
-                                <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
+                    itemsHTML += `
+                        <div class="pack-item ${item.checked ? 'checked' : ''}">
+                            <label style="margin:0; display:flex; align-items:center; color: var(--text-main); font-weight:normal;">
+                                <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px; accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
                                 ${item.name}
                             </label>
                             ${isMe ? `<button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>` : ''}
                         </div>`;
-                    });
-                    itemsHTML += `</div>`;
                 });
             }
-            const checked = list.filter(i => i.checked).length;
-            const total = list.length;
-            const pct = total > 0 ? Math.round(checked/total*100) : 0;
-            const progressBar = total > 0 ? `<div style="background:rgba(255,255,255,.05);border-radius:99px;height:4px;overflow:hidden;margin-bottom:10px;"><div style="height:100%;border-radius:99px;background:${pct===100?'var(--success)':'var(--primary)'};width:${pct}%;transition:width .4s;"></div></div>` : '';
-            packingGrid.innerHTML += `<div class="card" style="background:rgba(15,23,42,0.6);padding:15px;border-color:${isMe?'var(--primary)':'var(--border)'}">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <h4 style="color:${isMe?'var(--primary)':'var(--text-main)'};margin:0;">${user}${isMe?' (Du)':''}</h4>
-                    ${total > 0 ? `<span style="font-size:11px;color:${pct===100?'var(--success)':'var(--text-muted)'};">${checked}/${total} ✓</span>` : ''}
-                </div>
-                ${progressBar}
-                <div>${itemsHTML}</div>
-            </div>`;
+            packingGrid.innerHTML += `<div class="card" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-color: ${isMe ? 'var(--primary)' : 'var(--border)'}"><h4 style="color: ${isMe ? 'var(--primary)' : 'var(--text-main)'}; margin-bottom:10px;">${user}'s Gepäck ${isMe ? '(Du)' : ''}</h4><div>${itemsHTML}</div></div>`;
         });
 
         if(creditsList.innerHTML === '') creditsList.innerHTML = '<li>Niemand schuldet dir was! 😎</li>';
         if(debtsList.innerHTML === '') debtsList.innerHTML = '<li>Keine offenen Schulden! 🎉</li>';
         if(historyList.innerHTML === '') historyList.innerHTML = '<li>Keine Ausgaben im Verlauf.</li>';
 
-        // Karte vs Bar Summe - nur eigene Ausgaben + beglichene Schulden
+        // Karte vs Bar Summe
         var sumKarte = 0; var sumBar = 0;
         db.expenses.forEach(exp => {
+            var myPart = 0;
             if (exp.payer === currentUser && exp.participants.includes(currentUser)) {
-                // Eigene Ausgabe: immer zaehlen
-                const myPart = exp.totalAmount / exp.participants.length;
-                if (exp.method === 'Karte') sumKarte += myPart;
-                else sumBar += myPart;
+                myPart = exp.totalAmount / exp.participants.length;
             } else if (exp.payer !== currentUser && exp.participants.includes(currentUser)) {
-                // Fremde Ausgabe: NUR zaehlen wenn Schuld erledigt
-                const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
-                if (debt && debt.resolved) {
-                    const myPart = exp.shareAmount || (exp.totalAmount / exp.participants.length);
-                    const method = debt.resolvedMethod ? debt.resolvedMethod : exp.method;
+                myPart = exp.shareAmount || (exp.totalAmount / exp.participants.length);
+            }
+            if (myPart > 0) {
+                if (exp.payer === currentUser) {
+                    // Eigene Ausgabe: eigene Zahlungsmethode
+                    if (exp.method === 'Karte') sumKarte += myPart;
+                    else sumBar += myPart;
+                } else {
+                    // Schuld beglichen: resolvedMethod des Schuldners verwenden
+                    const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
+                    const method = (debt && debt.resolvedMethod) ? debt.resolvedMethod : exp.method;
                     if (method === 'Karte') sumKarte += myPart;
                     else sumBar += myPart;
                 }
@@ -2516,9 +2543,6 @@
 
         // Kategorie-Auswertung
         renderCategoryBreakdown();
-        renderFinStats();
-        renderDailyStats();
-        updateBadges();
         // Refresh Schwimmen if tab is active
         const schwTab = document.getElementById('subtab-schwimmen');
         if (schwTab && schwTab.classList.contains('active')) renderSchwimmen();
@@ -2527,217 +2551,34 @@
         renderAllReviews();
     }
 
-    // ================= FIN STATS =================
-    function renderFinStats() {
-        const barsEl = document.getElementById('fin-stats-bars');
-        const totalEl = document.getElementById('fin-stats-total');
-        if (!barsEl || !totalEl) return;
-        const totals = {};
-        ALL_USERS.forEach(u => totals[u] = 0);
-        db.expenses.forEach(exp => {
-            const payerShare = exp.participants.includes(exp.payer) ? exp.shareAmount : exp.totalAmount;
-            totals[exp.payer] = (totals[exp.payer] || 0) + payerShare;
-            exp.participants.forEach(p => {
-                if (p === exp.payer) return;
-                const debt = db.debts.find(d => d.expenseId === exp.id && d.from === p);
-                if (debt && debt.resolved) totals[p] = (totals[p] || 0) + exp.shareAmount;
-            });
-        });
-        const sorted = ALL_USERS.slice().sort((a, b) => totals[b] - totals[a]);
-        const max = Math.max(...Object.values(totals)) || 1;
-        const grand = Object.values(totals).reduce((a, b) => a + b, 0);
-        const colors = ['var(--primary)', 'rgba(0,212,255,0.7)', 'rgba(0,212,255,0.5)', 'rgba(0,212,255,0.35)'];
-        barsEl.innerHTML = sorted.map((user, i) => {
-            const pct = (totals[user] / max * 100).toFixed(1);
-            return `<div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                    <span style="font-weight:700;font-size:13px;color:${colors[i]}">${user}${user === currentUser ? ' (Du)' : ''}</span>
-                    <span style="font-weight:700;font-size:13px;color:${colors[i]}">${totals[user].toFixed(2)} €</span>
-                </div>
-                <div style="background:#0f172a;border-radius:8px;height:18px;overflow:hidden;">
-                    <div style="width:${pct}%;background:${colors[i]};height:100%;border-radius:8px;transition:width 0.6s ease;"></div>
-                </div>
-            </div>`;
-        }).join('');
-        totalEl.textContent = grand.toFixed(2) + ' €';
-    }
-
-    function renderDailyStats() {
-        const el = document.getElementById('fin-daily-bars');
-        if (!el) return;
-
-        const dayMap = {};
-
-        db.expenses.forEach(exp => {
-            if (exp.payer !== currentUser || !exp.timestamp) return;
-            const match = exp.timestamp.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
-            if (!match) return;
-            const key = match[1]+'.'+match[2]+'.'+match[3];
-            if (!dayMap[key]) dayMap[key] = { label: match[1]+'.'+match[2]+'.', total: 0, date: new Date(parseInt(match[3]), parseInt(match[2])-1, parseInt(match[1])) };
-            dayMap[key].total += exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
-        });
-
-        db.expenses.forEach(exp => {
-            if (exp.payer === currentUser || !exp.participants.includes(currentUser)) return;
-            const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
-            if (!debt || !debt.resolved || !exp.timestamp) return;
-            const match = exp.timestamp.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
-            if (!match) return;
-            const key = match[1]+'.'+match[2]+'.'+match[3];
-            if (!dayMap[key]) dayMap[key] = { label: match[1]+'.'+match[2]+'.', total: 0, date: new Date(parseInt(match[3]), parseInt(match[2])-1, parseInt(match[1])) };
-            dayMap[key].total += exp.shareAmount;
-        });
-
-        const days = Object.values(dayMap).sort((a, b) => a.date - b.date);
-
-        if (days.length === 0) {
-            el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:12px 0;">Noch keine Ausgaben eingetragen.</div>';
-            return;
-        }
-
-        const max = Math.max(...days.map(d => d.total)) || 1;
-        el.innerHTML = days.map(day => {
-            const pct = (day.total / max * 100).toFixed(1);
-            return `<div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                    <span style="font-size:12px;font-weight:700;color:var(--text-main);">${day.label}</span>
-                    <span style="font-size:12px;font-weight:700;color:var(--accent);">${day.total.toFixed(2)} €</span>
-                </div>
-                <div style="background:#0f172a;border-radius:6px;height:14px;overflow:hidden;">
-                    <div style="width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--primary));height:100%;border-radius:6px;transition:width 0.6s ease;"></div>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-
-    // ================= SUCHE =================
-    function filterExpenses() {
-        const query = document.getElementById('expense-search').value.toLowerCase().trim();
-        const items = document.querySelectorAll('#personal-history li');
-        items.forEach(li => {
-            li.style.display = query === '' || li.textContent.toLowerCase().includes(query) ? '' : 'none';
-        });
-    }
-
-    // ================= BADGES =================
-    function updateBadges() {
-        if (!currentUser) return;
-        // Offene Schulden (ich schulde jemandem)
-        const openDebts = (db.debts || []).filter(d => d.from === currentUser && !d.resolved).length;
-        // Offene Forderungen (jemand schuldet mir)
-        const openCredits = (db.debts || []).filter(d => d.to === currentUser && !d.resolved).length;
-        const finBadge = openDebts + openCredits;
-
-        // Ungelesene Nachrichten
-        const lastRead = parseInt(localStorage.getItem('chat_last_read_' + currentUser) || '0');
-        const unreadMsgs = (db.chat || []).filter(m => m.author !== currentUser && (m.ts || 0) > lastRead).length;
-
-        setTabBadge('tab-finanzen', finBadge);
-        setTabBadge('tab-kommunikation', unreadMsgs);
-    }
-
-    function setTabBadge(tabId, count) {
-        const btn = document.getElementById(tabId);
-        if (!btn) return;
-        const existing = btn.querySelector('.badge');
-        if (count > 0) {
-            if (existing) { existing.textContent = count; }
-            else {
-                const badge = document.createElement('span');
-                badge.className = 'badge';
-                badge.textContent = count;
-                btn.appendChild(badge);
-            }
-        } else {
-            if (existing) existing.remove();
-        }
-    }
-
     // ================= CUSTOM PLACES =================
     function addCustomPlace() {
-        const name = document.getElementById('custom-place-name').value.trim();
-        const addr = document.getElementById('custom-place-addr').value.trim();
-        const cat  = document.getElementById('custom-place-cat').value;
+        var name = document.getElementById('custom-place-name').value.trim();
+        var addr = document.getElementById('custom-place-addr').value.trim();
+        var cat  = document.getElementById('custom-place-cat').value;
         if (!name || !addr) { alert('Bitte Name und Adresse eintragen.'); return; }
         if (!db.customPlaces) db.customPlaces = [];
-        db.customPlaces.push({ id: Date.now().toString(), name, addr, cat, addedBy: currentUser });
+        db.customPlaces.push({ id: Date.now().toString(), name: name, addr: addr, cat: cat, addedBy: currentUser });
         saveDB();
         document.getElementById('custom-place-name').value = '';
         document.getElementById('custom-place-addr').value = '';
-        renderCustomPlaces();
-        alert('Ort hinzugefügt! Er erscheint jetzt im Tab ' + cat + '.');
+        renderCustomInTabs();
+        alert('Ort hinzugefügt!');
     }
 
     function deleteCustomPlace(id) {
         if (!confirm('Ort löschen?')) return;
-        db.customPlaces = db.customPlaces.filter(p => p.id !== id);
+        db.customPlaces = (db.customPlaces || []).filter(function(p){ return p.id !== id; });
         saveDB();
-        renderCustomPlaces();
         renderCustomInTabs();
     }
 
-    function renderCustomPlaces() {
-        const el = document.getElementById('custom-places-list');
-        if (!el) return;
-        const list = (db.customPlaces || []);
-        if (list.length === 0) {
-            el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:16px;">Noch keine eigenen Orte hinzugefügt.</div>';
-            return;
-        }
-        const catLabels = { restaurants:'🍔 Restaurants', tabak:'🚬 Tabak', apotheke:'💊 Apotheke', orte:'🧭 Orte' };
-        el.innerHTML = list.map(p => `
-            <div class="card" style="background:#0f172a;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-                <div>
-                    <div style="font-weight:700;font-size:14px;color:var(--text-main);">${p.name}</div>
-                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">${p.addr}</div>
-                    <div style="font-size:11px;color:var(--accent);margin-top:3px;">${catLabels[p.cat]||p.cat} · von ${p.addedBy}</div>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-                    <button onclick="openMap('${p.name.replace(/'/g,"\'")}','${p.addr.replace(/'/g,"\'")}')">🗺️ Route</button>
-                    <button onclick="deleteCustomPlace('${p.id}')" style="background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:6px 10px;font-size:12px;">🗑️</button>
-                </div>
-            </div>`).join('');
-    }
-
-    function renderCustomInTabs() {
-        const cats = ['restaurants','tabak','apotheke','orte'];
-        cats.forEach(cat => {
-            document.querySelectorAll('.custom-place-card[data-cat="'+cat+'"]').forEach(el => el.remove());
-            const subtab = document.getElementById('content-'+cat);
-            if (!subtab) return;
-            const items = (db.customPlaces || []).filter(p => p.cat === cat);
-            if (items.length === 0) return;
-            const grid = subtab.querySelector('.restaurant-grid');
-            if (!grid) return;
-            items.forEach(p => {
-                const visited = (db.visited||{})[p.id];
-                const card = document.createElement('div');
-                card.className = 'card custom-place-card';
-                card.setAttribute('data-cat', cat);
-                card.style.cssText = 'background:#0f172a;margin-bottom:0;';
-                const safeName = p.name.replace(/'/g, "\\'");
-                const safeAddr = p.addr.replace(/'/g, "\\'");
-                card.innerHTML =
-                    '<h4 style="font-size:17px;margin-bottom:5px;">'+p.name+'</h4>'
-                    +'<div class="cuisine-tag">📍 Eigener Eintrag</div>'
-                    +'<div class="meta-info" style="margin-bottom:10px;">'+p.addr+'</div>'
-                    +'<div class="distance-live">von '+p.addedBy+' hinzugefügt</div>'
-                    +(cat !== 'apotheke' ? '<button class="btn-check" style="margin-top:8px;font-size:12px;" data-place-id="'+p.id+'" onclick="toggleVisited(''+p.id+'',''+cat+'')">'+(visited ? '✅ Besucht am '+visited : '☐ Als besucht markieren')+'</button>' : '')
-                    +'<button class="btn-nav-link" style="margin-top:6px;" onclick="openMap(''+safeName+'',''+safeAddr+'')">🗺️ Route öffnen</button>'
-                    +'<button onclick="deleteCustomPlace(''+p.id+'')" style="margin-top:6px;background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:7px;font-size:12px;width:100%;border-radius:8px;cursor:pointer;">🗑️ Entfernen</button>';
-                grid.appendChild(card);
-            });
-        });
-    }
-
-    // ================= BEREITS BESUCHT =================
-    function toggleVisited(placeId, cat) {
+    function toggleVisited(placeId) {
         if (!db.visited) db.visited = {};
         if (db.visited[placeId]) {
             delete db.visited[placeId];
         } else {
-            const now = new Date();
+            var now = new Date();
             db.visited[placeId] = String(now.getDate()).padStart(2,'0')+'.'+String(now.getMonth()+1).padStart(2,'0')+'.';
         }
         saveDB();
@@ -2745,48 +2586,79 @@
     }
 
     function renderVisitedButtons() {
-        // For static cards: find all btn-bewerten or add visited buttons
-        const tabs = ['restaurants','tabak','orte'];
-        tabs.forEach(cat => {
-            const subtab = document.getElementById('content-'+cat);
-            if (!subtab) return;
-            subtab.querySelectorAll('[data-place-id]').forEach(btn => {
-                const id = btn.getAttribute('data-place-id');
-                const visited = (db.visited||{})[id];
-                btn.textContent = visited ? '✅ Besucht am '+visited : '☐ Als besucht markieren';
-                btn.style.background = visited ? 'linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15))' : '';
-                btn.style.color = visited ? 'var(--success)' : '';
-                btn.style.borderColor = visited ? 'rgba(0,255,163,.35)' : '';
-            });
+        document.querySelectorAll('[data-place-id]').forEach(function(btn) {
+            var id = btn.getAttribute('data-place-id');
+            var visited = (db.visited || {})[id];
+            btn.textContent = visited ? '✅ Besucht am ' + visited : '☐ Als besucht markieren';
+            btn.style.background = visited ? 'linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15))' : '';
+            btn.style.color = visited ? 'var(--success)' : '';
+            btn.style.borderColor = visited ? 'rgba(0,255,163,.35)' : '';
         });
-        renderCustomInTabs();
     }
 
     function initVisitedButtons() {
-        // Inject visited buttons into all static place cards in restaurants, tabak, orte
-        const configs = [
+        var configs = [
             { tabId: 'content-restaurants' },
             { tabId: 'content-tabak' },
             { tabId: 'content-orte' }
         ];
-        configs.forEach(cfg => {
-            const subtab = document.getElementById(cfg.tabId);
+        configs.forEach(function(cfg) {
+            var subtab = document.getElementById(cfg.tabId);
             if (!subtab) return;
-            subtab.querySelectorAll('.card[data-lat]').forEach((card, i) => {
-                if (card.querySelector('[data-place-id]')) return; // already added
-                const name = card.querySelector('h4') ? card.querySelector('h4').textContent.trim() : 'ort_'+i;
-                const placeId = 'static_'+cfg.tabId+'_'+i;
-                const btn = document.createElement('button');
+            subtab.querySelectorAll('.card[data-lat]').forEach(function(card, i) {
+                if (card.querySelector('[data-place-id]')) return;
+                var placeId = 'static_' + cfg.tabId + '_' + i;
+                var btn = document.createElement('button');
                 btn.setAttribute('data-place-id', placeId);
                 btn.className = 'btn-check';
                 btn.style.cssText = 'margin-top:8px;font-size:12px;width:100%;';
-                const visited = (db.visited||{})[placeId];
-                btn.textContent = visited ? '✅ Besucht am '+visited : '☐ Als besucht markieren';
+                var visited = (db.visited || {})[placeId];
+                btn.textContent = visited ? '✅ Besucht am ' + visited : '☐ Als besucht markieren';
                 if (visited) { btn.style.background='linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15))'; btn.style.color='var(--success)'; btn.style.borderColor='rgba(0,255,163,.35)'; }
-                btn.onclick = () => toggleVisited(placeId, cfg.tabId.replace('content-',''));
+                btn.onclick = function() { toggleVisited(placeId); };
                 card.appendChild(btn);
             });
         });
+    }
+
+    function renderCustomInTabs() {
+        var cats = ['restaurants', 'tabak', 'apotheke', 'orte'];
+        cats.forEach(function(cat) {
+            // Remove old custom cards
+            document.querySelectorAll('.custom-place-card[data-cat="' + cat + '"]').forEach(function(el) { el.remove(); });
+            var subtab = document.getElementById('content-' + cat);
+            if (!subtab) return;
+            var items = (db.customPlaces || []).filter(function(p) { return p.cat === cat; });
+            if (items.length === 0) return;
+            var grid = subtab.querySelector('.restaurant-grid');
+            if (!grid) return;
+            items.forEach(function(p) {
+                var visited = (db.visited || {})[p.id];
+                var card = document.createElement('div');
+                card.className = 'card custom-place-card';
+                card.setAttribute('data-cat', cat);
+                card.style.cssText = 'background:#0f172a;margin-bottom:0;';
+                var html = '<h4 style="font-size:17px;margin-bottom:5px;">' + p.name + '</h4>'
+                    + '<div class="cuisine-tag">📍 Eigener Eintrag</div>'
+                    + '<div class="meta-info" style="margin-bottom:10px;">' + p.addr + '</div>';
+                if (cat !== 'apotheke') {
+                    html += '<button class="btn-check" data-place-id="' + p.id + '" style="margin-top:8px;font-size:12px;"'
+                        + (visited ? ' style="background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border-color:rgba(0,255,163,.35);"' : '')
+                        + '>' + (visited ? '✅ Besucht am ' + visited : '☐ Als besucht markieren') + '</button>';
+                }
+                html += '<button class="btn-nav-link" style="margin-top:6px;" id="nav-' + p.id + '">🗺️ Route öffnen</button>'
+                    + '<button class="btn-check" style="margin-top:4px;font-size:12px;background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);" id="del-' + p.id + '">🗑️ Entfernen</button>';
+                card.innerHTML = html;
+                grid.appendChild(card);
+                // Attach events after appending
+                card.querySelector('#nav-' + p.id).onclick = function() { openMap(p.name, p.addr); };
+                card.querySelector('#del-' + p.id).onclick = function() { deleteCustomPlace(p.id); };
+                var visBtn = card.querySelector('[data-place-id="' + p.id + '"]');
+                if (visBtn) visBtn.onclick = function() { toggleVisited(p.id); };
+            });
+        });
+        initVisitedButtons();
+        renderVisitedButtons();
     }
 
     // ================= STATISTIK =================
