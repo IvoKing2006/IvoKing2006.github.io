@@ -682,19 +682,35 @@
                 </div>
             </div>
 
-            <div class="card" style="margin-top: 25px; border-left: 4px solid var(--warning);">
-                <h3 style="color: var(--warning);">📊 Ausgaben nach Kategorie</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Gleiche Begriffe werden automatisch zusammengefasst (egal ob groß oder klein geschrieben).</p>
-                <ul id="category-breakdown"></ul>
+            <!-- Kategorie -->
+            <div class="card" style="margin-top:20px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                    <span style="font-size:16px;">📊</span>
+                    <h3 style="margin:0;font-size:15px;">Kategorien</h3>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;">Gleiche Begriffe werden zusammengefasst.</p>
+                <ul id="category-breakdown" style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;"></ul>
+            </div>
 
-                <!-- Gruppenrangliste -->
-                <h3 style="color:var(--primary); margin-top:24px;">🏆 Wer hat am meisten ausgegeben?</h3>
-                <div id="fin-stats-bars" style="display:flex;flex-direction:column;gap:12px;margin-bottom:6px;"></div>
-                <div style="font-size:13px;color:var(--text-muted);margin-top:8px;">Gruppe gesamt: <span id="fin-stats-total" style="color:var(--text-main);font-weight:700;">0.00 €</span></div>
+            <!-- Gruppenrangliste -->
+            <div class="card" style="margin-top:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:16px;">🏆</span>
+                        <h3 style="margin:0;font-size:15px;">Wer hat am meisten ausgegeben?</h3>
+                    </div>
+                    <span style="font-size:12px;color:var(--text-muted);">Gesamt: <span id="fin-stats-total" style="color:var(--text-main);font-weight:700;">0.00 €</span></span>
+                </div>
+                <div id="fin-stats-bars" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
 
-                <!-- Persönliche Tagesausgaben -->
-                <h3 style="color:var(--accent); margin-top:24px;">📅 Meine Ausgaben pro Tag</h3>
-                <div id="fin-daily-bars" style="display:flex;flex-direction:column;gap:10px;"></div>
+            <!-- Tagesausgaben -->
+            <div class="card" style="margin-top:14px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                    <span style="font-size:16px;">📅</span>
+                    <h3 style="margin:0;font-size:15px;">Meine Ausgaben pro Tag</h3>
+                </div>
+                <div id="fin-daily-bars" style="display:flex;flex-direction:column;gap:8px;"></div>
             </div>
         </div>
 
@@ -2451,7 +2467,7 @@
         const sorted = ALL_USERS.slice().sort((a, b) => totals[b] - totals[a]);
         const max = Math.max(...Object.values(totals)) || 1;
         const grand = Object.values(totals).reduce((a, b) => a + b, 0);
-        const colors = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warning)'];
+        const colors = ['var(--primary)', 'rgba(0,212,255,0.7)', 'rgba(0,212,255,0.5)', 'rgba(0,212,255,0.35)'];
         barsEl.innerHTML = sorted.map((user, i) => {
             const pct = (totals[user] / max * 100).toFixed(1);
             return `<div>
