@@ -2171,7 +2171,12 @@
         if (window._heartbeat) clearInterval(window._heartbeat);
         localStorage.removeItem('bcn_saved_user');
         currentUser = null;
-        document.getElementById('login-screen').classList.remove('hidden');
+        var ls = document.getElementById('login-screen');
+        ls.classList.remove('swiping');
+        ls.style.animation = 'none';
+        ls.offsetHeight; // reflow
+        ls.style.animation = '';
+        ls.classList.remove('hidden');
         document.body.classList.add('login-active');
         document.getElementById('app-screen').classList.add('hidden');
     }
