@@ -671,6 +671,15 @@
                 <h3 style="color: var(--warning);">📊 Ausgaben nach Kategorie</h3>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Gleiche Begriffe werden automatisch zusammengefasst (egal ob groß oder klein geschrieben).</p>
                 <ul id="category-breakdown"></ul>
+
+                <!-- Gruppenrangliste -->
+                <h3 style="color:var(--primary); margin-top:24px;">🏆 Wer hat am meisten ausgegeben?</h3>
+                <div id="fin-stats-bars" style="display:flex;flex-direction:column;gap:12px;margin-bottom:6px;"></div>
+                <div style="font-size:13px;color:var(--text-muted);margin-top:8px;">Gruppe gesamt: <span id="fin-stats-total" style="color:var(--text-main);font-weight:700;">0.00 €</span></div>
+
+                <!-- Persönliche Tagesausgaben -->
+                <h3 style="color:var(--accent); margin-top:24px;">📅 Meine Ausgaben pro Tag</h3>
+                <div id="fin-daily-bars" style="display:flex;flex-direction:column;gap:10px;"></div>
             </div>
         </div>
 
@@ -2399,12 +2408,122 @@
 
         // Kategorie-Auswertung
         renderCategoryBreakdown();
+        renderFinStats();
+        renderDailyStats();
         // Refresh Schwimmen if tab is active
         const schwTab = document.getElementById('subtab-schwimmen');
         if (schwTab && schwTab.classList.contains('active')) renderSchwimmen();
 
         // Bewertungen für alle Restaurants laden
         renderAllReviews();
+    }
+
+    // ================= FIN STATS =================
+    function renderFinStats() {
+        const barsEl = document.getElementById('fin-stats-bars');
+        const totalEl = document.getElementById('fin-stats-total');
+        if (!barsEl || !totalEl) return;
+        const totals = {};
+        ALL_USERS.forEach(u => totals[u] = 0);
+        db.expenses.forEach(exp => {
+            const payerShare = exp.participants.includes(exp.payer) ? exp.shareAmount : exp.totalAmount;
+            totals[exp.payer] = (totals[exp.payer] || 0) + payerShare;
+            exp.participants.forEach(p => {
+                if (p === exp.payer) return;
+                const debt = db.debts.find(d => d.expenseId === exp.id && d.from === p);
+                if (debt && debt.resolved) totals[p] = (totals[p] || 0) + exp.shareAmount;
+            });
+        });
+        const sorted = ALL_USERS.slice().sort((a, b) => totals[b] - totals[a]);
+        const max = Math.max(...Object.values(totals)) || 1;
+        const grand = Object.values(totals).reduce((a, b) => a + b, 0);
+        const colors = ['var(--primary)', 'var(--accent)', 'var(--success)', 'var(--warning)'];
+        barsEl.innerHTML = sorted.map((user, i) => {
+            const pct = (totals[user] / max * 100).toFixed(1);
+            return `<div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                    <span style="font-weight:700;font-size:13px;color:${colors[i]}">${user}${user === currentUser ? ' (Du)' : ''}</span>
+                    <span style="font-weight:700;font-size:13px;color:${colors[i]}">${totals[user].toFixed(2)} €</span>
+                </div>
+                <div style="background:#0f172a;border-radius:8px;height:18px;overflow:hidden;">
+                    <div style="width:${pct}%;background:${colors[i]};height:100%;border-radius:8px;transition:width 0.6s ease;"></div>
+                </div>
+            </div>`;
+        }).join('');
+        totalEl.textContent = grand.toFixed(2) + ' €';
+    }
+
+    function renderDailyStats() {
+        const el = document.getElementById('fin-daily-bars');
+        if (!el) return;
+        const tripStart = new Date('2026-07-22');
+        const tripDays = 5;
+        const days = [];
+        for (let i = 0; i < tripDays; i++) {
+            const d = new Date(tripStart);
+            d.setDate(d.getDate() + i);
+            const wdays = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+            days.push({ label: 'Tag '+(i+1)+' – '+wdays[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.', total: 0 });
+        }
+
+        db.expenses.forEach(exp => {
+            if (exp.payer !== currentUser) return;
+            if (!exp.timestamp) return;
+            // timestamp format: "DD.MM. HH:MM" or similar
+            const parts = exp.timestamp.split('.');
+            if (parts.length < 2) return;
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            for (let i = 0; i < tripDays; i++) {
+                const d = new Date(tripStart);
+                d.setDate(d.getDate() + i);
+                if (d.getDate() === day && (d.getMonth()+1) === month) {
+                    days[i].total += exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
+                    break;
+                }
+            }
+        });
+
+        // Also count resolved debts per day
+        db.expenses.forEach(exp => {
+            if (exp.payer === currentUser || !exp.participants.includes(currentUser)) return;
+            const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
+            if (!debt || !debt.resolved || !exp.timestamp) return;
+            const parts = exp.timestamp.split('.');
+            if (parts.length < 2) return;
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            for (let i = 0; i < tripDays; i++) {
+                const d = new Date(tripStart);
+                d.setDate(d.getDate() + i);
+                if (d.getDate() === day && (d.getMonth()+1) === month) {
+                    days[i].total += exp.shareAmount;
+                    break;
+                }
+            }
+        });
+
+        const max = Math.max(...days.map(d => d.total)) || 1;
+        const hasAny = days.some(d => d.total > 0);
+
+        if (!hasAny) {
+            el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:12px 0;">Noch keine Ausgaben eingetragen.</div>';
+            return;
+        }
+
+        el.innerHTML = days.map((day, i) => {
+            const pct = (day.total / max * 100).toFixed(1);
+            const isEmpty = day.total === 0;
+            return `<div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-size:12px;font-weight:700;color:${isEmpty ? 'var(--text-muted)' : 'var(--text-main)'};">${day.label}</span>
+                    <span style="font-size:12px;font-weight:700;color:${isEmpty ? 'var(--text-muted)' : 'var(--accent)'};">${isEmpty ? '–' : day.total.toFixed(2)+' €'}</span>
+                </div>
+                <div style="background:#0f172a;border-radius:6px;height:14px;overflow:hidden;">
+                    <div style="width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--primary));height:100%;border-radius:6px;transition:width 0.6s ease;"></div>
+                </div>
+            </div>`;
+        }).join('');
     }
 
     // ================= STATISTIK =================
