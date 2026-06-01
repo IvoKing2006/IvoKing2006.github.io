@@ -786,7 +786,10 @@
         
         <div id="content-wetter" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>🌤️ Aktuelles Wetter in Barcelona</h3>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="margin:0;">🌤️ Aktuelles Wetter in Barcelona</h3>
+                    <button onclick="reloadWetter()" style="width:auto;padding:6px 14px;font-size:12px;background:rgba(0,212,255,.15);color:var(--primary);border:1px solid rgba(0,212,255,.3);box-shadow:none;">🔄 Aktualisieren</button>
+                </div>
                 <div id="wetter-content" style="margin-top:15px; text-align:center;">
                     <p style="color:var(--text-muted);">Wird geladen...</p>
                 </div>
@@ -2657,40 +2660,132 @@
 
     // ================= WETTER =================
     var wetterLoaded = false;
+
+    function reloadWetter() {
+        wetterLoaded = false;
+        document.getElementById("wetter-content").innerHTML = '<p style="color:var(--text-muted);">Wird geladen...</p>';
+        loadWetter();
+    }
+
     function loadWetter() {
         if (wetterLoaded) return;
         wetterLoaded = true;
-        // Barcelona coords: 41.3851, 2.1734
-        const url = "https://api.open-meteo.com/v1/forecast?latitude=41.3851&longitude=2.1734&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&timezone=Europe/Madrid&forecast_days=5";
-        fetch(url)
-            .then(r => r.json())
-            .then(data => {
+
+        // Gefühlte Temperatur berechnen (Hitzindex-Formel)
+        function apparentTemp(t, rh, ws) {
+            // Humidex für hohe Temperaturen
+            if (t >= 27) {
+                const e = 6.105 * Math.exp(25.22 * (t - 273.16) / t - 5.31 * Math.log(t / 273.16));
+                const h = t + 0.5555 * (6.11 * Math.exp(5417.7530 * (1/273.16 - 1/(273.16+t))) * rh/100 - 10);
+                return Math.round(h);
+            }
+            // Windchill für niedrige Temperaturen
+            return Math.round(13.12 + 0.6215*t - 11.37*Math.pow(ws,0.16) + 0.3965*t*Math.pow(ws,0.16));
+        }
+
+        const dayNames = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+        // Haupt-API: Wetter + UV + Sonnenauf/-untergang + stündlich
+        const urlMain = "https://api.open-meteo.com/v1/forecast?latitude=41.3851&longitude=2.1734"
+            + "&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relativehumidity_2m,uv_index"
+            + "&hourly=temperature_2m,weathercode,precipitation_probability&timezone=Europe/Madrid&forecast_days=1"
+            + "&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max,sunrise,sunset,uv_index_max"
+            + "&forecast_days=5";
+
+        // Wassertemperatur API (Open-Meteo Marine)
+        const urlMarine = "https://marine-api.open-meteo.com/v1/marine?latitude=41.3851&longitude=2.1734&current=sea_surface_temperature";
+
+        const el = document.getElementById("wetter-content");
+
+        Promise.all([fetch(urlMain).then(r=>r.json()), fetch(urlMarine).then(r=>r.json()).catch(()=>null)])
+            .then(([data, marine]) => {
                 const c = data.current;
                 const d = data.daily;
+                const h = data.hourly;
                 const icon = wetterIcon(c.weathercode);
-                let html = `
-                    <div style="font-size:72px; margin-bottom:10px;">${icon}</div>
-                    <div style="font-size:48px; font-weight:800; color:var(--primary);">${c.temperature_2m}°C</div>
-                    <div style="color:var(--text-muted); margin:8px 0 20px 0; font-size:15px;">💨 Wind: ${c.windspeed_10m} km/h &nbsp;|&nbsp; 💧 Luftfeuchte: ${c.relativehumidity_2m}%</div>
-                    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:10px;">`;
-                const days = ["´s Heute", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
-                const dayNames = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+                // UV-Index Bewertung
+                const uv = c.uv_index || 0;
+                const uvColor = uv <= 2 ? 'var(--success)' : uv <= 5 ? 'var(--warning)' : uv <= 7 ? '#f97316' : 'var(--danger)';
+                const uvLabel = uv <= 2 ? 'Niedrig' : uv <= 5 ? 'Mittel' : uv <= 7 ? 'Hoch' : uv <= 10 ? 'Sehr hoch' : 'Extrem';
+
+                // Wassertemperatur
+                const seaTemp = marine && marine.current ? marine.current.sea_surface_temperature : null;
+
+                // Sonnenauf/-untergang heute
+                const sunrise = d.sunrise[0] ? d.sunrise[0].split('T')[1] : '--';
+                const sunset  = d.sunset[0]  ? d.sunset[0].split('T')[1]  : '--';
+
+                // Hitzewarnung
+                const hitzeBanner = c.temperature_2m >= 35
+                    ? `<div style="background:rgba(255,77,109,.15);border:1px solid rgba(255,77,109,.4);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--danger);font-weight:700;">🔥 Hitzewarnung! Viel trinken, Schatten suchen, Sonnencreme!</div>`
+                    : '';
+
+                let html = hitzeBanner + `
+                    <div style="font-size:64px;margin-bottom:6px;">${icon}</div>
+                    <div style="font-size:48px;font-weight:900;color:var(--primary);letter-spacing:-.03em;">${c.temperature_2m}°C</div>
+                    <div style="font-size:14px;color:var(--text-muted);margin-bottom:4px;">Gefühlt: <span style="color:var(--text-main);font-weight:700;">${c.apparent_temperature}°C</span></div>
+                    <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">💨 ${c.windspeed_10m} km/h &nbsp;|&nbsp; 💧 ${c.relativehumidity_2m}%</div>
+
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+                        <div style="background:#0f172a;border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;">
+                            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">☀️ UV-Index</div>
+                            <div style="font-size:22px;font-weight:900;color:${uvColor};">${uv}</div>
+                            <div style="font-size:11px;color:${uvColor};">${uvLabel}</div>
+                        </div>
+                        <div style="background:#0f172a;border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;">
+                            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">🌊 Wassertemp.</div>
+                            <div style="font-size:22px;font-weight:900;color:#60a5fa;">${seaTemp ? seaTemp.toFixed(1)+'°C' : '--'}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">Mittelmeer</div>
+                        </div>
+                        <div style="background:#0f172a;border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;">
+                            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">🌅 Sonnenaufgang</div>
+                            <div style="font-size:18px;font-weight:800;color:var(--warning);">${sunrise}</div>
+                        </div>
+                        <div style="background:#0f172a;border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;">
+                            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">🌇 Sonnenuntergang</div>
+                            <div style="font-size:18px;font-weight:800;color:#f97316;">${sunset}</div>
+                        </div>
+                    </div>`;
+
+                // Stündliche Vorhersage (nächste 12 Stunden)
+                const now = new Date();
+                const currentHour = now.getHours();
+                html += `<div style="margin-bottom:16px;">
+                    <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;text-align:left;">🕐 Stündlich (nächste 12h)</div>
+                    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;">`;
+
+                for (let i = currentHour; i < Math.min(currentHour + 12, h.time.length); i++) {
+                    const hTime = h.time[i].split('T')[1];
+                    html += `<div style="flex-shrink:0;background:#0f172a;border-radius:10px;padding:10px 8px;border:1px solid var(--border);text-align:center;min-width:52px;">
+                        <div style="font-size:11px;color:var(--text-muted);">${hTime}</div>
+                        <div style="font-size:20px;margin:4px 0;">${wetterIcon(h.weathercode[i])}</div>
+                        <div style="font-size:12px;font-weight:700;color:var(--primary);">${h.temperature_2m[i]}°</div>
+                        <div style="font-size:10px;color:#60a5fa;">🌧️${h.precipitation_probability[i]}%</div>
+                    </div>`;
+                }
+                html += `</div></div>`;
+
+                // 5-Tage-Vorschau
+                html += `<div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;text-align:left;">📅 5-Tage-Vorschau</div>
+                    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">`;
                 for (let i = 0; i < 5; i++) {
                     const date = new Date(d.time[i]);
                     const dayName = i === 0 ? "Heute" : dayNames[date.getDay()];
-                    html += `<div style="background:#0f172a; border-radius:12px; padding:12px 6px; border:1px solid var(--border);">
-                        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">${dayName}</div>
-                        <div style="font-size:26px;">${wetterIcon(d.weathercode[i])}</div>
-                        <div style="font-size:13px; font-weight:700; color:var(--primary); margin-top:6px;">${d.temperature_2m_max[i]}°</div>
-                        <div style="font-size:11px; color:var(--text-muted);">${d.temperature_2m_min[i]}°</div>
-                        <div style="font-size:11px; color:#60a5fa; margin-top:4px;">🌧️ ${d.precipitation_probability_max[i]}%</div>
+                    html += `<div style="background:#0f172a;border-radius:12px;padding:10px 6px;border:1px solid var(--border);text-align:center;">
+                        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">${dayName}</div>
+                        <div style="font-size:24px;">${wetterIcon(d.weathercode[i])}</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--primary);margin-top:4px;">${d.temperature_2m_max[i]}°</div>
+                        <div style="font-size:11px;color:var(--text-muted);">${d.temperature_2m_min[i]}°</div>
+                        <div style="font-size:10px;color:#60a5fa;margin-top:3px;">🌧️${d.precipitation_probability_max[i]}%</div>
                     </div>`;
                 }
                 html += "</div>";
-                document.getElementById("wetter-content").innerHTML = html;
+
+                el.innerHTML = html;
             })
             .catch(() => {
-                document.getElementById("wetter-content").innerHTML = '<p style="color:var(--danger);">❌ Wetter konnte nicht geladen werden. Bitte Internetverbindung prüfen.</p>';
+                el.innerHTML = '<p style="color:var(--danger);">❌ Wetter konnte nicht geladen werden.</p>';
             });
     }
 
