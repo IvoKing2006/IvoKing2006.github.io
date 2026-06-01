@@ -816,6 +816,7 @@
                 <button id="subtab-tabak" class="subnav-btn" onclick="switchSubTab('entdecken', 'tabak')">🚬 Tabak</button>
                 <button id="subtab-apotheke" class="subnav-btn" onclick="switchSubTab('entdecken', 'apotheke')">💊 Apotheke</button>
                 <button id="subtab-orte" class="subnav-btn" onclick="switchSubTab('entdecken', 'orte')">🧭 Orte</button>
+                <button id="subtab-hinzufuegen" class="subnav-btn" onclick="switchSubTab('entdecken', 'hinzufuegen')">➕ Hinzufügen</button>
             </div>
         <div id="content-restaurants" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent);">
@@ -1498,6 +1499,33 @@
                 <div id="map-orte" class="map-container"></div>
             </div>
         </div>
+
+        <!-- Ort hinzufügen Subtab -->
+        <div id="content-hinzufuegen" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid var(--success);">
+                <h3>➕ Eigenen Ort hinzufügen</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Trag Name und Adresse ein – der Ort erscheint automatisch im richtigen Tab mit Route öffnen Button.</p>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="custom-place-name" placeholder="z.B. La Cerveceria">
+                </div>
+                <div class="form-group">
+                    <label>Adresse</label>
+                    <input type="text" id="custom-place-addr" placeholder="z.B. Carrer de Mallorca, 272, Barcelona">
+                </div>
+                <div class="form-group">
+                    <label>Kategorie</label>
+                    <select id="custom-place-cat" style="padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;font-size:14px;color:var(--text-main);width:100%;">
+                        <option value="restaurants">🍔 Restaurants</option>
+                        <option value="tabak">🚬 Tabak</option>
+                        <option value="apotheke">💊 Apotheke</option>
+                        <option value="orte">🧭 Orte</option>
+                    </select>
+                </div>
+                <button onclick="addCustomPlace()" style="background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">➕ Ort hinzufügen</button>
+            </div>
+            <div id="custom-places-list" style="margin-top:14px;"></div>
+        </div>
         </div>
 
         <div id="content-spiele" class="tab-content hidden">
@@ -1765,7 +1793,7 @@
 
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'statistik') updateStatistik();
-        if (tabName === 'entdecken') switchSubTab('entdecken', 'restaurants');
+        if (tabName === 'entdecken') { switchSubTab('entdecken', 'restaurants'); setTimeout(() => { initVisitedButtons(); renderCustomInTabs(); renderCustomPlaces(); }, 100); }
         if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
         if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
     }
@@ -2347,6 +2375,9 @@
             if (!db.packing[u]) db.packing[u] = [];
             else if (!Array.isArray(db.packing[u])) db.packing[u] = Object.values(db.packing[u]);
         });
+        if (!db.visited) db.visited = {};
+        if (!db.customPlaces) db.customPlaces = [];
+        else if (!Array.isArray(db.customPlaces)) db.customPlaces = Object.values(db.customPlaces);
     }
 
     function updateUI() {
@@ -2621,6 +2652,138 @@
         } else {
             if (existing) existing.remove();
         }
+    }
+
+    // ================= CUSTOM PLACES =================
+    function addCustomPlace() {
+        const name = document.getElementById('custom-place-name').value.trim();
+        const addr = document.getElementById('custom-place-addr').value.trim();
+        const cat  = document.getElementById('custom-place-cat').value;
+        if (!name || !addr) { alert('Bitte Name und Adresse eintragen.'); return; }
+        if (!db.customPlaces) db.customPlaces = [];
+        db.customPlaces.push({ id: Date.now().toString(), name, addr, cat, addedBy: currentUser });
+        saveDB();
+        document.getElementById('custom-place-name').value = '';
+        document.getElementById('custom-place-addr').value = '';
+        renderCustomPlaces();
+        alert('Ort hinzugefügt! Er erscheint jetzt im Tab ' + cat + '.');
+    }
+
+    function deleteCustomPlace(id) {
+        if (!confirm('Ort löschen?')) return;
+        db.customPlaces = db.customPlaces.filter(p => p.id !== id);
+        saveDB();
+        renderCustomPlaces();
+        renderCustomInTabs();
+    }
+
+    function renderCustomPlaces() {
+        const el = document.getElementById('custom-places-list');
+        if (!el) return;
+        const list = (db.customPlaces || []);
+        if (list.length === 0) {
+            el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:16px;">Noch keine eigenen Orte hinzugefügt.</div>';
+            return;
+        }
+        const catLabels = { restaurants:'🍔 Restaurants', tabak:'🚬 Tabak', apotheke:'💊 Apotheke', orte:'🧭 Orte' };
+        el.innerHTML = list.map(p => `
+            <div class="card" style="background:#0f172a;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <div>
+                    <div style="font-weight:700;font-size:14px;color:var(--text-main);">${p.name}</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">${p.addr}</div>
+                    <div style="font-size:11px;color:var(--accent);margin-top:3px;">${catLabels[p.cat]||p.cat} · von ${p.addedBy}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+                    <button onclick="openMap('${p.name.replace(/'/g,"\'")}','${p.addr.replace(/'/g,"\'")}')">🗺️ Route</button>
+                    <button onclick="deleteCustomPlace('${p.id}')" style="background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:6px 10px;font-size:12px;">🗑️</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function renderCustomInTabs() {
+        const cats = ['restaurants','tabak','apotheke','orte'];
+        cats.forEach(cat => {
+            const existing = document.getElementById('custom-in-'+cat);
+            if (existing) existing.remove();
+            const gridId = cat === 'restaurants' ? '.restaurant-grid' : (cat === 'tabak' ? '#tabak-grid' : (cat === 'apotheke' ? '#apotheke-grid' : '.restaurant-grid'));
+            const subtab = document.getElementById('content-'+cat);
+            if (!subtab) return;
+            const items = (db.customPlaces || []).filter(p => p.cat === cat);
+            if (items.length === 0) return;
+            const wrapper = document.createElement('div');
+            wrapper.id = 'custom-in-'+cat;
+            wrapper.style.marginTop = '16px';
+            wrapper.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">➕ Von euch hinzugefügt</div>'
+                + '<div class="restaurant-grid">'
+                + items.map(p => `
+                <div class="card" style="background:#0f172a;margin-bottom:0;">
+                    <h4 style="font-size:16px;margin-bottom:4px;">${p.name}</h4>
+                    <div class="meta-info">${p.addr}</div>
+                    <div class="distance-live">📍 Eigener Eintrag von ${p.addedBy}</div>
+                    ${cat !== 'apotheke' ? `<button class="btn-check" style="margin-top:8px;font-size:12px;" onclick="toggleVisited('${p.id}','${cat}')" id="vis-${p.id}">${(db.visited||{})[p.id] ? '✅ Besucht am '+(db.visited[p.id]) : '☐ Als besucht markieren'}</button>` : ''}
+                    <button class="btn-nav-link" style="margin-top:6px;" onclick="openMap('${p.name.replace(/'/g,"\'")}','${p.addr.replace(/'/g,"\'")}')">🗺️ Route öffnen</button>
+                </div>`).join('')
+                + '</div>';
+            subtab.querySelector('.card').appendChild(wrapper);
+        });
+    }
+
+    // ================= BEREITS BESUCHT =================
+    function toggleVisited(placeId, cat) {
+        if (!db.visited) db.visited = {};
+        if (db.visited[placeId]) {
+            delete db.visited[placeId];
+        } else {
+            const now = new Date();
+            db.visited[placeId] = String(now.getDate()).padStart(2,'0')+'.'+String(now.getMonth()+1).padStart(2,'0')+'.';
+        }
+        saveDB();
+        renderVisitedButtons();
+    }
+
+    function renderVisitedButtons() {
+        // For static cards: find all btn-bewerten or add visited buttons
+        const tabs = ['restaurants','tabak','orte'];
+        tabs.forEach(cat => {
+            const subtab = document.getElementById('content-'+cat);
+            if (!subtab) return;
+            subtab.querySelectorAll('[data-place-id]').forEach(btn => {
+                const id = btn.getAttribute('data-place-id');
+                const visited = (db.visited||{})[id];
+                btn.textContent = visited ? '✅ Besucht am '+visited : '☐ Als besucht markieren';
+                btn.style.background = visited ? 'linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15))' : '';
+                btn.style.color = visited ? 'var(--success)' : '';
+                btn.style.borderColor = visited ? 'rgba(0,255,163,.35)' : '';
+            });
+        });
+        renderCustomInTabs();
+    }
+
+    function initVisitedButtons() {
+        // Inject visited buttons into all static place cards in restaurants, tabak, orte
+        const configs = [
+            { tabId: 'content-restaurants' },
+            { tabId: 'content-tabak' },
+            { tabId: 'content-orte' }
+        ];
+        configs.forEach(cfg => {
+            const subtab = document.getElementById(cfg.tabId);
+            if (!subtab) return;
+            subtab.querySelectorAll('.card[data-lat]').forEach((card, i) => {
+                if (card.querySelector('[data-place-id]')) return; // already added
+                const name = card.querySelector('h4') ? card.querySelector('h4').textContent.trim() : 'ort_'+i;
+                const placeId = 'static_'+cfg.tabId+'_'+i;
+                const btn = document.createElement('button');
+                btn.setAttribute('data-place-id', placeId);
+                btn.className = 'btn-check';
+                btn.style.cssText = 'margin-top:8px;font-size:12px;width:100%;';
+                const visited = (db.visited||{})[placeId];
+                btn.textContent = visited ? '✅ Besucht am '+visited : '☐ Als besucht markieren';
+                if (visited) { btn.style.background='linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15))'; btn.style.color='var(--success)'; btn.style.borderColor='rgba(0,255,163,.35)'; }
+                btn.onclick = () => toggleVisited(placeId, cfg.tabId.replace('content-',''));
+                card.appendChild(btn);
+            });
+        });
     }
 
     // ================= STATISTIK =================
