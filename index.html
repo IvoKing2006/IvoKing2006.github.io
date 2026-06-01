@@ -101,6 +101,20 @@
             transition: all 0.2s;
             letter-spacing: 0.01em;
         }
+        .nav-btn .badge {
+            display: inline-block;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            border-radius: 99px;
+            padding: 1px 6px;
+            margin-left: 4px;
+            vertical-align: middle;
+            line-height: 16px;
+            min-width: 16px;
+            text-align: center;
+        }
         .nav-btn:hover {
             background: rgba(0, 212, 255, 0.08);
             color: var(--primary);
@@ -654,6 +668,7 @@
 
             <div class="card" style="margin-top: 25px;">
                 <h3>Dein Ausgaben-Verlauf (Bestätigte Posten)</h3>
+                <input type="text" id="expense-search" placeholder="🔍 Ausgaben durchsuchen..." oninput="filterExpenses()" style="margin-bottom:12px;padding:9px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--text-main);width:100%;">
                 <ul id="personal-history" style="max-height:340px;overflow-y:auto;padding-right:4px;margin:0;"></ul>
                 <div id="payment-summary" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
                     <div style="flex:1; background:#0f172a; border-radius:10px; padding:12px 16px; border:1px solid var(--border); text-align:center;">
@@ -1978,6 +1993,7 @@
 
             // Snapshots updaten
             _knownDebtIds = (db.debts || []).map(d => d.id);
+            updateBadges();
             _knownExpenseIds = (db.expenses || []).map(e => e.id);
             _knownChatCount = chatArr.length;
         });
@@ -2407,6 +2423,7 @@
         renderCategoryBreakdown();
         renderFinStats();
         renderDailyStats();
+        updateBadges();
         // Refresh Schwimmen if tab is active
         const schwTab = document.getElementById('subtab-schwimmen');
         if (schwTab && schwTab.classList.contains('active')) renderSchwimmen();
@@ -2498,6 +2515,49 @@
         }).join('');
     }
 
+
+    // ================= SUCHE =================
+    function filterExpenses() {
+        const query = document.getElementById('expense-search').value.toLowerCase().trim();
+        const items = document.querySelectorAll('#personal-history li');
+        items.forEach(li => {
+            li.style.display = query === '' || li.textContent.toLowerCase().includes(query) ? '' : 'none';
+        });
+    }
+
+    // ================= BADGES =================
+    function updateBadges() {
+        if (!currentUser) return;
+        // Offene Schulden (ich schulde jemandem)
+        const openDebts = (db.debts || []).filter(d => d.from === currentUser && !d.resolved).length;
+        // Offene Forderungen (jemand schuldet mir)
+        const openCredits = (db.debts || []).filter(d => d.to === currentUser && !d.resolved).length;
+        const finBadge = openDebts + openCredits;
+
+        // Ungelesene Nachrichten
+        const lastRead = parseInt(localStorage.getItem('chat_last_read_' + currentUser) || '0');
+        const unreadMsgs = (db.chat || []).filter(m => m.author !== currentUser && (m.ts || 0) > lastRead).length;
+
+        setTabBadge('tab-finanzen', finBadge);
+        setTabBadge('tab-kommunikation', unreadMsgs);
+    }
+
+    function setTabBadge(tabId, count) {
+        const btn = document.getElementById(tabId);
+        if (!btn) return;
+        const existing = btn.querySelector('.badge');
+        if (count > 0) {
+            if (existing) { existing.textContent = count; }
+            else {
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = count;
+                btn.appendChild(badge);
+            }
+        } else {
+            if (existing) existing.remove();
+        }
+    }
 
     // ================= STATISTIK =================
     function updateStatistik() {
