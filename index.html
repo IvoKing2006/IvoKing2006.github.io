@@ -2171,14 +2171,38 @@
         if (window._heartbeat) clearInterval(window._heartbeat);
         localStorage.removeItem('bcn_saved_user');
         currentUser = null;
+        document.getElementById('app-screen').classList.add('hidden');
+
+        // Reset all animations completely
         var ls = document.getElementById('login-screen');
+        var card = document.getElementById('login-card');
+        var cityName = document.getElementById('login-city-name');
+        var h1 = ls.querySelector('h1');
+
+        // Remove and re-add to DOM to force animation reset
         ls.classList.remove('swiping');
+        ls.style.transform = '';
+        ls.style.opacity = '';
         ls.style.animation = 'none';
-        ls.offsetHeight; // reflow
+
+        [card, cityName, h1].forEach(function(el) {
+            if (!el) return;
+            el.style.animation = 'none';
+            el.style.opacity = '';
+            el.style.transform = '';
+        });
+
+        // Force reflow then re-enable animations
+        ls.offsetHeight;
+
         ls.style.animation = '';
+        [card, cityName, h1].forEach(function(el) {
+            if (!el) return;
+            el.style.animation = '';
+        });
+
         ls.classList.remove('hidden');
         document.body.classList.add('login-active');
-        document.getElementById('app-screen').classList.add('hidden');
     }
 
     function setOnlineStatus(isOnline) {
