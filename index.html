@@ -127,10 +127,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding: 16px;
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
             overflow: hidden;
             z-index: 100;
+        }
+
+        @media (max-height: 700px) {
+            #login-card { padding: 18px 20px 16px; }
+            #login-card h1 { font-size: 1.6rem !important; margin-bottom: 16px !important; }
         }
 
         #login-bg {
@@ -170,21 +175,55 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 24px;
-            padding: 36px 32px;
+            border-radius: 20px;
+            padding: 24px 24px 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 360px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,212,255,0.15);
+            animation: cardSlideIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes cardSlideIn {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         #login-city-name {
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.25em;
             color: rgba(255,255,255,0.5);
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            animation: fadeInDown 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        #login-card h1 {
+            animation: logoAnim 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        @keyframes logoAnim {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Wisch-Animation beim Login */
+        @keyframes swipeLeft {
+            0%   { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-110vw); opacity: 0; }
+        }
+
+        #login-screen.swiping {
+            animation: swipeLeft 0.5s cubic-bezier(0.55, 0, 1, 0.45) forwards;
         }
 
         #login-countdown-banner {
@@ -2079,10 +2118,16 @@
                 localStorage.removeItem('bcn_saved_user');
             }
             document.getElementById('current-username').innerText = currentUser;
-            document.getElementById('login-screen').classList.add('hidden');
-            document.body.classList.remove('login-active');
-            document.getElementById('app-screen').classList.remove('hidden');
-            document.getElementById('login-pass').value = ''; 
+            document.getElementById('login-pass').value = '';
+            // Swipe animation
+            var ls = document.getElementById('login-screen');
+            ls.classList.add('swiping');
+            setTimeout(function() {
+                ls.classList.add('hidden');
+                ls.classList.remove('swiping');
+                document.body.classList.remove('login-active');
+                document.getElementById('app-screen').classList.remove('hidden');
+            }, 480); 
             
             if (currentUser === "Ivo") { document.getElementById('admin-reset-btn').classList.remove('hidden'); } 
             else { document.getElementById('admin-reset-btn').classList.add('hidden'); }
