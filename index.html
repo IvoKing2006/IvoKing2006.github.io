@@ -619,7 +619,6 @@
             <button id="tab-spiele" class="nav-btn" onclick="switchTab('spiele')">🎮 Spiele</button>
             <button id="tab-kommunikation" class="nav-btn" onclick="switchTab('kommunikation')">💬 Soziales</button>
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
-            <button id="tab-statistik" class="nav-btn" onclick="switchTab('statistik')">📊 Statistik</button>
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
         </div>
 
@@ -785,18 +784,6 @@
         </div>
 
         
-        <div id="content-statistik" class="tab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--primary);">
-                <h3>📊 Gesamtausgaben – Wer hat am meisten ausgegeben?</h3>
-                <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Alle bestätigten Ausgaben pro Person zusammengezählt.</p>
-                <div id="stats-bars" style="display:flex; flex-direction:column; gap:14px;"></div>
-            </div>
-            <div class="card" style="border-top: 4px solid var(--accent); margin-top:20px;">
-                <h3>💸 Gesamtausgaben der Gruppe</h3>
-                <div class="stats-box" style="margin-bottom:0;">Insgesamt ausgegeben: <span id="stats-total-all">0.00</span> €</div>
-            </div>
-        </div>
-
         <div id="content-wetter" class="tab-content hidden">
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🌤️ Aktuelles Wetter in Barcelona</h3>
@@ -1764,7 +1751,6 @@
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
         if (tabName === 'wetter') loadWetter();
-        if (tabName === 'statistik') updateStatistik();
         if (tabName === 'entdecken') switchSubTab('entdecken', 'restaurants');
         if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
         if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
