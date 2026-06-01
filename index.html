@@ -722,6 +722,10 @@
                 <label for="login-pass">Passwort:</label>
                 <input type="password" id="login-pass" placeholder="Passwort eingeben" onkeydown="if(event.key==='Enter') login()">
             </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <input type="checkbox" id="stay-logged-in" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;">
+                <label for="stay-logged-in" style="font-size:13px;color:rgba(255,255,255,0.7);cursor:pointer;margin:0;font-weight:500;">Eingeloggt bleiben</label>
+            </div>
             <button onclick="login()" style="width:100%;background:linear-gradient(135deg,rgba(0,212,255,0.25),rgba(124,58,237,0.2));border:1px solid rgba(0,212,255,0.4);box-shadow:0 4px 24px rgba(0,212,255,0.2);">Einloggen →</button>
             <div id="login-countdown-banner"></div>
         </div>
@@ -2067,6 +2071,13 @@
 
         if (PASSWORDS[user] === pass) {
             currentUser = user;
+            // Save to localStorage if "stay logged in" is checked
+            var stayLoggedIn = document.getElementById('stay-logged-in').checked;
+            if (stayLoggedIn) {
+                localStorage.setItem('bcn_saved_user', user);
+            } else {
+                localStorage.removeItem('bcn_saved_user');
+            }
             document.getElementById('current-username').innerText = currentUser;
             document.getElementById('login-screen').classList.add('hidden');
             document.body.classList.remove('login-active');
@@ -2113,6 +2124,7 @@
     function logout() {
         setOnlineStatus(false);
         if (window._heartbeat) clearInterval(window._heartbeat);
+        localStorage.removeItem('bcn_saved_user');
         currentUser = null;
         document.getElementById('login-screen').classList.remove('hidden');
         document.body.classList.add('login-active');
@@ -3087,6 +3099,37 @@
     }
     updateLoginCountdown();
     document.body.classList.add('login-active');
+
+    // Auto-login if saved
+    var savedUser = localStorage.getItem('bcn_saved_user');
+    if (savedUser && PASSWORDS[savedUser]) {
+        currentUser = savedUser;
+        document.getElementById('login-user').value = savedUser;
+        document.getElementById('current-username').innerText = currentUser;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.body.classList.remove('login-active');
+        document.getElementById('app-screen').classList.remove('hidden');
+        if (currentUser === "Ivo") { document.getElementById('admin-reset-btn').classList.remove('hidden'); }
+        else { document.getElementById('admin-reset-btn').classList.add('hidden'); }
+        setupShareCheckboxes();
+        switchTab('finanzen');
+        // Wait for DB before updateUI
+        var autoLoginCheck = setInterval(function() {
+            if (isDbReady) {
+                clearInterval(autoLoginCheck);
+                updateUI();
+                updateCountdown();
+                showDebtWarningIfNeeded();
+                checkNotificationsOnLogin();
+                _liveListenerActive = false;
+                startLiveNotifications();
+                watchOnlineStatus();
+                if (window._heartbeat) clearInterval(window._heartbeat);
+                window._heartbeat = setInterval(function(){ setOnlineStatus(true); }, 60000);
+                setOnlineStatus(true);
+            }
+        }, 200);
+    }
     setInterval(updateLoginCountdown, 60000);
 
     function updateCountdown() {
