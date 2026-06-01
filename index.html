@@ -2023,9 +2023,6 @@
         const id = Date.now().toString();
         const shareAmount = parseFloat((amount / checkedPeople.length).toFixed(2));
         let note = "";
-        if (checkedPeople.length === 1 && checkedPeople[0] === currentUser) {
-            note = document.getElementById('exp-note').value.trim();
-        }
 
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
@@ -2470,10 +2467,11 @@
             if (exp.payer !== currentUser) return;
             if (!exp.timestamp) return;
             // timestamp format: "DD.MM. HH:MM" or similar
-            const parts = exp.timestamp.split('.');
-            if (parts.length < 2) return;
-            const day = parseInt(parts[0]);
-            const month = parseInt(parts[1]);
+            // timestamp format: "DD.MM.YYYY, HH:MM Uhr"
+            const match = exp.timestamp.match(/^(\d{2})\.(\d{2})/);
+            if (!match) return;
+            const day = parseInt(match[1]);
+            const month = parseInt(match[2]);
             for (let i = 0; i < tripDays; i++) {
                 const d = new Date(tripStart);
                 d.setDate(d.getDate() + i);
@@ -2489,10 +2487,10 @@
             if (exp.payer === currentUser || !exp.participants.includes(currentUser)) return;
             const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
             if (!debt || !debt.resolved || !exp.timestamp) return;
-            const parts = exp.timestamp.split('.');
-            if (parts.length < 2) return;
-            const day = parseInt(parts[0]);
-            const month = parseInt(parts[1]);
+            const match = exp.timestamp.match(/^(\d{2})\.(\d{2})/);
+            if (!match) return;
+            const day = parseInt(match[1]);
+            const month = parseInt(match[2]);
             for (let i = 0; i < tripDays; i++) {
                 const d = new Date(tripStart);
                 d.setDate(d.getDate() + i);
