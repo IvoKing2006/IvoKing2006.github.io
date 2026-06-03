@@ -818,7 +818,6 @@
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
             <button id="tab-infos" class="nav-btn" onclick="switchTab('infos')">ℹ️ Infos</button>
-            <button id="tab-webcam" class="nav-btn" onclick="switchTab('webcam')">📸 Webcam</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -1801,63 +1800,6 @@
                 <div id="map-orte" class="map-container"></div>
             </div>
         </div>
-        </div>
-
-        <!-- WEBCAM TAB -->
-        <div id="content-webcam" class="tab-content hidden">
-            <div class="card" style="border-top:4px solid var(--primary);padding:0;overflow:hidden;">
-                <div style="padding:16px 20px 12px;display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="margin:0;">📸 Live Webcam – Barceloneta</h3>
-                    <div style="font-size:11px;color:var(--text-muted);">powered by Windy</div>
-                </div>
-                <div style="position:relative;width:100%;padding-bottom:60%;height:0;overflow:hidden;">
-                    <iframe 
-                        id="windy-frame"
-                        src="https://embed.windy.com/embed2.html?lat=41.3791&lon=2.1899&detailLat=41.3791&detailLon=2.1899&width=650&height=450&zoom=13&level=surface&overlay=wind&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
-                        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-
-            <div class="card" style="margin-top:14px;">
-                <h3 style="font-size:15px;margin-bottom:14px;">🎥 Live Strand-Kameras</h3>
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                    <a href="https://www.skylinewebcams.com/en/webcam/espana/cataluna/barcelona/playa-barceloneta.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:12px;text-decoration:none;color:var(--text-main);">
-                        <span style="font-size:22px;">🏖️</span>
-                        <div>
-                            <div style="font-weight:700;font-size:13px;">Playa de Barceloneta</div>
-                            <div style="font-size:11px;color:var(--text-muted);">Blick auf den Strand · SkylineWebcams</div>
-                        </div>
-                        <span style="margin-left:auto;font-size:12px;color:var(--primary);">▶ Live</span>
-                    </a>
-                    <a href="https://www.skylinewebcams.com/en/webcam/espana/cataluna/barcelona/playa-sant-sebastia.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:12px;text-decoration:none;color:var(--text-main);">
-                        <span style="font-size:22px;">🌊</span>
-                        <div>
-                            <div style="font-weight:700;font-size:13px;">Sant Sebastià Beach</div>
-                            <div style="font-size:11px;color:var(--text-muted);">Ältester Strand Barcelonas · SkylineWebcams</div>
-                        </div>
-                        <span style="margin-left:auto;font-size:12px;color:var(--primary);">▶ Live</span>
-                    </a>
-                    <a href="https://www.geocam.ru/en/online/barceloneta/" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:12px;text-decoration:none;color:var(--text-main);">
-                        <span style="font-size:22px;">🏨</span>
-                        <div>
-                            <div style="font-weight:700;font-size:13px;">Barceloneta Panorama</div>
-                            <div style="font-size:11px;color:var(--text-muted);">Blick auf W Barcelona Hotel · GeoCam HD</div>
-                        </div>
-                        <span style="margin-left:auto;font-size:12px;color:var(--primary);">▶ Live</span>
-                    </a>
-                    <a href="https://www.surfline.com/surf-report/barcelona/5842041f4e65fad6a7708d13" target="_blank" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:12px;text-decoration:none;color:var(--text-main);">
-                        <span style="font-size:22px;">🏄</span>
-                        <div>
-                            <div style="font-weight:700;font-size:13px;">BoardRiders Barceloneta</div>
-                            <div style="font-size:11px;color:var(--text-muted);">Surfer-Cam direkt vom Strand · Surfline</div>
-                        </div>
-                        <span style="margin-left:auto;font-size:12px;color:var(--primary);">▶ Live</span>
-                    </a>
-                </div>
-                <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:12px;margin-bottom:0;">Tippen öffnet die Webcam direkt 📱</p>
-            </div>
         </div>
 
         <div id="content-spiele" class="tab-content hidden">
