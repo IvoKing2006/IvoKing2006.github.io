@@ -2758,25 +2758,18 @@
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
 
-        document.querySelectorAll('.subtab-content .restaurant-grid').forEach(grid => {
-            const isSupermarkt = grid.classList.contains('supermarkt-grid');
-            const cards = Array.from(grid.querySelectorAll(':scope > .card[data-lat]'));
-
-            cards.forEach(card => {
-                const restLat = parseFloat(card.getAttribute('data-lat'));
-                const restLng = parseFloat(card.getAttribute('data-lng'));
-                if (isNaN(restLat) || isNaN(restLng)) return;
-                const d = calcDistance(userLat, userLng, restLat, restLng);
-                card.setAttribute('data-distance', d);
-                const distanceStr = d < 1
-                    ? `🟢 ${Math.round(d * 1000)} Meter entfernt`
-                    : `🟢 ${d.toFixed(2)} km entfernt`;
-                const distEl = card.querySelector('.distance-live');
-                if (distEl) distEl.innerHTML = distanceStr;
-            });
-
-            // Sortierung deaktiviert - verhindert DOM-Probleme
-            // cards bleiben immer in ihrem ursprünglichen Container
+        // Nur distance-live Texte updaten, KEIN DOM-Manipulation
+        document.querySelectorAll('[data-lat][data-lng]').forEach(card => {
+            const restLat = parseFloat(card.getAttribute('data-lat'));
+            const restLng = parseFloat(card.getAttribute('data-lng'));
+            if (isNaN(restLat) || isNaN(restLng)) return;
+            const d = calcDistance(userLat, userLng, restLat, restLng);
+            card.setAttribute('data-distance', d);
+            const distanceStr = d < 1
+                ? `🟢 ${Math.round(d * 1000)} Meter entfernt`
+                : `🟢 ${d.toFixed(2)} km entfernt`;
+            const distEl = card.querySelector('.distance-live');
+            if (distEl) distEl.innerHTML = distanceStr;
         });
     }
 
