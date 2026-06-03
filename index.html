@@ -1261,7 +1261,6 @@
                         <div class="reviews-container" data-rest-name="Fast Eddie’s"></div>
                     </div>
                 </div>
-                <div id="map-restaurants" class="map-container"></div>
             </div>
         </div>
         <div id="content-tabak" class="subtab-content hidden">
@@ -1590,7 +1589,6 @@
 
                 </div>
 
-                <div id="map-tabak" class="map-container"></div>
             </div>
         </div>
         <div id="content-apotheke" class="subtab-content hidden">
@@ -1674,7 +1672,6 @@
                     </div>
 
                 </div>
-                <div id="map-apotheke" class="map-container"></div>
             </div>
         </div>
         <div id="content-orte" class="subtab-content hidden">
@@ -1690,7 +1687,7 @@
                         <div class="cuisine-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">Unterkunft</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de la Marina, 212, Barcelona, Catalunya 08013, Spanien</div>
                         <div class="distance-live">🔍 Suche GPS...</div>
-                        <button class="btn-nav-link" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="openMap('Unser AirBNB', 'Carrer de la Marina, 212, Barcelona, Catalunya 08013, Spanien')">🗺️ Route öffnen</button>
+                        <button class="btn-nav-link" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="openMap('', 'Carrer de la Marina, 212, Barcelona, Catalunya 08013, Spanien')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.397682" data-lng="2.194255">
@@ -1741,7 +1738,6 @@
                         <button class="btn-nav-link" onclick="openMap('Bunkers del Carmel', 'Carrer de la Gran Vista, 96, Horta-Guinardó, 08032 Barcelona')">🗺️ Route öffnen</button>
                     </div>
                 </div>
-                <div id="map-orte" class="map-container"></div>
             </div>
         </div>
 
@@ -1830,7 +1826,7 @@
                         <div class="cuisine-tag" style="background:rgba(0,212,255,0.15);color:var(--primary);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer d'Ortigosa, 14-16, Ciutat Vella</div>
                         <div class="distance-live">🔍 Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Lidl','Carrer de l&#39;Ortigosa, 14-16, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-nav-link" onclick="openMap('Lidl','Carrer Ortigosa, 14-16, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
                     <div class="card" data-lat="41.4005" data-lng="2.1688" style="background:#0f172a;margin-bottom:0;">
@@ -1891,7 +1887,6 @@
                     </div>
 
                 </div>
-                <div id="map-supermarkt" class="map-container"></div>
             </div>
         </div>
         </div>
@@ -2159,11 +2154,6 @@
         if (tabName === 'restaurants' || tabName === 'tabak' || tabName === 'apotheke' || tabName === 'orte') {
             startLiveTracking();
         }
-        if (tabName === 'restaurants') setTimeout(() => initMap('map-restaurants', 'restaurants'), 100);
-        if (tabName === 'orte') setTimeout(() => initMap('map-orte', 'orte'), 100);
-        if (tabName === 'tabak') setTimeout(() => initMap('map-tabak', 'tabak'), 100);
-        if (tabName === 'apotheke') setTimeout(() => initMap('map-apotheke', 'apotheke'), 100);
-        if (tabName === 'supermarkt') setTimeout(() => initMap('map-supermarkt', 'supermarkt'), 100);
         if (tabName === 'chat') renderChat();
         if (tabName === 'schwimmen') renderSchwimmen();
         if (tabName === 'notizen') renderNotizen();
