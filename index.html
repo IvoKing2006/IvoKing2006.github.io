@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020817;
+            --bg-color: #020f1a;
             --card-bg: rgba(255, 255, 255, 0.04);
             --primary: #00d4ff;
             --primary-dim: rgba(0, 212, 255, 0.15);
@@ -43,9 +43,7 @@
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
-            background-image:
-                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0, 212, 255, 0.12) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(124, 58, 237, 0.1) 0%, transparent 60%);
+            background-image: none;
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
@@ -4218,6 +4216,189 @@
                     .catch(function(err) { console.log('SW error:', err); });
             });
         }
+    </script>
+    <!-- OCEAN BACKGROUND -->
+    <canvas id="ocean-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;"></canvas>
+    <script>
+    (function() {
+        var canvas = document.getElementById('ocean-bg');
+        var ctx = canvas.getContext('2d');
+        var W, H;
+
+        function resize() {
+            var dpr = window.devicePixelRatio || 1;
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width  = W * dpr;
+            canvas.height = H * dpr;
+            canvas.style.width  = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.scale(dpr, dpr);
+        }
+        resize();
+        window.addEventListener('resize', function() { ctx.setTransform(1,0,0,1,0,0); resize(); });
+
+        // Fish
+        var fishes = [];
+        var FISH_COUNT = 12;
+        var fishTypes = [
+            { color: '#00d4ff', accent: '#0090c8', size: 18 },
+            { color: '#00ffa3', accent: '#00a066', size: 14 },
+            { color: '#ff9a40', accent: '#c86000', size: 22 },
+            { color: '#a78bfa', accent: '#6d28d9', size: 12 },
+            { color: '#ffbe0b', accent: '#c8900a', size: 16 },
+        ];
+
+        for (var i = 0; i < FISH_COUNT; i++) {
+            var t = fishTypes[i % fishTypes.length];
+            var dir = Math.random() > 0.5 ? 1 : -1;
+            fishes.push({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                speed: (0.4 + Math.random() * 0.6) * dir,
+                wobble: Math.random() * Math.PI * 2,
+                wobbleSpeed: 0.02 + Math.random() * 0.02,
+                color: t.color,
+                accent: t.accent,
+                size: t.size * (0.7 + Math.random() * 0.6),
+                dir: dir,
+                opacity: 0.3 + Math.random() * 0.35,
+                depth: Math.random(), // 0=far, 1=close
+            });
+        }
+
+        // Bubbles
+        var bubbles = [];
+        for (var b = 0; b < 20; b++) {
+            bubbles.push({
+                x: Math.random() * W,
+                y: H + Math.random() * H,
+                r: 2 + Math.random() * 5,
+                speed: 0.3 + Math.random() * 0.5,
+                wobble: Math.random() * Math.PI * 2,
+                opacity: 0.1 + Math.random() * 0.15,
+            });
+        }
+
+        function drawFish(f) {
+            ctx.save();
+            ctx.globalAlpha = f.opacity;
+            ctx.translate(f.x, f.y);
+            if (f.dir < 0) ctx.scale(-1, 1);
+            var s = f.size;
+
+            // Body
+            ctx.beginPath();
+            ctx.ellipse(0, 0, s, s * 0.45, 0, 0, Math.PI * 2);
+            ctx.fillStyle = f.color;
+            ctx.fill();
+
+            // Tail
+            ctx.beginPath();
+            ctx.moveTo(-s * 0.7, 0);
+            ctx.lineTo(-s * 1.35, -s * 0.5);
+            ctx.lineTo(-s * 1.35, s * 0.5);
+            ctx.closePath();
+            ctx.fillStyle = f.accent;
+            ctx.fill();
+
+            // Fin top
+            ctx.beginPath();
+            ctx.moveTo(-s * 0.1, -s * 0.35);
+            ctx.lineTo(s * 0.2, -s * 0.7);
+            ctx.lineTo(s * 0.5, -s * 0.35);
+            ctx.closePath();
+            ctx.fillStyle = f.accent;
+            ctx.globalAlpha = f.opacity * 0.7;
+            ctx.fill();
+
+            // Eye
+            ctx.beginPath();
+            ctx.arc(s * 0.5, -s * 0.1, s * 0.12, 0, Math.PI * 2);
+            ctx.fillStyle = '#000';
+            ctx.globalAlpha = f.opacity;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(s * 0.52, -s * 0.12, s * 0.05, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        var lastTime = 0;
+        function frame(ts) {
+            var dt = Math.min(ts - lastTime, 50);
+            lastTime = ts;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Ocean gradient background
+            var grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0,   '#020f1a');
+            grad.addColorStop(0.4, '#031828');
+            grad.addColorStop(1,   '#010a12');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Subtle light rays from top
+            for (var r = 0; r < 5; r++) {
+                var rx = W * (0.1 + r * 0.2) + Math.sin(ts * 0.0003 + r) * 30;
+                var rayGrad = ctx.createLinearGradient(rx, 0, rx + 60, H * 0.7);
+                rayGrad.addColorStop(0, 'rgba(0,180,255,0.04)');
+                rayGrad.addColorStop(1, 'rgba(0,180,255,0)');
+                ctx.beginPath();
+                ctx.moveTo(rx - 20, 0);
+                ctx.lineTo(rx + 80, 0);
+                ctx.lineTo(rx + 40, H * 0.7);
+                ctx.lineTo(rx - 10, H * 0.7);
+                ctx.closePath();
+                ctx.fillStyle = rayGrad;
+                ctx.fill();
+            }
+
+            // Bubbles
+            bubbles.forEach(function(bub) {
+                bub.y -= bub.speed * dt * 0.05;
+                bub.wobble += 0.02;
+                bub.x += Math.sin(bub.wobble) * 0.3;
+                if (bub.y + bub.r < 0) {
+                    bub.y = H + bub.r;
+                    bub.x = Math.random() * W;
+                }
+                ctx.beginPath();
+                ctx.arc(bub.x, bub.y, bub.r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(0,220,255,' + bub.opacity + ')';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Fish (sort by depth)
+            fishes.sort(function(a,b){ return a.depth - b.depth; });
+            fishes.forEach(function(f) {
+                f.wobble += f.wobbleSpeed;
+                f.x += f.speed * dt * 0.04;
+                f.y += Math.sin(f.wobble) * 0.4;
+
+                // Wrap around
+                if (f.dir > 0 && f.x > W + f.size * 2) {
+                    f.x = -f.size * 2;
+                    f.y = H * 0.1 + Math.random() * H * 0.8;
+                }
+                if (f.dir < 0 && f.x < -f.size * 2) {
+                    f.x = W + f.size * 2;
+                    f.y = H * 0.1 + Math.random() * H * 0.8;
+                }
+                if (f.y < 20) f.y = 20;
+                if (f.y > H - 20) f.y = H - 20;
+
+                drawFish(f);
+            });
+
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    })();
     </script>
 </body>
 </html>
