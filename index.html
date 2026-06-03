@@ -2814,23 +2814,27 @@
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
 
-        document.querySelectorAll('.restaurant-grid').forEach(grid => {
-            const cards = Array.from(grid.querySelectorAll('.card'));
+        document.querySelectorAll('.subtab-content .restaurant-grid').forEach(grid => {
+            const cards = Array.from(grid.querySelectorAll(':scope > .card[data-lat]'));
 
             cards.forEach(card => {
                 const restLat = parseFloat(card.getAttribute('data-lat'));
                 const restLng = parseFloat(card.getAttribute('data-lng'));
+                if (isNaN(restLat) || isNaN(restLng)) return;
                 const d = calcDistance(userLat, userLng, restLat, restLng);
                 card.setAttribute('data-distance', d);
                 const distanceStr = d < 1
                     ? `🟢 ${Math.round(d * 1000)} Meter entfernt`
                     : `🟢 ${d.toFixed(2)} km entfernt`;
-                card.querySelector('.distance-live').innerHTML = distanceStr;
+                const distEl = card.querySelector('.distance-live');
+                if (distEl) distEl.innerHTML = distanceStr;
             });
 
             // Nach Entfernung sortieren, nächstes oben
-            cards.sort((a, b) => parseFloat(a.getAttribute('data-distance')) - parseFloat(b.getAttribute('data-distance')));
-            cards.forEach(card => grid.appendChild(card));
+            cards.sort((a, b) => parseFloat(a.getAttribute('data-distance') || 999) - parseFloat(b.getAttribute('data-distance') || 999));
+            cards.forEach(card => {
+                if (card.parentNode === grid) grid.appendChild(card);
+            });
         });
     }
 
