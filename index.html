@@ -413,7 +413,7 @@
 
         .grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 25px; }
         .packing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
-        .restaurant-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 15px; }
+        .restaurant-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px; } .restaurant-grid > .card { flex: 1 1 250px; min-width: 250px; }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .packing-grid { grid-template-columns: 1fr; } }
 
         .card {
@@ -1752,7 +1752,7 @@
                 <div class="restaurant-grid supermarkt-grid">
 
                     <!-- MERCADONA -->
-                    <div class="card" data-lat="41.3988" data-lng="2.1785" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3982" data-lng="2.1769" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Sardenya, 229, Eixample</div>
@@ -1760,7 +1760,7 @@
                         <button class="btn-nav-link" onclick="openMap('Mercadona','Carrer de Sardenya, 229, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3944" data-lng="2.1864" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3948" data-lng="2.1856" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Provença, 409, Eixample</div>
@@ -1768,7 +1768,7 @@
                         <button class="btn-nav-link" onclick="openMap('Mercadona','Carrer de Provença, 409, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3912" data-lng="2.1720" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3896" data-lng="2.1698" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer del Consell de Cent, 366, Eixample</div>
@@ -1776,7 +1776,7 @@
                         <button class="btn-nav-link" onclick="openMap('Mercadona','Carrer del Consell de Cent, 366, Eixample, 08009 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3980" data-lng="2.1938" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3985" data-lng="2.1932" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Buenaventura Muñoz, 37, Sant Martí</div>
@@ -1784,7 +1784,7 @@
                         <button class="btn-nav-link" onclick="openMap('Mercadona','Carrer de Buenaventura Muñoz, 37, Sant Martí, 08018 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3885" data-lng="2.1723" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3878" data-lng="2.1756" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Ronda de Sant Pere, 31, Eixample</div>
@@ -1792,7 +1792,7 @@
                         <button class="btn-nav-link" onclick="openMap('Mercadona','Rda. de Sant Pere, 31, Eixample, 08010 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3970" data-lng="2.1820" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3968" data-lng="2.1825" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de la Indústria, 129, Eixample</div>
@@ -1800,7 +1800,7 @@
                         <button class="btn-nav-link" onclick="openMap('Mercadona','Carrer de la Indústria, 129, Eixample, 08025 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3955" data-lng="2.1890" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3950" data-lng="2.1892" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Mercadona</h4>
                         <div class="cuisine-tag" style="background:rgba(0,255,163,0.15);color:var(--success);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de València, 531, Eixample</div>
@@ -1809,7 +1809,7 @@
                     </div>
 
                     <!-- LIDL -->
-                    <div class="card" data-lat="41.3953" data-lng="2.1872" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3952" data-lng="2.1868" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Lidl</h4>
                         <div class="cuisine-tag" style="background:rgba(0,212,255,0.15);color:var(--primary);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Gran Via de les Corts Catalanes, 721, Eixample</div>
@@ -1817,7 +1817,7 @@
                         <button class="btn-nav-link" onclick="openMap('Lidl','Gran Via de les Corts Catalanes, 721, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3940" data-lng="2.1840" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3938" data-lng="2.1842" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Lidl</h4>
                         <div class="cuisine-tag" style="background:rgba(0,212,255,0.15);color:var(--primary);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Cartagena, 210, Eixample</div>
@@ -1825,15 +1825,15 @@
                         <button class="btn-nav-link" onclick="openMap('Lidl','Carrer de Cartagena, 210, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3825" data-lng="2.1782" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3826" data-lng="2.1780" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Lidl</h4>
                         <div class="cuisine-tag" style="background:rgba(0,212,255,0.15);color:var(--primary);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer d'Ortigosa, 14-16, Ciutat Vella</div>
                         <div class="distance-live">🔍 Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Lidl','Carrer d'Ortigosa, 14-16, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-nav-link" onclick="openMap('Lidl','Carrer de l&#39;Ortigosa, 14-16, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.4012" data-lng="2.1695" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.4005" data-lng="2.1688" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Lidl</h4>
                         <div class="cuisine-tag" style="background:rgba(0,212,255,0.15);color:var(--primary);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Bailèn, 165-167, Eixample</div>
@@ -1841,7 +1841,7 @@
                         <button class="btn-nav-link" onclick="openMap('Lidl','Carrer de Bailèn, 165, Eixample, 08037 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3958" data-lng="2.1922" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3960" data-lng="2.1918" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Lidl</h4>
                         <div class="cuisine-tag" style="background:rgba(0,212,255,0.15);color:var(--primary);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Pujades, 15-17, Sant Martí</div>
@@ -1850,7 +1850,7 @@
                     </div>
 
                     <!-- BONPREU -->
-                    <div class="card" data-lat="41.3992" data-lng="2.1788" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3990" data-lng="2.1772" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Bonpreu</h4>
                         <div class="cuisine-tag" style="background:rgba(255,190,11,0.15);color:var(--warning);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Sardenya, 278, Eixample</div>
@@ -1858,15 +1858,15 @@
                         <button class="btn-nav-link" onclick="openMap('Bonpreu','Carrer de Sardenya, 278, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3880" data-lng="2.1742" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3882" data-lng="2.1738" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Bonpreu</h4>
                         <div class="cuisine-tag" style="background:rgba(255,190,11,0.15);color:var(--warning);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer d'Ausiàs Marc, 23, Eixample</div>
                         <div class="distance-live">🔍 Suche GPS...</div>
-                        <button class="btn-nav-link" onclick="openMap('Bonpreu','Carrer d'Ausiàs Marc, 23, Eixample, 08010 Barcelona')">🗺️ Route öffnen</button>
+                        <button class="btn-nav-link" onclick="openMap('Bonpreu','Carrer Ausias Marc, 23, Eixample, 08010 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3938" data-lng="2.1682" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3942" data-lng="2.1676" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Bonpreu</h4>
                         <div class="cuisine-tag" style="background:rgba(255,190,11,0.15);color:var(--warning);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Provença, 335-337, Eixample</div>
@@ -1874,7 +1874,7 @@
                         <button class="btn-nav-link" onclick="openMap('Bonpreu','Carrer de Provença, 335-337, Eixample, 08037 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.3975" data-lng="2.1945" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.3978" data-lng="2.1940" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Bonpreu</h4>
                         <div class="cuisine-tag" style="background:rgba(255,190,11,0.15);color:var(--warning);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Buenaventura Muñoz, 62-64, Sant Martí</div>
@@ -1882,7 +1882,7 @@
                         <button class="btn-nav-link" onclick="openMap('Bonpreu','Carrer de Buenaventura Muñoz, 62-64, Sant Martí, 08018 Barcelona')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" data-lat="41.4035" data-lng="2.1802" style="background:#0f172a;margin-bottom:0;">
+                    <div class="card" data-lat="41.4032" data-lng="2.1808" style="background:#0f172a;margin-bottom:0;">
                         <h4 style="font-size:17px;margin-bottom:5px;">Bonpreu</h4>
                         <div class="cuisine-tag" style="background:rgba(255,190,11,0.15);color:var(--warning);">Supermarkt</div>
                         <div class="meta-info" style="margin-bottom:10px;">Carrer de Sicília, 370-376, Gràcia</div>
@@ -2759,7 +2759,7 @@
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
 
-        // Nur distance-live Texte updaten, KEIN DOM-Manipulation
+        // Update distances
         document.querySelectorAll('[data-lat][data-lng]').forEach(card => {
             const restLat = parseFloat(card.getAttribute('data-lat'));
             const restLng = parseFloat(card.getAttribute('data-lng'));
@@ -2771,6 +2771,13 @@
                 : `🟢 ${d.toFixed(2)} km entfernt`;
             const distEl = card.querySelector('.distance-live');
             if (distEl) distEl.innerHTML = distanceStr;
+        });
+
+        // Sort using CSS order (no DOM moves - safe!)
+        document.querySelectorAll('.restaurant-grid').forEach(grid => {
+            const cards = Array.from(grid.querySelectorAll(':scope > .card[data-distance]'));
+            cards.sort((a, b) => parseFloat(a.getAttribute('data-distance')) - parseFloat(b.getAttribute('data-distance')));
+            cards.forEach((card, i) => card.style.order = i);
         });
     }
 
