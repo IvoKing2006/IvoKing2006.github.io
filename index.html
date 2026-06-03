@@ -2831,13 +2831,8 @@
                 if (distEl) distEl.innerHTML = distanceStr;
             });
 
-            // Nur sortieren wenn kein Supermarkt-Grid (verhindert DOM-Probleme)
-            if (!isSupermarkt) {
-                cards.sort((a, b) => parseFloat(a.getAttribute('data-distance') || 999) - parseFloat(b.getAttribute('data-distance') || 999));
-                cards.forEach(card => {
-                    if (card.parentNode === grid) grid.appendChild(card);
-                });
-            }
+            // Sortierung deaktiviert - verhindert DOM-Probleme
+            // cards bleiben immer in ihrem ursprünglichen Container
         });
     }
 
