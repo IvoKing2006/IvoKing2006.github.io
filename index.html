@@ -1804,10 +1804,10 @@
 
 
         <div id="content-supermarkt" class="subtab-content hidden">
-            <div class="card" style="border-top: 4px solid var(--success);">
+            <div class="supermarkt-wrapper" style="border-top: 4px solid var(--success);background:rgba(255,255,255,0.03);border-radius:18px;padding:20px;border:1px solid var(--glass-border);">
                 <h3>🛒 Supermärkte in der Nähe</h3>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Live-Entfernung wird automatisch berechnet.</p>
-                <div class="restaurant-grid">
+                <div class="restaurant-grid supermarkt-grid">
 
                     <!-- MERCADONA -->
                     <div class="card" data-lat="41.3988" data-lng="2.1785" style="background:#0f172a;margin-bottom:0;">
@@ -2815,6 +2815,7 @@
         const userLng = position.coords.longitude;
 
         document.querySelectorAll('.subtab-content .restaurant-grid').forEach(grid => {
+            const isSupermarkt = grid.classList.contains('supermarkt-grid');
             const cards = Array.from(grid.querySelectorAll(':scope > .card[data-lat]'));
 
             cards.forEach(card => {
@@ -2830,11 +2831,13 @@
                 if (distEl) distEl.innerHTML = distanceStr;
             });
 
-            // Nach Entfernung sortieren, nächstes oben
-            cards.sort((a, b) => parseFloat(a.getAttribute('data-distance') || 999) - parseFloat(b.getAttribute('data-distance') || 999));
-            cards.forEach(card => {
-                if (card.parentNode === grid) grid.appendChild(card);
-            });
+            // Nur sortieren wenn kein Supermarkt-Grid (verhindert DOM-Probleme)
+            if (!isSupermarkt) {
+                cards.sort((a, b) => parseFloat(a.getAttribute('data-distance') || 999) - parseFloat(b.getAttribute('data-distance') || 999));
+                cards.forEach(card => {
+                    if (card.parentNode === grid) grid.appendChild(card);
+                });
+            }
         });
     }
 
