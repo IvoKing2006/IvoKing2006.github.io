@@ -775,6 +775,7 @@
                     <option value="Romeo">Romeo</option>
                     <option value="Anton">Anton</option>
                     <option value="Raul">Raul</option>
+                    <option value="Timmy">Timmy</option>
                 </select>
             </div>
             <div class="form-group">
@@ -1983,13 +1984,13 @@
     var dbRef = database.ref('urlaubskasse');
 
 
-    var PASSWORDS = {"Ivo": "0511", "Romeo": "2508", "Anton": "1603", "Raul": "2406"};
-    var ALL_USERS = ["Ivo", "Romeo", "Anton", "Raul"];
+    var PASSWORDS = {"Ivo": "0511", "Romeo": "2508", "Anton": "1603", "Raul": "2406", "Timmy": "2607"};
+    var ALL_USERS = ["Ivo", "Romeo", "Anton", "Raul", "Timmy"];
     var currentUser = null;
     var isDbReady = false;
 
     var db = {
-        expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] }, food_diary: []
+        expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [], "Timmy": [] }, food_diary: []
     };
 
     // ================= LIVE SYNC: Firebase → local db =================
@@ -2519,7 +2520,7 @@
     function resetAllData() {
         if (currentUser !== "Ivo") return;
         if (confirm("Möchtest du wirklich ALLE Daten löschen?")) {
-            db = { expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [] }, food_diary: [] };
+            db = { expenses: [], debts: [], packing: { "Ivo": [], "Romeo": [], "Anton": [], "Raul": [], "Timmy": [] }, food_diary: [] };
             saveDB(); logout();
         }
     }
