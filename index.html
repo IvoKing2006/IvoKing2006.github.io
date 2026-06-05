@@ -4292,7 +4292,7 @@
     }
 
     function schwDeck() {
-        const vals = ['6','7','8','9','10','B','D','K','A'];
+        const vals = ['7','8','9','10','B','D','K','A'];
         const suits = ['herz','karo','kreuz','pik'];
         const d = [];
         suits.forEach(s => vals.forEach(v => d.push({suit:s, value:v})));
@@ -4534,15 +4534,18 @@
         losers.forEach(loser => {
             g.lives[loser] = (g.lives[loser]??3) - 1;
             if (g.lives[loser] <= 0) {
-                if (g.swimmer === null) {
-                    g.swimmer = loser;
-                    g.lives[loser] = 0;
-                    g.log.unshift('🌊 '+loser+' schwimmt jetzt!');
-                } else if (g.swimmer === loser && g.lives[loser] < 0) {
+                if (g.swimmer === loser) {
+                    // Swimmer lost again - eliminated, slot stays permanently empty
                     g.eliminated = g.eliminated||[];
                     g.eliminated.push(loser);
+                    g.swimmer = 'used'; // mark as used so nobody else can get it
                     g.log.unshift('💀 '+loser+' ist raus!');
-                } else if (g.swimmer !== loser) {
+                } else if (g.swimmer === null) {
+                    // First player to reach 0 lives - becomes swimmer
+                    g.swimmer = loser;
+                    g.log.unshift('🌊 '+loser+' schwimmt jetzt!');
+                } else {
+                    // Swimmer slot already used - eliminated directly
                     g.eliminated = g.eliminated||[];
                     g.eliminated.push(loser);
                     g.log.unshift('💀 '+loser+' ist raus!');
