@@ -4263,14 +4263,22 @@
             if (!g.lives[u]) g.lives[u] = 3;
             if (g.lives[u] > 0) {
                 g.lives[u]--;
-                if (g.lives[u] === 0) {
+                if (g.lives[u] <= 0) {
                     if (!(g.eliminated||[]).includes(u)) {
                         g.eliminated = g.eliminated || [];
                         if (g.swimmer === u) {
+                            // Swimmer lost again - out, slot permanently gone
                             g.eliminated.push(u);
-                            g.swimmer = null;
-                        } else {
+                            g.swimmer = 'used';
+                            g.log.unshift('💀 '+u+' ist raus!');
+                        } else if (!g.swimmer || g.swimmer === null) {
+                            // First to reach 0 lives - becomes swimmer
                             g.swimmer = u;
+                            g.log.unshift('🌊 '+u+' schwimmt jetzt!');
+                        } else {
+                            // Swimmer slot taken or used - eliminated directly
+                            g.eliminated.push(u);
+                            g.log.unshift('💀 '+u+' ist raus!');
                         }
                     }
                 }
@@ -4327,7 +4335,7 @@
                 let hearts = '';
                 if (isElim) hearts = '💀';
                 else if (isSwim) hearts = '🌊';
-                else if (lives === 0 && g.swimmer === u) hearts = '🌊 Schwimmt';
+                else if (g.swimmer === u) hearts = '🌊 Schwimmt';
                 else hearts = '❤️'.repeat(Math.max(0,lives)) + '🖤'.repeat(Math.max(0,3-lives));
                 const isCurrent = g.currentPlayer === u && g.status === 'playing';
                 return `<div style="background:${isCurrent?'rgba(0,255,163,0.1)':'rgba(255,255,255,0.04)'};border:1px solid ${isCurrent?'rgba(0,255,163,0.4)':'var(--glass-border)'};border-radius:10px;padding:8px 12px;text-align:center;min-width:75px;">
@@ -4386,6 +4394,7 @@
         g.roundClosedBy = null; g.closedPlayersDone = [];
         g.feuerPlayer = null;
         g.skippedThisRound = []; g.roundScores = {};
+        g.playedThisRound = []; // track who has had a turn
         g.hands = {}; g.log = [];
 
         const deck = schwDeck();
@@ -4493,6 +4502,15 @@
         const g = db.schwimmen;
         if (currentUser !== g.currentPlayer || g.roundClosedBy) return;
         if (!Array.isArray(g.log)) g.log = [];
+        if (!Array.isArray(g.playedThisRound)) g.playedThisRound = [];
+        // Check if everyone has had at least one turn
+        const gamePlayers = Array.isArray(g.joinedPlayers) ? g.joinedPlayers : ALL_USERS;
+        const alive = gamePlayers.filter(u => !(g.eliminated||[]).includes(u));
+        const everyonePlayed = alive.every(u => g.playedThisRound.includes(u));
+        if (!everyonePlayed) {
+            showNotif('⏳ Warte...', 'Jeder muss erst einmal dran gewesen sein!', 'warning', 3000);
+            return;
+        }
         g.roundClosedBy = currentUser;
         g.closedPlayersDone = [currentUser];
         g.log.unshift('🔔 '+currentUser+' klopft! Jeder noch ein Zug.');
@@ -4505,6 +4523,11 @@
         if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
         if (!Array.isArray(g.closedPlayersDone)) g.closedPlayersDone = [];
         if (!Array.isArray(g.log)) g.log = [];
+        if (!Array.isArray(g.playedThisRound)) g.playedThisRound = [];
+        // Mark current player as having played
+        if (g.currentPlayer && !g.playedThisRound.includes(g.currentPlayer)) {
+            g.playedThisRound.push(g.currentPlayer);
+        }
         const idx = g.turnOrder.indexOf(g.currentPlayer);
         if (g.roundClosedBy) {
             let next = null;
@@ -4540,7 +4563,7 @@
                     g.eliminated.push(loser);
                     g.swimmer = 'used'; // mark as used so nobody else can get it
                     g.log.unshift('💀 '+loser+' ist raus!');
-                } else if (g.swimmer === null) {
+                } else if (!g.swimmer || g.swimmer === null) {
                     // First player to reach 0 lives - becomes swimmer
                     g.swimmer = loser;
                     g.log.unshift('🌊 '+loser+' schwimmt jetzt!');
@@ -4565,7 +4588,7 @@
             g.dealer = aliveNow[(di+1)%aliveNow.length];
             g.status = 'roundEnd';
             // Reset swimmer if they survive
-            if (g.swimmer && !aliveNow.includes(g.swimmer)) g.swimmer = null;
+            // swimmer slot stays as 'used' permanently - do not reset
         }
         saveDB();
     }
