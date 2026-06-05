@@ -2106,6 +2106,20 @@
                 <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Passwort zurücksetzen → Person muss beim nächsten Login ein neues wählen.</p>
                 <div id="admin-pass-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
             </div>
+            <div class="card" style="border-top:4px solid var(--primary);margin-top:14px;">
+                <h3>🔑 Mein Passwort ändern</h3>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>Neues Passwort</label>
+                    <input type="password" id="ivo-new-pass-1" placeholder="Neues Passwort">
+                </div>
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label>Bestätigen</label>
+                    <input type="password" id="ivo-new-pass-2" placeholder="Passwort wiederholen">
+                </div>
+                <div id="ivo-pass-error" style="font-size:13px;color:var(--danger);margin-bottom:10px;display:none;"></div>
+                <div id="ivo-pass-success" style="font-size:13px;color:var(--success);margin-bottom:10px;display:none;">✅ Passwort geändert!</div>
+                <button onclick="ivoChangePassword()" style="background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);">💾 Passwort speichern</button>
+            </div>
         </div>
         <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
@@ -3170,17 +3184,10 @@
         var user = document.getElementById('login-user').value;
         var pass = document.getElementById('login-pass').value;
 
-        // Check custom password first
+        // Check if user has set a custom password in Firebase
         database.ref('customPasswords/' + user).once('value', function(snap) {
-            var validPass;
-            if (snap.exists()) {
-                validPass = snap.val();
-            } else {
-                validPass = PASSWORDS[user];
-            }
-
-            if (!pass && !snap.exists()) {
-                // No password set yet - show set password screen
+            if (!snap.exists()) {
+                // No custom password set yet - go directly to set password screen
                 document.getElementById('set-pass-name').textContent = user;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('set-password-screen').style.display = 'flex';
@@ -3189,7 +3196,8 @@
                 return;
             }
 
-            if (pass === validPass) {
+            // Custom password exists - validate it
+            if (pass === snap.val()) {
                 var stayLoggedIn = document.getElementById('stay-logged-in').checked;
                 if (stayLoggedIn) localStorage.setItem('bcn_saved_user', user);
                 else localStorage.removeItem('bcn_saved_user');
@@ -3220,11 +3228,18 @@
     function completeLogin(user) {
         currentUser = user;
         document.getElementById('current-username').innerText = currentUser;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('set-password-screen').style.display = 'none';
-        document.body.classList.remove('login-active');
-        document.getElementById('app-screen').classList.remove('hidden');
         document.getElementById('login-pass').value = '';
+        document.getElementById('set-password-screen').style.display = 'none';
+
+        // Swipe animation
+        var ls = document.getElementById('login-screen');
+        ls.classList.add('swiping');
+        setTimeout(function() {
+            ls.style.display = 'none';
+            ls.classList.remove('swiping');
+            document.body.classList.remove('login-active');
+            document.getElementById('app-screen').classList.remove('hidden');
+            document.getElementById('current-username').innerText = currentUser;
         if (currentUser === "Ivo") {
             document.getElementById('admin-reset-btn').classList.remove('hidden');
             document.getElementById('admin-panel').classList.remove('hidden');
@@ -3233,19 +3248,38 @@
             document.getElementById('admin-reset-btn').classList.add('hidden');
             document.getElementById('admin-panel').classList.add('hidden');
         }
-        setupShareCheckboxes();
-        switchTab('finanzen');
-        updateCountdown();
-        showDebtWarningIfNeeded();
-        checkNotificationsOnLogin();
-        _liveListenerActive = false;
-        startLiveNotifications();
-        watchOnlineStatus();
-        if (window._heartbeat) clearInterval(window._heartbeat);
-        window._heartbeat = setInterval(function(){ setOnlineStatus(true); }, 60000);
-        window.addEventListener('beforeunload', function(){ setOnlineStatus(false); });
-        document.addEventListener('visibilitychange', function(){ setOnlineStatus(!document.hidden); });
-        setOnlineStatus(true);
+            setupShareCheckboxes();
+            switchTab('finanzen');
+            updateUI();
+            updateCountdown();
+            showDebtWarningIfNeeded();
+            checkNotificationsOnLogin();
+            _liveListenerActive = false;
+            startLiveNotifications();
+            watchOnlineStatus();
+            if (window._heartbeat) clearInterval(window._heartbeat);
+            window._heartbeat = setInterval(function(){ setOnlineStatus(true); }, 60000);
+            window.addEventListener('beforeunload', function(){ setOnlineStatus(false); });
+            document.addEventListener('visibilitychange', function(){ setOnlineStatus(!document.hidden); });
+            setOnlineStatus(true);
+        }, 480);
+    }
+
+    function ivoChangePassword() {
+        var p1 = document.getElementById('ivo-new-pass-1').value.trim();
+        var p2 = document.getElementById('ivo-new-pass-2').value.trim();
+        var err = document.getElementById('ivo-pass-error');
+        var suc = document.getElementById('ivo-pass-success');
+        err.style.display = 'none';
+        suc.style.display = 'none';
+        if (!p1) { err.textContent = 'Bitte ein Passwort eingeben.'; err.style.display = 'block'; return; }
+        if (p1.length < 3) { err.textContent = 'Mindestens 3 Zeichen.'; err.style.display = 'block'; return; }
+        if (p1 !== p2) { err.textContent = 'Passwörter stimmen nicht überein.'; err.style.display = 'block'; return; }
+        database.ref('customPasswords/Ivo').set(p1, function() {
+            suc.style.display = 'block';
+            document.getElementById('ivo-new-pass-1').value = '';
+            document.getElementById('ivo-new-pass-2').value = '';
+        });
     }
 
     function renderAdminPassList() {
