@@ -817,6 +817,7 @@
             <h2>Hi, <span id="current-username" style="color:var(--primary)"></span>! 👋</h2>
             <div style="display:flex; align-items:center; gap:12px;">
                 <span id="sync-indicator" style="font-size:12px; color:var(--success); opacity:0; transition: opacity 0.4s; white-space:nowrap;">🔄 Synced</span>
+                <button id="admin-btn" class="hidden" onclick="openAdminModal()" style="width:auto;margin:0;background:rgba(255,190,11,.15);color:var(--warning);border:1px solid rgba(255,190,11,.3);box-shadow:none;">⚙️ Admin</button>
                 <button class="btn-logout" style="width:auto; margin:0;" onclick="logout()">Abmelden</button>
             </div>
         </div>
@@ -2100,28 +2101,7 @@
         </div>
         </div>
 
-        <div id="admin-panel" class="hidden" style="margin-top:20px;">
-            <div class="card" style="border-top:4px solid var(--warning);">
-                <h3>🔐 Admin – Passwörter verwalten</h3>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Passwort zurücksetzen → Person muss beim nächsten Login ein neues wählen.</p>
-                <div id="admin-pass-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
-            </div>
-            <div class="card" style="border-top:4px solid var(--primary);margin-top:14px;">
-                <h3>🔑 Mein Passwort ändern</h3>
-                <div class="form-group" style="margin-bottom:10px;">
-                    <label>Neues Passwort</label>
-                    <input type="password" id="ivo-new-pass-1" placeholder="Neues Passwort">
-                </div>
-                <div class="form-group" style="margin-bottom:14px;">
-                    <label>Bestätigen</label>
-                    <input type="password" id="ivo-new-pass-2" placeholder="Passwort wiederholen">
-                </div>
-                <div id="ivo-pass-error" style="font-size:13px;color:var(--danger);margin-bottom:10px;display:none;"></div>
-                <div id="ivo-pass-success" style="font-size:13px;color:var(--success);margin-bottom:10px;display:none;">✅ Passwort geändert!</div>
-                <button onclick="ivoChangePassword()" style="background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);">💾 Passwort speichern</button>
-            </div>
-        </div>
-        <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
+
     </div>
 </div>
 
@@ -3241,12 +3221,9 @@
             document.getElementById('app-screen').classList.remove('hidden');
             document.getElementById('current-username').innerText = currentUser;
         if (currentUser === "Ivo") {
-            document.getElementById('admin-reset-btn').classList.remove('hidden');
-            document.getElementById('admin-panel').classList.remove('hidden');
-            renderAdminPassList();
+            document.getElementById('admin-btn').classList.remove('hidden');
         } else {
-            document.getElementById('admin-reset-btn').classList.add('hidden');
-            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('admin-btn').classList.add('hidden');
         }
             setupShareCheckboxes();
             switchTab('finanzen');
@@ -3265,6 +3242,15 @@
         }, 480);
     }
 
+    function openAdminModal() {
+        document.getElementById('admin-modal').style.display = 'block';
+        renderAdminPassListModal();
+    }
+
+    function closeAdminModal() {
+        document.getElementById('admin-modal').style.display = 'none';
+    }
+
     function ivoChangePassword() {
         var p1 = document.getElementById('ivo-new-pass-1').value.trim();
         var p2 = document.getElementById('ivo-new-pass-2').value.trim();
@@ -3279,6 +3265,26 @@
             suc.style.display = 'block';
             document.getElementById('ivo-new-pass-1').value = '';
             document.getElementById('ivo-new-pass-2').value = '';
+        });
+    }
+
+    function renderAdminPassListModal() {
+        var el = document.getElementById('admin-pass-list-modal');
+        if (!el) return;
+        var others = ALL_USERS.filter(function(u){ return u !== 'Ivo'; });
+        el.innerHTML = '';
+        others.forEach(function(u) {
+            database.ref('customPasswords/' + u).once('value', function(snap) {
+                var hasCustom = snap.exists();
+                var div = document.createElement('div');
+                div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;';
+                div.innerHTML = '<div>'
+                    + '<div style="font-weight:700;font-size:13px;color:var(--text-main);">' + u + '</div>'
+                    + '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (hasCustom ? '🔑 Eigenes Passwort' : '🔓 Noch kein Passwort gesetzt') + '</div>'
+                    + '</div>'
+                    + '<button onclick="adminResetPassword(\'' + u + '\')" style="width:auto;padding:6px 12px;font-size:12px;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">🔄 Reset</button>';
+                el.appendChild(div);
+            });
         });
     }
 
@@ -4533,6 +4539,38 @@
             });
         }
     </script>
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto;">
+        <div style="max-width:420px;margin:40px auto;padding:20px;">
+            <div class="card" style="border-top:4px solid var(--warning);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 style="margin:0;">⚙️ Admin-Bereich</h3>
+                    <button onclick="closeAdminModal()" style="width:auto;background:none;border:1px solid var(--glass-border);color:var(--text-muted);box-shadow:none;padding:6px 12px;font-size:13px;">✕ Schließen</button>
+                </div>
+
+                <!-- Passwörter verwalten -->
+                <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">🔐 Passwörter zurücksetzen</h4>
+                <div id="admin-pass-list-modal" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+
+                <!-- Eigenes Passwort ändern -->
+                <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">🔑 Mein Passwort ändern</h4>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <input type="password" id="ivo-new-pass-1" placeholder="Neues Passwort">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <input type="password" id="ivo-new-pass-2" placeholder="Passwort bestätigen">
+                </div>
+                <div id="ivo-pass-error" style="font-size:13px;color:var(--danger);margin-bottom:8px;display:none;"></div>
+                <div id="ivo-pass-success" style="font-size:13px;color:var(--success);margin-bottom:8px;display:none;">✅ Passwort geändert!</div>
+                <button onclick="ivoChangePassword()" style="width:100%;background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);margin-bottom:20px;">💾 Passwort speichern</button>
+
+                <!-- Reset -->
+                <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">⚠️ Gefahrenzone</h4>
+                <button onclick="resetAllData()" style="width:100%;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">⚠️ Gesamte App zurücksetzen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- OCEAN BACKGROUND -->
     <canvas id="ocean-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;"></canvas>
     <script>
