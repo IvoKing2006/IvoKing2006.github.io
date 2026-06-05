@@ -1134,6 +1134,8 @@
                 <button id="subtab-apotheke" class="subnav-btn" onclick="switchSubTab('entdecken', 'apotheke')">💊 Apotheke</button>
                 <button id="subtab-orte" class="subnav-btn" onclick="switchSubTab('entdecken', 'orte')">🧭 Orte</button>
                 <button id="subtab-supermarkt" class="subnav-btn" onclick="switchSubTab('entdecken', 'supermarkt')">🛒 Supermärkte</button>
+                <div id="custom-tabs-nav"></div>
+                <button id="subtab-eigene-orte" class="subnav-btn" onclick="switchSubTab('entdecken', 'eigene-orte')">➕ Hinzufügen</button>
             </div>
         <div id="content-restaurants" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent);">
@@ -2027,6 +2029,51 @@
         </div>
         </div>
 
+        <!-- EIGENE ORTE TAB -->
+        <div id="content-eigene-orte" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid var(--success);">
+                <h3>➕ Ort hinzufügen</h3>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="eo-name" placeholder="z.B. Restaurant La Mar">
+                </div>
+                <div class="form-group">
+                    <label>Adresse</label>
+                    <input type="text" id="eo-addr" placeholder="z.B. Carrer de la Marina, 10, Barcelona">
+                </div>
+                <div class="form-group">
+                    <label>Kategorie</label>
+                    <div style="display:flex;gap:8px;">
+                        <select id="eo-cat" style="flex:1;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;font-size:14px;color:var(--text-main);" onchange="toggleNewCat()">
+                            <option value="restaurants">🍔 Restaurants</option>
+                            <option value="tabak">🚬 Tabak</option>
+                            <option value="apotheke">💊 Apotheke</option>
+                            <option value="supermarkt">🛒 Supermärkte</option>
+                            <option value="orte">🧭 Orte</option>
+                            <option value="neu">✨ Neue Kategorie erstellen</option>
+                        </select>
+                    </div>
+                    <div id="eo-new-cat-wrap" style="display:none;margin-top:8px;">
+                        <input type="text" id="eo-new-cat-name" placeholder="Name der neuen Kategorie (z.B. Clubs)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tag (optional)</label>
+                    <input type="text" id="eo-tag" placeholder="z.B. Italienisch, Pizza, Bar...">
+                </div>
+                <div class="form-group">
+                    <label>Öffnungszeiten (optional)</label>
+                    <input type="text" id="eo-hours" placeholder="z.B. Mo–So: 12:00–23:00">
+                </div>
+                <div id="eo-status" style="font-size:13px;margin-bottom:10px;display:none;"></div>
+                <button onclick="addEigenerOrt()" style="background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">➕ Ort hinzufügen</button>
+            </div>
+            <div id="eo-list" style="margin-top:14px;"></div>
+        </div>
+
+        <!-- CUSTOM KATEGORIE TABS -->
+        <div id="custom-cat-tabs-container"></div>
+
         <div id="content-spiele" class="tab-content hidden">
             <div class="sub-nav-tabs">
                 <button id="subtab-zufall" class="subnav-btn active" onclick="switchSubTab('spiele', 'zufall')">🎲 Zufall</button>
@@ -2304,7 +2351,7 @@
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
         if (tabName === 'wetter') loadWetter();
-        if (tabName === 'entdecken') switchSubTab('entdecken', 'restaurants');
+        if (tabName === 'entdecken') { switchSubTab('entdecken', 'restaurants'); setTimeout(function(){ renderEigeneOrteInTabs(); renderCustomCatNav(); }, 200); }
         if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
         if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
     }
@@ -2871,6 +2918,10 @@
             if (!db.packing[u]) db.packing[u] = [];
             else if (!Array.isArray(db.packing[u])) db.packing[u] = Object.values(db.packing[u]);
         });
+        if (!db.eigeneOrte) db.eigeneOrte = [];
+        else if (!Array.isArray(db.eigeneOrte)) db.eigeneOrte = Object.values(db.eigeneOrte);
+        if (!db.customCats) db.customCats = [];
+        else if (!Array.isArray(db.customCats)) db.customCats = Object.values(db.customCats);
     }
 
     function updateUI() {
@@ -3314,6 +3365,194 @@
             showNotif('✅ Passwort zurückgesetzt', user + ' muss beim nächsten Login ein neues Passwort wählen.', 'success', 4000);
             renderAdminPassList();
         });
+    }
+
+    // ================= EIGENE ORTE =================
+    function toggleNewCat() {
+        var val = document.getElementById('eo-cat').value;
+        document.getElementById('eo-new-cat-wrap').style.display = val === 'neu' ? 'block' : 'none';
+    }
+
+    function addEigenerOrt() {
+        var name   = document.getElementById('eo-name').value.trim();
+        var addr   = document.getElementById('eo-addr').value.trim();
+        var cat    = document.getElementById('eo-cat').value;
+        var newCatName = document.getElementById('eo-new-cat-name').value.trim();
+        var tag    = document.getElementById('eo-tag').value.trim();
+        var hours  = document.getElementById('eo-hours').value.trim();
+        var status = document.getElementById('eo-status');
+
+        if (!name || !addr) { status.textContent = '❌ Bitte Name und Adresse eingeben.'; status.style.color = 'var(--danger)'; status.style.display = 'block'; return; }
+
+        if (cat === 'neu') {
+            if (!newCatName) { status.textContent = '❌ Bitte Kategorie-Namen eingeben.'; status.style.color = 'var(--danger)'; status.style.display = 'block'; return; }
+            // Add new category if not exists
+            var catId = 'custom_' + newCatName.toLowerCase().replace(/\s+/g, '_');
+            if (!db.customCats.find(function(c){ return c.id === catId; })) {
+                db.customCats.push({ id: catId, name: newCatName });
+            }
+            cat = catId;
+        }
+
+        status.textContent = '🔍 Adresse wird gesucht...';
+        status.style.color = 'var(--text-muted)';
+        status.style.display = 'block';
+
+        // Geocode via Nominatim
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(addr) + '&limit=1', {
+            headers: { 'Accept-Language': 'de' }
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+            var lat = data && data[0] ? parseFloat(data[0].lat) : null;
+            var lng = data && data[0] ? parseFloat(data[0].lon) : null;
+
+            var ort = {
+                id: Date.now().toString(),
+                name: name,
+                addr: addr,
+                cat: cat,
+                tag: tag,
+                hours: hours,
+                lat: lat,
+                lng: lng,
+                addedBy: currentUser
+            };
+
+            if (!db.eigeneOrte) db.eigeneOrte = [];
+            db.eigeneOrte.push(ort);
+            saveDB();
+
+            // Clear form
+            document.getElementById('eo-name').value = '';
+            document.getElementById('eo-addr').value = '';
+            document.getElementById('eo-tag').value = '';
+            document.getElementById('eo-hours').value = '';
+            document.getElementById('eo-new-cat-name').value = '';
+            document.getElementById('eo-new-cat-wrap').style.display = 'none';
+
+            status.textContent = lat ? '✅ Hinzugefügt!' : '✅ Hinzugefügt! (Adresse nicht gefunden – Route möglicherweise ungenau)';
+            status.style.color = 'var(--success)';
+
+            renderEigeneOrteInTabs();
+            renderCustomCatNav();
+            renderEigeneOrteListe();
+        })
+        .catch(function() {
+            // Add without coordinates
+            var ort = { id: Date.now().toString(), name: name, addr: addr, cat: cat, tag: tag, hours: hours, lat: null, lng: null, addedBy: currentUser };
+            if (!db.eigeneOrte) db.eigeneOrte = [];
+            db.eigeneOrte.push(ort);
+            saveDB();
+            status.textContent = '✅ Hinzugefügt! (Ohne GPS-Koordinaten)';
+            status.style.color = 'var(--success)';
+            renderEigeneOrteInTabs();
+            renderCustomCatNav();
+            renderEigeneOrteListe();
+        });
+    }
+
+    function deleteEigenerOrt(id) {
+        if (!confirm('Ort löschen?')) return;
+        db.eigeneOrte = (db.eigeneOrte || []).filter(function(o){ return o.id !== id; });
+        saveDB();
+        renderEigeneOrteInTabs();
+        renderEigeneOrteListe();
+    }
+
+    function renderEigeneOrteListe() {
+        var el = document.getElementById('eo-list');
+        if (!el) return;
+        var list = db.eigeneOrte || [];
+        if (list.length === 0) { el.innerHTML = ''; return; }
+        el.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bereits hinzugefügt:</div>'
+            + list.map(function(o) {
+                var catLabel = getCatLabel(o.cat);
+                return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;margin-bottom:8px;gap:10px;">'
+                    + '<div><div style="font-weight:700;font-size:13px;color:var(--text-main);">' + o.name + '</div>'
+                    + '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + catLabel + ' · ' + o.addr + '</div></div>'
+                    + '<button onclick="deleteEigenerOrt(\'' + o.id + '\')" style="background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:5px 10px;font-size:12px;border-radius:8px;cursor:pointer;width:auto;flex-shrink:0;">🗑️</button>'
+                    + '</div>';
+            }).join('');
+    }
+
+    function getCatLabel(cat) {
+        var labels = { restaurants: '🍔 Restaurants', tabak: '🚬 Tabak', apotheke: '💊 Apotheke', supermarkt: '🛒 Supermärkte', orte: '🧭 Orte' };
+        if (labels[cat]) return labels[cat];
+        var custom = (db.customCats || []).find(function(c){ return c.id === cat; });
+        return custom ? '📍 ' + custom.name : cat;
+    }
+
+    function renderCustomCatNav() {
+        // Add buttons for custom categories in subnav
+        var navEl = document.getElementById('custom-tabs-nav');
+        if (!navEl) return;
+        var cats = db.customCats || [];
+        navEl.innerHTML = cats.map(function(c) {
+            return '<button id="subtab-' + c.id + '" class="subnav-btn" onclick="switchSubTab(\'entdecken\', \'' + c.id + '\')">' + c.name + '</button>';
+        }).join('');
+
+        // Add tab content for each custom category
+        var container = document.getElementById('custom-cat-tabs-container');
+        if (!container) return;
+        container.innerHTML = '';
+        cats.forEach(function(c) {
+            var div = document.createElement('div');
+            div.id = 'content-' + c.id;
+            div.className = 'subtab-content hidden';
+            div.innerHTML = '<div class="card" style="border-top:4px solid var(--accent);">'
+                + '<h3>📍 ' + c.name + '</h3>'
+                + '<p style="font-size:13px;color:var(--text-muted);margin-bottom:15px;">Live-Entfernung wird automatisch berechnet.</p>'
+                + '<div class="restaurant-grid" id="grid-' + c.id + '"></div>'
+                + '</div>';
+            container.appendChild(div);
+        });
+
+        renderEigeneOrteInTabs();
+    }
+
+    function renderEigeneOrteInTabs() {
+        var orte = db.eigeneOrte || [];
+        var cats = ['restaurants','tabak','apotheke','supermarkt','orte'];
+
+        // Also get custom cat ids
+        (db.customCats || []).forEach(function(c){ cats.push(c.id); });
+
+        cats.forEach(function(cat) {
+            // Remove old injected cards
+            document.querySelectorAll('.eigener-ort-card[data-cat="' + cat + '"]').forEach(function(el){ el.remove(); });
+
+            var items = orte.filter(function(o){ return o.cat === cat; });
+            if (items.length === 0) return;
+
+            // Find grid
+            var gridId = cat === 'restaurants' ? null : (cat === 'tabak' ? 'tabak-grid' : (cat === 'apotheke' ? 'apotheke-grid' : (cat === 'supermarkt' ? null : null)));
+            var subtab = document.getElementById('content-' + cat);
+            if (!subtab) return;
+            var grid = subtab.querySelector('.restaurant-grid') || subtab.querySelector('#grid-' + cat);
+            if (!grid) return;
+
+            items.forEach(function(o) {
+                var card = document.createElement('div');
+                card.className = 'card eigener-ort-card';
+                card.setAttribute('data-cat', cat);
+                if (o.lat) { card.setAttribute('data-lat', o.lat); card.setAttribute('data-lng', o.lng); }
+                card.style.cssText = 'background:#0f172a;margin-bottom:0;';
+                var html = '<h4 style="font-size:17px;margin-bottom:5px;">' + o.name + '</h4>';
+                if (o.tag) html += '<div class="cuisine-tag">' + o.tag + '</div>';
+                else html += '<div class="cuisine-tag">📍 Eigener Eintrag</div>';
+                html += '<div class="meta-info" style="margin-bottom:' + (o.hours ? '6px' : '10px') + ';">' + o.addr + '</div>';
+                if (o.hours) html += '<span class="hours-info">' + o.hours + '</span>';
+                if (o.lat) html += '<div class="distance-live">🔍 Suche GPS...</div>';
+                html += '<button class="btn-nav-link" id="enav-' + o.id + '">🗺️ Route öffnen</button>';
+                html += '<button onclick="deleteEigenerOrt(\'' + o.id + '\')" style="margin-top:4px;background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:6px;font-size:12px;width:100%;border-radius:8px;cursor:pointer;">🗑️ Entfernen</button>';
+                card.innerHTML = html;
+                grid.appendChild(card);
+                card.querySelector('#enav-' + o.id).onclick = function(){ openMap(o.name, o.addr); };
+            });
+        });
+
+        renderEigeneOrteListe();
     }
 
     // ================= STATISTIK =================
