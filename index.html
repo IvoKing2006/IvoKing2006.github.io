@@ -2351,74 +2351,6 @@
         setTimeout(() => { modal.style.display = 'none'; modal.style.opacity = ''; modal.style.transition = ''; }, 300);
     }
 
-    function login() {
-        if (!isDbReady) { alert('Verbindung zu Firebase wird aufgebaut... Bitte kurz warten und nochmal versuchen!'); return; }
-        const user = document.getElementById('login-user').value;
-        const pass = document.getElementById('login-pass').value;
-
-        if (PASSWORDS[user] === pass) {
-            currentUser = user;
-            // Save to localStorage if "stay logged in" is checked
-            var stayLoggedIn = document.getElementById('stay-logged-in').checked;
-            if (stayLoggedIn) {
-                localStorage.setItem('bcn_saved_user', user);
-            } else {
-                localStorage.removeItem('bcn_saved_user');
-            }
-            document.getElementById('current-username').innerText = currentUser;
-            document.getElementById('login-pass').value = '';
-            // Swipe animation
-            var ls = document.getElementById('login-screen');
-            ls.classList.add('swiping');
-            setTimeout(function() {
-                ls.style.display = 'none';
-                ls.classList.remove('swiping');
-                document.body.classList.remove('login-active');
-                document.getElementById('app-screen').classList.remove('hidden');
-            }, 480); 
-            
-            if (currentUser === "Ivo") {
-                document.getElementById('admin-reset-btn').classList.remove('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-                renderAdminPassList();
-            } else {
-                document.getElementById('admin-reset-btn').classList.add('hidden');
-                document.getElementById('admin-panel').classList.add('hidden');
-            }
-            
-            // Online-Status setzen
-            setOnlineStatus(true);
-
-            setupShareCheckboxes();
-            switchTab('finanzen'); 
-            updateUI();
-            updateCountdown();
-
-
-            // Schulden-Vollbild-Reminder beim Login
-            showDebtWarningIfNeeded();
-            // Notifications beim Login prüfen
-            checkNotificationsOnLogin();
-            // Live-Notifications starten
-            _liveListenerActive = false;
-            startLiveNotifications();
-
-            // Live-Listener für Online-Status aller User
-            watchOnlineStatus();
-
-            // Heartbeat alle 60s damit "zuletzt online" aktuell bleibt
-            if (window._heartbeat) clearInterval(window._heartbeat);
-            window._heartbeat = setInterval(() => setOnlineStatus(true), 60000);
-
-            // Bei Tab-Wechsel / Schließen offline setzen
-            window.addEventListener('beforeunload', () => setOnlineStatus(false));
-            document.addEventListener('visibilitychange', () => {
-                setOnlineStatus(!document.hidden);
-            });
-        } else {
-            alert('Falsches Passwort!');
-        }
-    }
 
     function logout() {
         setOnlineStatus(false);
@@ -3330,14 +3262,14 @@
                     + '<div style="font-weight:700;font-size:13px;color:var(--text-main);">' + u + '</div>'
                     + '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (hasCustom ? '🔑 Eigenes Passwort gesetzt' : '🔓 Standard-Passwort aktiv') + '</div>'
                     + '</div>'
-                    + '<button onclick="adminResetPassword('' + u + '')" style="width:auto;padding:6px 12px;font-size:12px;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">🔄 Zurücksetzen</button>';
+                    + '<button onclick="adminResetPassword(\'' + u + '\')" style="width:auto;padding:6px 12px;font-size:12px;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">🔄 Zurücksetzen</button>';
                 el.appendChild(div);
             });
         });
     }
 
     function adminResetPassword(user) {
-        if (!confirm(user + ''s Passwort zurücksetzen? Sie müssen beim nächsten Login ein neues Passwort wählen.')) return;
+        if (!confirm(user + ' - Passwort zurücksetzen? Beim nächsten Login muss ein neues gewählt werden.')) return;
         database.ref('customPasswords/' + user).remove(function() {
             showNotif('✅ Passwort zurückgesetzt', user + ' muss beim nächsten Login ein neues Passwort wählen.', 'success', 4000);
             renderAdminPassList();
@@ -3625,32 +3557,22 @@
     // Run splash screen first, then show login or auto-login
     runSplashScreen(function() {
         var savedUser = localStorage.getItem('bcn_saved_user');
-        if (savedUser && PASSWORDS[savedUser]) {
-            // Auto-login
-            currentUser = savedUser;
-            document.getElementById('login-user').value = savedUser;
-            document.getElementById('current-username').innerText = currentUser;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').classList.remove('hidden');
-            if (currentUser === "Ivo") { document.getElementById('admin-reset-btn').classList.remove('hidden'); }
-            else { document.getElementById('admin-reset-btn').classList.add('hidden'); }
-            setupShareCheckboxes();
-            switchTab('finanzen');
-            var autoLoginCheck = setInterval(function() {
+        if (savedUser && ALL_USERS.indexOf(savedUser) > -1) {
+            // Wait for DB then auto-login
+            var waitForDb = setInterval(function() {
                 if (isDbReady) {
-                    clearInterval(autoLoginCheck);
-                    updateUI();
-                    updateCountdown();
-                    showDebtWarningIfNeeded();
-                    checkNotificationsOnLogin();
-                    _liveListenerActive = false;
-                    startLiveNotifications();
-                    watchOnlineStatus();
-                    if (window._heartbeat) clearInterval(window._heartbeat);
-                    window._heartbeat = setInterval(function(){ setOnlineStatus(true); }, 60000);
-                    setOnlineStatus(true);
+                    clearInterval(waitForDb);
+                    completeLogin(savedUser);
                 }
             }, 200);
+            // Timeout after 5s - show login screen
+            setTimeout(function() {
+                clearInterval(waitForDb);
+                if (!currentUser) {
+                    document.getElementById('login-screen').style.display = 'flex';
+                    document.body.classList.add('login-active');
+                }
+            }, 5000);
         } else {
             // Show login screen
             document.getElementById('login-screen').style.display = 'flex';
