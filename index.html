@@ -3518,9 +3518,13 @@
         // Also get custom cat ids
         (db.customCats || []).forEach(function(c){ cats.push(c.id); });
 
+        // Only remove/add within content-entdecken to prevent DOM leaking
+        var entdecken = document.getElementById('content-entdecken');
+        if (!entdecken) return;
+
         cats.forEach(function(cat) {
-            // Remove old injected cards
-            document.querySelectorAll('.eigener-ort-card[data-cat="' + cat + '"]').forEach(function(el){ el.remove(); });
+            // Remove old injected cards - only within entdecken
+            entdecken.querySelectorAll('.eigener-ort-card[data-cat="' + cat + '"]').forEach(function(el){ el.remove(); });
 
             var items = orte.filter(function(o){ return o.cat === cat; });
             if (items.length === 0) return;
