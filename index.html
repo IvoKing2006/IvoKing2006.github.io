@@ -789,6 +789,29 @@
         </div>
     </div>
 
+    <!-- PASSWORT SETZEN SCREEN -->
+    <div id="set-password-screen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;height:100dvh;z-index:200;overflow:hidden;">
+        <div id="login-bg" style="position:fixed;top:-50px;left:-50px;right:-50px;bottom:-50px;width:calc(100% + 100px);height:calc(100% + 100px);background-image:url('bg.jpg');background-size:cover;background-position:center;z-index:-2;"></div>
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,rgba(2,8,23,0.2),rgba(2,8,23,0.05) 50%,rgba(2,8,23,0.35));z-index:-1;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;">
+            <div id="login-card" style="width:100%;max-width:360px;">
+                <div id="login-city-name">Barcelona 2026</div>
+                <h1 style="font-size:1.8rem;margin-bottom:8px;">🔑 Passwort wählen</h1>
+                <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:20px;">Hey <span id="set-pass-name" style="color:var(--primary);font-weight:700;"></span>! Wähle dein persönliches Passwort.</p>
+                <div class="form-group">
+                    <label>Neues Passwort</label>
+                    <input type="password" id="new-pass-1" placeholder="Passwort eingeben">
+                </div>
+                <div class="form-group">
+                    <label>Passwort bestätigen</label>
+                    <input type="password" id="new-pass-2" placeholder="Passwort wiederholen" onkeydown="if(event.key==='Enter') saveNewPassword()">
+                </div>
+                <div id="set-pass-error" style="font-size:13px;color:var(--danger);margin-bottom:12px;display:none;"></div>
+                <button onclick="saveNewPassword()" style="width:100%;background:linear-gradient(135deg,rgba(0,255,163,0.25),rgba(0,200,122,0.2));border:1px solid rgba(0,255,163,0.4);color:var(--success);">✅ Passwort speichern</button>
+            </div>
+        </div>
+    </div>
+
     <div id="app-screen" class="hidden">
         <div class="header-bar">
             <h2>Hi, <span id="current-username" style="color:var(--primary)"></span>! 👋</h2>
@@ -2077,6 +2100,13 @@
         </div>
         </div>
 
+        <div id="admin-panel" class="hidden" style="margin-top:20px;">
+            <div class="card" style="border-top:4px solid var(--warning);">
+                <h3>🔐 Admin – Passwörter verwalten</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Passwort zurücksetzen → Person muss beim nächsten Login ein neues wählen.</p>
+                <div id="admin-pass-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
+            </div>
+        </div>
         <button id="admin-reset-btn" class="btn-danger-outline hidden" onclick="resetAllData()">⚠️ Gesamte App auf Null zurücksetzen (Admin)</button>
     </div>
 </div>
@@ -2347,8 +2377,14 @@
                 document.getElementById('app-screen').classList.remove('hidden');
             }, 480); 
             
-            if (currentUser === "Ivo") { document.getElementById('admin-reset-btn').classList.remove('hidden'); } 
-            else { document.getElementById('admin-reset-btn').classList.add('hidden'); }
+            if (currentUser === "Ivo") {
+                document.getElementById('admin-reset-btn').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminPassList();
+            } else {
+                document.getElementById('admin-reset-btn').classList.add('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
             
             // Online-Status setzen
             setOnlineStatus(true);
@@ -3183,6 +3219,129 @@
         } else {
             if (existing) existing.remove();
         }
+    }
+
+    // ================= PASSWORT MANAGEMENT =================
+    function checkFirstLogin(user, callback) {
+        // Check if user has a custom password in Firebase
+        database.ref('customPasswords/' + user).once('value', function(snap) {
+            if (snap.exists()) {
+                callback(snap.val());
+            } else {
+                callback(null);
+            }
+        });
+    }
+
+    function login() {
+        if (!isDbReady) { alert('Verbindung zu Firebase wird aufgebaut... Bitte kurz warten!'); return; }
+        var user = document.getElementById('login-user').value;
+        var pass = document.getElementById('login-pass').value;
+
+        // Check custom password first
+        database.ref('customPasswords/' + user).once('value', function(snap) {
+            var validPass;
+            if (snap.exists()) {
+                validPass = snap.val();
+            } else {
+                validPass = PASSWORDS[user];
+            }
+
+            if (!pass && !snap.exists()) {
+                // No password set yet - show set password screen
+                document.getElementById('set-pass-name').textContent = user;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('set-password-screen').style.display = 'flex';
+                document.getElementById('set-password-screen').setAttribute('data-user', user);
+                document.body.classList.remove('login-active');
+                return;
+            }
+
+            if (pass === validPass) {
+                var stayLoggedIn = document.getElementById('stay-logged-in').checked;
+                if (stayLoggedIn) localStorage.setItem('bcn_saved_user', user);
+                else localStorage.removeItem('bcn_saved_user');
+                completeLogin(user);
+            } else {
+                alert('Falsches Passwort!');
+            }
+        });
+    }
+
+    function saveNewPassword() {
+        var pass1 = document.getElementById('new-pass-1').value.trim();
+        var pass2 = document.getElementById('new-pass-2').value.trim();
+        var errEl = document.getElementById('set-pass-error');
+        var user = document.getElementById('set-password-screen').getAttribute('data-user');
+
+        if (!pass1) { errEl.textContent = 'Bitte ein Passwort eingeben.'; errEl.style.display = 'block'; return; }
+        if (pass1.length < 3) { errEl.textContent = 'Passwort muss mindestens 3 Zeichen haben.'; errEl.style.display = 'block'; return; }
+        if (pass1 !== pass2) { errEl.textContent = 'Passwörter stimmen nicht überein.'; errEl.style.display = 'block'; return; }
+
+        errEl.style.display = 'none';
+        database.ref('customPasswords/' + user).set(pass1, function() {
+            document.getElementById('set-password-screen').style.display = 'none';
+            completeLogin(user);
+        });
+    }
+
+    function completeLogin(user) {
+        currentUser = user;
+        document.getElementById('current-username').innerText = currentUser;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('set-password-screen').style.display = 'none';
+        document.body.classList.remove('login-active');
+        document.getElementById('app-screen').classList.remove('hidden');
+        document.getElementById('login-pass').value = '';
+        if (currentUser === "Ivo") {
+            document.getElementById('admin-reset-btn').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.remove('hidden');
+            renderAdminPassList();
+        } else {
+            document.getElementById('admin-reset-btn').classList.add('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+        }
+        setupShareCheckboxes();
+        switchTab('finanzen');
+        updateCountdown();
+        showDebtWarningIfNeeded();
+        checkNotificationsOnLogin();
+        _liveListenerActive = false;
+        startLiveNotifications();
+        watchOnlineStatus();
+        if (window._heartbeat) clearInterval(window._heartbeat);
+        window._heartbeat = setInterval(function(){ setOnlineStatus(true); }, 60000);
+        window.addEventListener('beforeunload', function(){ setOnlineStatus(false); });
+        document.addEventListener('visibilitychange', function(){ setOnlineStatus(!document.hidden); });
+        setOnlineStatus(true);
+    }
+
+    function renderAdminPassList() {
+        var el = document.getElementById('admin-pass-list');
+        if (!el) return;
+        var others = ALL_USERS.filter(function(u){ return u !== 'Ivo'; });
+        el.innerHTML = '';
+        others.forEach(function(u) {
+            database.ref('customPasswords/' + u).once('value', function(snap) {
+                var hasCustom = snap.exists();
+                var div = document.createElement('div');
+                div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;';
+                div.innerHTML = '<div>'
+                    + '<div style="font-weight:700;font-size:13px;color:var(--text-main);">' + u + '</div>'
+                    + '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (hasCustom ? '🔑 Eigenes Passwort gesetzt' : '🔓 Standard-Passwort aktiv') + '</div>'
+                    + '</div>'
+                    + '<button onclick="adminResetPassword('' + u + '')" style="width:auto;padding:6px 12px;font-size:12px;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">🔄 Zurücksetzen</button>';
+                el.appendChild(div);
+            });
+        });
+    }
+
+    function adminResetPassword(user) {
+        if (!confirm(user + ''s Passwort zurücksetzen? Sie müssen beim nächsten Login ein neues Passwort wählen.')) return;
+        database.ref('customPasswords/' + user).remove(function() {
+            showNotif('✅ Passwort zurückgesetzt', user + ' muss beim nächsten Login ein neues Passwort wählen.', 'success', 4000);
+            renderAdminPassList();
+        });
     }
 
     // ================= STATISTIK =================
