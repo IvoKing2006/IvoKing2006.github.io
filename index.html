@@ -2295,9 +2295,37 @@
 
     // Google Maps Fix Funktion
     function openMap(name, address, lat, lng) {
-        let query = name ? name + ', ' + address : address;
-        let url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
-        window.open(url, '_blank');
+        var query = name ? name + ', ' + address : address;
+        var gmapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+
+        if (currentUser === 'Ivo') {
+            // Show choice modal for Ivo
+            var modal = document.getElementById('tmb-modal');
+            modal.style.display = 'flex';
+
+            document.getElementById('tmb-gmaps-btn').onclick = function() {
+                modal.style.display = 'none';
+                window.open(gmapsUrl, '_blank');
+            };
+
+            document.getElementById('tmb-app-btn').onclick = function() {
+                modal.style.display = 'none';
+                // TMB Deep Link - opens TMB app if installed, otherwise TMB website
+                var tmbDeepLink = 'tmb://';
+                var tmbFallback = 'https://www.tmb.cat/ca/barcelona/xarxes-i-horaris/-/lineabus/linia/';
+                // Try deep link first, fall back to website after short delay
+                var iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = tmbDeepLink;
+                document.body.appendChild(iframe);
+                setTimeout(function() {
+                    document.body.removeChild(iframe);
+                    window.open('https://www.tmb.cat', '_blank');
+                }, 1500);
+            };
+        } else {
+            window.open(gmapsUrl, '_blank');
+        }
     }
 
     // ZUFALLSGENERATOR LOGIK
@@ -4845,6 +4873,19 @@
                 <!-- Reset -->
                 <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">⚠️ Gefahrenzone</h4>
                 <button onclick="resetAllData()" style="width:100%;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">⚠️ Gesamte App zurücksetzen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TMB AUSWAHL MODAL (nur Ivo) -->
+    <div id="tmb-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;">
+        <div style="background:#0f172a;border:1px solid var(--glass-border);border-radius:20px;padding:24px;width:90%;max-width:340px;box-shadow:0 24px 64px rgba(0,0,0,0.6);">
+            <h3 style="text-align:center;margin-bottom:6px;">🗺️ Route öffnen</h3>
+            <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:20px;">Womit möchtest du navigieren?</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button id="tmb-gmaps-btn" style="background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);">🗺️ Google Maps</button>
+                <button id="tmb-app-btn" style="background:linear-gradient(135deg,rgba(255,190,11,.2),rgba(255,140,0,.15));color:var(--warning);border:1px solid rgba(255,190,11,.35);">🚇 TMB Barcelona App</button>
+                <button onclick="document.getElementById('tmb-modal').style.display='none'" style="background:none;border:1px solid var(--glass-border);color:var(--text-muted);box-shadow:none;">Abbrechen</button>
             </div>
         </div>
     </div>
