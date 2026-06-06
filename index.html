@@ -2310,18 +2310,7 @@
 
             document.getElementById('tmb-app-btn').onclick = function() {
                 modal.style.display = 'none';
-                // TMB Deep Link - opens TMB app if installed, otherwise TMB website
-                var tmbDeepLink = 'tmb://';
-                var tmbFallback = 'https://www.tmb.cat/ca/barcelona/xarxes-i-horaris/-/lineabus/linia/';
-                // Try deep link first, fall back to website after short delay
-                var iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = tmbDeepLink;
-                document.body.appendChild(iframe);
-                setTimeout(function() {
-                    document.body.removeChild(iframe);
-                    window.open('https://www.tmb.cat', '_blank');
-                }, 1500);
+                window.open('https://www.tmb.cat', '_blank');
             };
         } else {
             window.open(gmapsUrl, '_blank');
