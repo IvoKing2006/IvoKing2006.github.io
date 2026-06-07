@@ -2,6 +2,8 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,34 +16,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020f1a;
+            /* Barcelona Palette – warmes Mittelmeer trifft goldenen Sonnenuntergang */
+            --bg-color: #0a0e1a;
             --card-bg: rgba(255, 255, 255, 0.04);
-            --primary: #00d4ff;
-            --primary-dim: rgba(0, 212, 255, 0.15);
-            --accent: #7c3aed;
-            --accent-dim: rgba(124, 58, 237, 0.2);
-            --success: #00ffa3;
-            --success-dim: rgba(0, 255, 163, 0.12);
-            --danger: #ff4d6d;
-            --danger-dim: rgba(255, 77, 109, 0.12);
-            --warning: #ffbe0b;
-            --warning-dim: rgba(255, 190, 11, 0.12);
-            --text-main: #f0f6ff;
-            --text-muted: #6b8caf;
-            --border: rgba(0, 212, 255, 0.12);
-            --glass: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glow: 0 0 30px rgba(0, 212, 255, 0.15);
+
+            /* Primary – Mittelmeergold */
+            --primary: #f5a623;
+            --primary-dim: rgba(245, 166, 35, 0.15);
+
+            /* Accent – tiefes Mittelmeerblau */
+            --accent: #1a7fc1;
+            --accent-dim: rgba(26, 127, 193, 0.2);
+
+            /* Success – Palmengrün */
+            --success: #2ecc71;
+            --success-dim: rgba(46, 204, 113, 0.12);
+
+            /* Danger – Flammenrot */
+            --danger: #e74c3c;
+            --danger-dim: rgba(231, 76, 60, 0.12);
+
+            /* Warning – Sonnengelb */
+            --warning: #f39c12;
+            --warning-dim: rgba(243, 156, 18, 0.12);
+
+            /* Text */
+            --text-main: #f2ede4;
+            --text-muted: #8a8070;
+
+            /* Glass & Borders */
+            --border: rgba(245, 166, 35, 0.12);
+            --glass: rgba(255, 248, 235, 0.04);
+            --glass-border: rgba(255, 248, 235, 0.10);
+            --glow: 0 0 40px rgba(245, 166, 35, 0.12);
         }
 
         * { box-sizing: border-box; }
 
         html, body {
-            background-color: #0d0520;
+            background-color: #0a0e1a;
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
             background-color: transparent;
             background-image: none;
             background-attachment: fixed;
@@ -62,7 +79,7 @@
             height: 100vh;
             height: 100dvh;
             height: -webkit-fill-available;
-            background: #0d0520;
+            background: #0a0e1a;
             background-image: none;
         }
 
@@ -100,6 +117,7 @@
         }
 
         h1, h2, h3, h4 { color: var(--text-main); font-weight: 800; margin-top: 0; letter-spacing: -0.02em; }
+        h3 { font-size: 1.1rem; }
         h1 {
             text-align: center;
             background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 60%, #ff4d6d 100%);
@@ -417,16 +435,17 @@
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .packing-grid { grid-template-columns: 1fr; } }
 
         .card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(15, 18, 30, 0.72);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             padding: 20px;
             border-radius: 18px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(245, 166, 35, 0.10);
             margin-bottom: 20px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 0 rgba(255,248,235,0.03) inset;
         }
-        .card:hover { border-color: rgba(0,212,255,0.2); box-shadow: 0 0 24px rgba(0,212,255,0.06); }
+        .card:hover { border-color: rgba(245,166,35,0.22); box-shadow: 0 8px 32px rgba(245,166,35,0.08); }
         .card h3 {
             font-size: 17px;
             margin-bottom: 15px;
@@ -4904,11 +4923,11 @@
         var fishes = [];
         var FISH_COUNT = 12;
         var fishTypes = [
-            { color: '#00d4ff', accent: '#0090c8', size: 18 },
-            { color: '#00ffa3', accent: '#00a066', size: 14 },
-            { color: '#ff9a40', accent: '#c86000', size: 22 },
-            { color: '#a78bfa', accent: '#6d28d9', size: 12 },
-            { color: '#ffbe0b', accent: '#c8900a', size: 16 },
+            { color: '#f5a623', accent: '#c8820a', size: 18 },
+            { color: '#1a7fc1', accent: '#0f5a8a', size: 14 },
+            { color: '#2ecc71', accent: '#1a9e4e', size: 22 },
+            { color: '#e74c3c', accent: '#b03a2e', size: 12 },
+            { color: '#f39c12', accent: '#b07c0a', size: 16 },
         ];
 
         for (var i = 0; i < FISH_COUNT; i++) {
@@ -4997,9 +5016,9 @@
 
             // Ocean gradient background
             var grad = ctx.createLinearGradient(0, 0, 0, H);
-            grad.addColorStop(0,   '#020f1a');
-            grad.addColorStop(0.4, '#031828');
-            grad.addColorStop(1,   '#010a12');
+            grad.addColorStop(0,   '#0a0e1a');
+            grad.addColorStop(0.4, '#0d1520');
+            grad.addColorStop(1,   '#080c15');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
@@ -5007,8 +5026,8 @@
             for (var r = 0; r < 5; r++) {
                 var rx = W * (0.1 + r * 0.2) + Math.sin(ts * 0.0003 + r) * 30;
                 var rayGrad = ctx.createLinearGradient(rx, 0, rx + 60, H * 0.7);
-                rayGrad.addColorStop(0, 'rgba(0,180,255,0.04)');
-                rayGrad.addColorStop(1, 'rgba(0,180,255,0)');
+                rayGrad.addColorStop(0, 'rgba(245,166,35,0.05)');
+                rayGrad.addColorStop(1, 'rgba(245,166,35,0)');
                 ctx.beginPath();
                 ctx.moveTo(rx - 20, 0);
                 ctx.lineTo(rx + 80, 0);
@@ -5030,7 +5049,7 @@
                 }
                 ctx.beginPath();
                 ctx.arc(bub.x, bub.y, bub.r, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(0,220,255,' + bub.opacity + ')';
+                ctx.strokeStyle = 'rgba(245,200,100,' + bub.opacity + ')';
                 ctx.lineWidth = 1;
                 ctx.stroke();
             });
