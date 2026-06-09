@@ -2203,6 +2203,9 @@
             <div class="sub-nav-tabs">
                 <button id="subtab-zufall" class="subnav-btn active" onclick="switchSubTab('spiele', 'zufall')">🎲 Zufall</button>
                 <button id="subtab-schwimmen" class="subnav-btn" onclick="switchSubTab('spiele', 'schwimmen')">🃏 Schwimmen</button>
+                <button id="subtab-blackjack" class="subnav-btn" onclick="switchSubTab('spiele', 'blackjack')">🃏 Blackjack</button>
+                <button id="subtab-roulette" class="subnav-btn" onclick="switchSubTab('spiele', 'roulette')">🎡 Roulette</button>
+                <button id="subtab-poker" class="subnav-btn" onclick="switchSubTab('spiele', 'poker')">♠️ Poker</button>
             </div>
         <div id="content-zufall" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent); text-align: center; padding: 40px 20px;">
@@ -2219,6 +2222,126 @@
         <div id="content-schwimmen" class="subtab-content hidden">
             <div id="schw-container" style="min-height:300px;">
                 <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">🃏 Lade Spiel...</div>
+            </div>
+        </div>
+
+        <!-- BLACKJACK -->
+        <div id="content-blackjack" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid var(--success);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 style="margin:0;">🃏 Blackjack</h3>
+                    <div style="background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.3);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--success);">💰 <span id="bj-balance">0</span> €</div>
+                </div>
+                <div id="bj-dealer-area" style="margin-bottom:16px;">
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Dealer</div>
+                    <div id="bj-dealer-cards" style="display:flex;gap:8px;flex-wrap:wrap;min-height:80px;align-items:center;"></div>
+                    <div id="bj-dealer-score" style="font-size:13px;color:var(--text-muted);margin-top:6px;"></div>
+                </div>
+                <div id="bj-player-area" style="margin-bottom:16px;">
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Du</div>
+                    <div id="bj-player-cards" style="display:flex;gap:8px;flex-wrap:wrap;min-height:80px;align-items:center;"></div>
+                    <div id="bj-player-score" style="font-size:13px;color:var(--text-muted);margin-top:6px;"></div>
+                </div>
+                <div id="bj-message" style="text-align:center;font-size:16px;font-weight:700;margin-bottom:14px;min-height:24px;"></div>
+                <div id="bj-bet-area" style="margin-bottom:14px;">
+                    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">Einsatz (€)</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                        <button onclick="bjSetBet(5)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">5</button>
+                        <button onclick="bjSetBet(10)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">10</button>
+                        <button onclick="bjSetBet(25)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">25</button>
+                        <button onclick="bjSetBet(50)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">50</button>
+                        <input type="number" id="bj-bet-input" min="1" placeholder="Betrag" style="width:90px;padding:6px 10px;font-size:13px;">
+                    </div>
+                </div>
+                <div id="bj-actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button id="bj-deal-btn" onclick="bjDeal()" style="flex:1;background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">🃏 Karten geben</button>
+                    <button id="bj-hit-btn" onclick="bjHit()" style="flex:1;display:none;">➕ Karte</button>
+                    <button id="bj-stand-btn" onclick="bjStand()" style="flex:1;display:none;">✋ Halten</button>
+                </div>
+                <div id="bj-broke-area" style="display:none;margin-top:14px;"></div>
+            </div>
+        </div>
+
+        <!-- ROULETTE -->
+        <div id="content-roulette" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid var(--danger);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 style="margin:0;">🎡 Roulette</h3>
+                    <div style="background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--danger);">💰 <span id="rl-balance">0</span> €</div>
+                </div>
+                <div id="rl-wheel" style="text-align:center;margin-bottom:20px;">
+                    <div id="rl-ball" style="font-size:72px;transition:all 0.5s;">🎡</div>
+                    <div id="rl-result-num" style="font-size:48px;font-weight:900;margin:8px 0;min-height:56px;"></div>
+                    <div id="rl-result-color" style="font-size:14px;font-weight:700;min-height:20px;"></div>
+                </div>
+                <div id="rl-message" style="text-align:center;font-size:16px;font-weight:700;margin-bottom:14px;min-height:24px;"></div>
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;">Wette wählen</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                        <button onclick="rlSetBet('red')" id="rl-btn-red" style="flex:1;background:rgba(239,68,68,.2);color:#ef4444;border:1px solid rgba(239,68,68,.4);box-shadow:none;padding:10px 8px;font-size:13px;">🔴 Rot<br><small style="opacity:.7;">1:1</small></button>
+                        <button onclick="rlSetBet('black')" id="rl-btn-black" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-main);border:1px solid var(--glass-border);box-shadow:none;padding:10px 8px;font-size:13px;">⚫ Schwarz<br><small style="opacity:.7;">1:1</small></button>
+                        <button onclick="rlSetBet('green')" id="rl-btn-green" style="flex:1;background:rgba(0,255,163,.1);color:var(--success);border:1px solid rgba(0,255,163,.3);box-shadow:none;padding:10px 8px;font-size:13px;">🟢 Grün (0)<br><small style="opacity:.7;">35:1</small></button>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                        <button onclick="rlSetBet('even')" id="rl-btn-even" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-main);border:1px solid var(--glass-border);box-shadow:none;padding:10px 8px;font-size:13px;">Gerade<br><small style="opacity:.7;">1:1</small></button>
+                        <button onclick="rlSetBet('odd')" id="rl-btn-odd" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-main);border:1px solid var(--glass-border);box-shadow:none;padding:10px 8px;font-size:13px;">Ungerade<br><small style="opacity:.7;">1:1</small></button>
+                        <button onclick="rlSetBet('1-18')" id="rl-btn-low" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-main);border:1px solid var(--glass-border);box-shadow:none;padding:10px 8px;font-size:13px;">1–18<br><small style="opacity:.7;">1:1</small></button>
+                        <button onclick="rlSetBet('19-36')" id="rl-btn-high" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-main);border:1px solid var(--glass-border);box-shadow:none;padding:10px 8px;font-size:13px;">19–36<br><small style="opacity:.7;">1:1</small></button>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                        <input type="number" id="rl-num-input" min="0" max="36" placeholder="Zahl 0–36" style="flex:1;padding:8px 12px;font-size:13px;">
+                        <button onclick="rlSetBet('number')" style="width:auto;padding:8px 14px;font-size:13px;background:rgba(255,190,11,.15);color:var(--warning);border:1px solid rgba(255,190,11,.3);box-shadow:none;">Zahl (35:1)</button>
+                    </div>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">Einsatz (€)</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                        <button onclick="rlSetAmount(5)" style="width:auto;padding:6px 12px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">5</button>
+                        <button onclick="rlSetAmount(10)" style="width:auto;padding:6px 12px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">10</button>
+                        <button onclick="rlSetAmount(25)" style="width:auto;padding:6px 12px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">25</button>
+                        <button onclick="rlSetAmount(50)" style="width:auto;padding:6px 12px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">50</button>
+                        <input type="number" id="rl-bet-input" min="1" placeholder="Betrag" style="width:90px;padding:6px 10px;font-size:13px;">
+                    </div>
+                </div>
+                <div id="rl-current-bet" style="font-size:13px;color:var(--text-muted);margin-bottom:10px;"></div>
+                <button id="rl-spin-btn" onclick="rlSpin()" style="background:linear-gradient(135deg,rgba(255,77,109,.2),rgba(180,0,50,.15));color:var(--danger);border:1px solid rgba(255,77,109,.35);">🎡 Drehen!</button>
+                <div id="rl-broke-area" style="display:none;margin-top:14px;"></div>
+            </div>
+        </div>
+
+        <!-- POKER -->
+        <div id="content-poker" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid var(--accent);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 style="margin:0;">♠️ Texas Hold'em</h3>
+                    <div style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--accent);">💰 <span id="pk-balance">0</span> €</div>
+                </div>
+                <div id="pk-lobby" style="">
+                    <div id="pk-players-list" style="margin-bottom:16px;"></div>
+                    <button onclick="pkJoin()" id="pk-join-btn" style="background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(80,20,180,.15));color:var(--accent);border:1px solid rgba(124,58,237,.35);margin-bottom:10px;">Beitreten</button>
+                    <button onclick="pkStart()" id="pk-start-btn" style="display:none;background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">🃏 Spiel starten</button>
+                    <button onclick="pkLeave()" id="pk-leave-btn" style="display:none;background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;margin-top:8px;">Verlassen</button>
+                </div>
+                <div id="pk-game" style="display:none;">
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Gemeinschaftskarten</div>
+                    <div id="pk-community" style="display:flex;gap:8px;flex-wrap:wrap;min-height:80px;align-items:center;margin-bottom:16px;"></div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Deine Karten</div>
+                    <div id="pk-hand" style="display:flex;gap:8px;margin-bottom:16px;"></div>
+                    <div id="pk-hand-rank" style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;"></div>
+                    <div id="pk-pot" style="font-size:14px;color:var(--text-muted);margin-bottom:12px;"></div>
+                    <div id="pk-message" style="font-size:15px;font-weight:700;text-align:center;margin-bottom:14px;min-height:22px;"></div>
+                    <div id="pk-actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button id="pk-fold-btn" onclick="pkFold()" style="flex:1;background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">Fold</button>
+                        <button id="pk-check-btn" onclick="pkCheck()" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-main);border:1px solid var(--glass-border);box-shadow:none;">Check</button>
+                        <button id="pk-call-btn" onclick="pkCall()" style="flex:1;background:rgba(0,212,255,.1);color:var(--primary);border:1px solid rgba(0,212,255,.3);box-shadow:none;">Call</button>
+                        <button id="pk-raise-btn" onclick="pkRaise()" style="flex:1;background:rgba(0,255,163,.1);color:var(--success);border:1px solid rgba(0,255,163,.3);box-shadow:none;">Raise</button>
+                    </div>
+                    <div id="pk-raise-area" style="display:none;margin-top:10px;display:flex;gap:8px;">
+                        <input type="number" id="pk-raise-input" min="1" placeholder="Raise Betrag" style="flex:1;font-size:13px;">
+                        <button onclick="pkConfirmRaise()" style="width:auto;padding:0 14px;background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">✓</button>
+                    </div>
+                </div>
+                <div id="pk-broke-area" style="display:none;margin-top:14px;"></div>
             </div>
         </div>
         </div>
@@ -2495,6 +2618,7 @@
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'entdecken') { switchSubTab('entdecken', 'restaurants'); setTimeout(function(){ renderEigeneOrteInTabs(); renderCustomCatNav(); }, 200); }
         if (tabName === 'airbnb') switchSubTab('airbnb', 'airbnb-infos');
+        if (tabName === 'spiele') { setTimeout(function(){ initCasino(); renderPoker(); }, 100); }
         if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
         if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
     }
@@ -3702,6 +3826,667 @@
         renderEigeneOrteListe();
     }
 
+
+    // ================= CASINO =================
+
+    var TRIVIA_QUESTIONS = [
+        {q:"Wie heißt die Hauptstadt von Australien?", a:"canberra"},
+        {q:"In welchem Jahr fiel die Berliner Mauer?", a:"1989"},
+        {q:"Wie viele Kontinente gibt es?", a:"7"},
+        {q:"Wer malte die Mona Lisa?", a:"leonardo da vinci"},
+        {q:"Wie heißt der längste Fluss der Welt?", a:"nil"},
+        {q:"In welchem Land liegt der Eiffelturm?", a:"frankreich"},
+        {q:"Wie viele Saiten hat eine Gitarre?", a:"6"},
+        {q:"Wer schrieb Romeo und Julia?", a:"shakespeare"},
+        {q:"Wie heißt der größte Ozean?", a:"pazifik"},
+        {q:"In welcher Stadt steht das Kolosseum?", a:"rom"},
+        {q:"Wie viele Zähne hat ein erwachsener Mensch?", a:"32"},
+        {q:"Wer war der erste Mensch im Weltall?", a:"gagarin"},
+        {q:"Wie heißt die Währung in Japan?", a:"yen"},
+        {q:"Welches ist das größte Land der Welt?", a:"russland"},
+        {q:"Wie viele Spieler stehen in einer Fußballmannschaft auf dem Platz?", a:"11"},
+        {q:"Wer erfand das Telefon?", a:"bell"},
+        {q:"In welchem Land wurde die Pizza erfunden?", a:"italien"},
+        {q:"Wie heißt der höchste Berg der Welt?", a:"mount everest"},
+        {q:"Wie viele Farben hat ein Regenbogen?", a:"7"},
+        {q:"Was ist die chemische Formel für Wasser?", a:"h2o"},
+        {q:"In welcher Stadt findet das Oktoberfest statt?", a:"münchen"},
+        {q:"Wie viele Bundesländer hat Deutschland?", a:"16"},
+        {q:"Wer war der erste US-Präsident?", a:"washington"},
+        {q:"Wie heißt die Hauptstadt von Kanada?", a:"ottawa"},
+        {q:"In welchem Jahr begann der Zweite Weltkrieg?", a:"1939"},
+        {q:"Wie viele Planeten hat unser Sonnensystem?", a:"8"},
+        {q:"Wer erfand die Glühbirne?", a:"edison"},
+        {q:"Wie heißt der größte Kontinent?", a:"asien"},
+        {q:"Welches Tier ist das schnellste der Welt?", a:"gepard"},
+        {q:"Wie viele Augen hat eine Spinne?", a:"8"},
+        {q:"Wo wurde Albert Einstein geboren?", a:"ulm"},
+        {q:"Wie heißt die Hauptstadt von Brasilien?", a:"brasilia"},
+        {q:"In welchem Jahr landete der erste Mensch auf dem Mond?", a:"1969"},
+        {q:"Wie viele Buchstaben hat das deutsche Alphabet?", a:"26"},
+        {q:"Was ist die Hauptstadt von Ägypten?", a:"kairo"},
+        {q:"Welches ist das kleinste Land der Welt?", a:"vatikan"},
+        {q:"Wie heißt der Fluss der durch Paris fließt?", a:"seine"},
+        {q:"Wie viele Knochen hat der menschliche Körper?", a:"206"},
+        {q:"In welchem Land wurde der FC Barcelona gegründet?", a:"spanien"},
+        {q:"Wer schrieb die Bibel des modernen Fußballs – in welcher Stadt steht das Camp Nou?", a:"barcelona"},
+        {q:"Wie heißt der längste Fluss Europas?", a:"wolga"},
+        {q:"Was ist die Hauptstadt der Türkei?", a:"ankara"},
+        {q:"Wie viele Seiten hat ein Würfel?", a:"6"},
+        {q:"In welchem Land liegt die Pyramide von Gizeh?", a:"ägypten"},
+        {q:"Wie heißt der Planet der am nächsten zur Sonne ist?", a:"merkur"},
+        {q:"Wer komponierte die 9. Sinfonie?", a:"beethoven"},
+        {q:"Wie viele Spieler braucht man für ein Schachspiel?", a:"2"},
+        {q:"In welchem Jahr wurde Deutschland Fußballweltmeister zuletzt?", a:"2014"},
+        {q:"Wie heißt der längste Fluss Deutschlands?", a:"rhein"},
+        {q:"Was ist die Hauptstadt von Argentinien?", a:"buenos aires"},
+    ];
+
+    function getCasinoBalance(user) {
+        if (!db.casino) db.casino = {};
+        if (db.casino[user] === undefined || db.casino[user] === null) {
+            db.casino[user] = 150;
+            saveDB();
+        }
+        return db.casino[user];
+    }
+
+    function setCasinoBalance(user, amount) {
+        if (!db.casino) db.casino = {};
+        db.casino[user] = Math.max(0, Math.round(amount * 100) / 100);
+        saveDB();
+    }
+
+    function casinoCard(val, suit) {
+        var colors = {'♥':'#ef4444','♦':'#ef4444','♠':'#f0f6ff','♣':'#f0f6ff'};
+        var color = colors[suit] || '#f0f6ff';
+        return '<div style="width:52px;height:72px;background:#1e293b;border:1px solid rgba(255,255,255,.15);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:'+color+';box-shadow:0 2px 8px rgba(0,0,0,.4);">'+val+'<span style="font-size:14px;">'+suit+'</span></div>';
+    }
+
+    function cardBack() {
+        return '<div style="width:52px;height:72px;background:linear-gradient(135deg,#1e3a5f,#0f2040);border:1px solid rgba(0,212,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(0,0,0,.4);">🂠</div>';
+    }
+
+    function showBrokeArea(areaId, game) {
+        var q = TRIVIA_QUESTIONS[Math.floor(Math.random() * TRIVIA_QUESTIONS.length)];
+        var el = document.getElementById(areaId);
+        el.style.display = 'block';
+        el.innerHTML = '<div style="background:rgba(255,190,11,.08);border:1px solid rgba(255,190,11,.3);border-radius:12px;padding:16px;">'+
+            '<div style="font-weight:700;color:var(--warning);margin-bottom:8px;">💸 Kein Guthaben mehr!</div>'+
+            '<div style="font-size:14px;color:var(--text-main);margin-bottom:12px;">Beantworte die Frage richtig für +50€:</div>'+
+            '<div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;">'+q.q+'</div>'+
+            '<div style="display:flex;gap:8px;">'+
+            '<input type="text" id="trivia-answer-'+game+'" placeholder="Antwort..." style="flex:1;font-size:13px;">'+
+            '<button onclick="checkTrivia(\''+q.a+'\',\''+game+'\',\''+areaId+'\')" style="width:auto;padding:0 14px;background:rgba(255,190,11,.2);color:var(--warning);border:1px solid rgba(255,190,11,.3);">✓</button>'+
+            '</div>'+
+            '<div id="trivia-result-'+game+'" style="font-size:13px;margin-top:8px;"></div>'+
+            '</div>';
+    }
+
+    function checkTrivia(correct, game, areaId) {
+        var input = document.getElementById('trivia-answer-'+game);
+        var result = document.getElementById('trivia-result-'+game);
+        if (!input) return;
+        var answer = input.value.trim().toLowerCase();
+        if (answer === correct.toLowerCase() || correct.toLowerCase().includes(answer) && answer.length > 2) {
+            setCasinoBalance(currentUser, getCasinoBalance(currentUser) + 50);
+            result.style.color = 'var(--success)';
+            result.textContent = '✅ Richtig! +50€ Guthaben';
+            document.getElementById(areaId).style.display = 'none';
+            if (game === 'bj') bjUpdateUI();
+            if (game === 'rl') rlUpdateUI();
+            if (game === 'pk') pkUpdateUI();
+        } else {
+            result.style.color = 'var(--danger)';
+            result.textContent = '❌ Falsch! Antwort: '+correct;
+        }
+    }
+
+    // ══════════════ BLACKJACK ══════════════
+    var bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjBet = 0, bjGameActive = false;
+    var SUITS = ['♠','♥','♦','♣'];
+    var VALUES = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+    function bjNewDeck() {
+        var d = [];
+        SUITS.forEach(function(s){ VALUES.forEach(function(v){ d.push({v:v,s:s}); }); });
+        for(var i=d.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=d[i];d[i]=d[j];d[j]=t;}
+        return d;
+    }
+
+    function bjCardValue(card) {
+        if (['J','Q','K'].includes(card.v)) return 10;
+        if (card.v === 'A') return 11;
+        return parseInt(card.v);
+    }
+
+    function bjHandValue(hand) {
+        var total = 0, aces = 0;
+        hand.forEach(function(c){ total += bjCardValue(c); if(c.v==='A') aces++; });
+        while(total > 21 && aces > 0){ total -= 10; aces--; }
+        return total;
+    }
+
+    function bjUpdateUI() {
+        var bal = getCasinoBalance(currentUser);
+        document.getElementById('bj-balance').textContent = bal.toFixed(2);
+        if (bal <= 0 && !bjGameActive) {
+            showBrokeArea('bj-broke-area', 'bj');
+        }
+    }
+
+    function bjSetBet(amount) {
+        document.getElementById('bj-bet-input').value = amount;
+    }
+
+    function bjRenderCards(hand, elId, hideFirst) {
+        var el = document.getElementById(elId);
+        el.innerHTML = hand.map(function(c, i) {
+            if (hideFirst && i === 0) return cardBack();
+            return casinoCard(c.v, c.s);
+        }).join('');
+    }
+
+    function bjDeal() {
+        var betInput = document.getElementById('bj-bet-input');
+        bjBet = parseFloat(betInput.value) || 0;
+        var bal = getCasinoBalance(currentUser);
+        if (bjBet <= 0) { document.getElementById('bj-message').textContent = 'Bitte Einsatz eingeben!'; return; }
+        if (bjBet > bal) { document.getElementById('bj-message').textContent = 'Nicht genug Guthaben!'; return; }
+
+        bjDeck = bjNewDeck();
+        bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
+        bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
+        bjGameActive = true;
+
+        bjRenderCards(bjPlayerHand, 'bj-player-cards');
+        bjRenderCards(bjDealerHand, 'bj-dealer-cards', true);
+        document.getElementById('bj-player-score').textContent = 'Punkte: '+bjHandValue(bjPlayerHand);
+        document.getElementById('bj-dealer-score').textContent = 'Punkte: ?';
+        document.getElementById('bj-message').textContent = '';
+        document.getElementById('bj-deal-btn').style.display = 'none';
+        document.getElementById('bj-hit-btn').style.display = 'block';
+        document.getElementById('bj-stand-btn').style.display = 'block';
+        document.getElementById('bj-bet-area').style.opacity = '0.5';
+        document.getElementById('bj-broke-area').style.display = 'none';
+
+        if (bjHandValue(bjPlayerHand) === 21) bjStand();
+    }
+
+    function bjHit() {
+        bjPlayerHand.push(bjDeck.pop());
+        bjRenderCards(bjPlayerHand, 'bj-player-cards');
+        var score = bjHandValue(bjPlayerHand);
+        document.getElementById('bj-player-score').textContent = 'Punkte: '+score;
+        if (score > 21) bjEndGame('bust');
+    }
+
+    function bjStand() {
+        // Dealer draws until 17+
+        while(bjHandValue(bjDealerHand) < 17) bjDealerHand.push(bjDeck.pop());
+        bjRenderCards(bjDealerHand, 'bj-dealer-cards');
+        var ds = bjHandValue(bjDealerHand);
+        var ps = bjHandValue(bjPlayerHand);
+        document.getElementById('bj-dealer-score').textContent = 'Punkte: '+ds;
+        if (ds > 21) bjEndGame('dealer_bust');
+        else if (ps > ds) bjEndGame('win');
+        else if (ps < ds) bjEndGame('lose');
+        else bjEndGame('push');
+    }
+
+    function bjEndGame(result) {
+        bjGameActive = false;
+        var bal = getCasinoBalance(currentUser);
+        var msg = '', color = '';
+        if (result === 'bust') { msg = '💥 Bust! -'+bjBet+'€'; color = 'var(--danger)'; setCasinoBalance(currentUser, bal - bjBet); }
+        else if (result === 'dealer_bust') { msg = '🎉 Dealer Bust! +'+bjBet+'€'; color = 'var(--success)'; setCasinoBalance(currentUser, bal + bjBet); }
+        else if (result === 'win') { msg = '🏆 Gewonnen! +'+bjBet+'€'; color = 'var(--success)'; setCasinoBalance(currentUser, bal + bjBet); }
+        else if (result === 'lose') { msg = '😞 Verloren! -'+bjBet+'€'; color = 'var(--danger)'; setCasinoBalance(currentUser, bal - bjBet); }
+        else { msg = '🤝 Unentschieden'; color = 'var(--warning)'; }
+        var msgEl = document.getElementById('bj-message');
+        msgEl.textContent = msg; msgEl.style.color = color;
+        bjRenderCards(bjDealerHand, 'bj-dealer-cards');
+        document.getElementById('bj-hit-btn').style.display = 'none';
+        document.getElementById('bj-stand-btn').style.display = 'none';
+        document.getElementById('bj-deal-btn').style.display = 'block';
+        document.getElementById('bj-deal-btn').textContent = '🃏 Neue Runde';
+        document.getElementById('bj-bet-area').style.opacity = '1';
+        bjUpdateUI();
+    }
+
+    // ══════════════ ROULETTE ══════════════
+    var RL_REDS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+    var rlBetType = null, rlBetNumber = null;
+
+    function rlUpdateUI() {
+        var bal = getCasinoBalance(currentUser);
+        document.getElementById('rl-balance').textContent = bal.toFixed(2);
+        if (bal <= 0) showBrokeArea('rl-broke-area', 'rl');
+    }
+
+    function rlSetBet(type) {
+        rlBetType = type;
+        rlBetNumber = type === 'number' ? parseInt(document.getElementById('rl-num-input').value) : null;
+        var labels = {red:'🔴 Rot',black:'⚫ Schwarz',green:'🟢 Grün (0)',even:'Gerade',odd:'Ungerade','1-18':'1–18','19-36':'19–36',number:'Zahl '+rlBetNumber};
+        document.getElementById('rl-current-bet').textContent = 'Wette: '+labels[type];
+        // Highlight selected
+        ['red','black','green','even','odd','low','high'].forEach(function(b){
+            var el = document.getElementById('rl-btn-'+b);
+            if(el) el.style.outline = '';
+        });
+        var btnMap = {red:'red',black:'black',green:'green',even:'even',odd:'odd','1-18':'low','19-36':'high'};
+        if(btnMap[type]) {
+            var btn = document.getElementById('rl-btn-'+btnMap[type]);
+            if(btn) btn.style.outline = '2px solid var(--primary)';
+        }
+    }
+
+    function rlSetAmount(a) { document.getElementById('rl-bet-input').value = a; }
+
+    function rlSpin() {
+        if (!rlBetType) { document.getElementById('rl-message').textContent = 'Bitte zuerst Wette wählen!'; return; }
+        var bet = parseFloat(document.getElementById('rl-bet-input').value) || 0;
+        var bal = getCasinoBalance(currentUser);
+        if (bet <= 0) { document.getElementById('rl-message').textContent = 'Bitte Einsatz eingeben!'; return; }
+        if (bet > bal) { document.getElementById('rl-message').textContent = 'Nicht genug Guthaben!'; return; }
+        document.getElementById('rl-broke-area').style.display = 'none';
+
+        // Animate wheel
+        var spinEl = document.getElementById('rl-ball');
+        var frames = ['🎡','🌀','⭕','🎡','🌀','⭕','🎡','🌀','⭕'];
+        var fi = 0;
+        var anim = setInterval(function(){ spinEl.textContent = frames[fi++ % frames.length]; }, 120);
+
+        setTimeout(function() {
+            clearInterval(anim);
+            var num = Math.floor(Math.random() * 37); // 0-36
+            var isRed = RL_REDS.includes(num);
+            var color = num === 0 ? 'green' : (isRed ? 'red' : 'black');
+            var colorEmoji = num === 0 ? '🟢' : (isRed ? '🔴' : '⚫');
+
+            spinEl.textContent = '🎡';
+            document.getElementById('rl-result-num').textContent = num;
+            document.getElementById('rl-result-num').style.color = num === 0 ? 'var(--success)' : (isRed ? 'var(--danger)' : 'var(--text-main)');
+            document.getElementById('rl-result-color').textContent = colorEmoji + ' ' + (num === 0 ? 'Grün' : (isRed ? 'Rot' : 'Schwarz'));
+
+            var won = false, multiplier = 0;
+            if (rlBetType === 'red' && color === 'red') { won = true; multiplier = 2; }
+            else if (rlBetType === 'black' && color === 'black') { won = true; multiplier = 2; }
+            else if (rlBetType === 'green' && num === 0) { won = true; multiplier = 36; }
+            else if (rlBetType === 'even' && num > 0 && num % 2 === 0) { won = true; multiplier = 2; }
+            else if (rlBetType === 'odd' && num % 2 === 1) { won = true; multiplier = 2; }
+            else if (rlBetType === '1-18' && num >= 1 && num <= 18) { won = true; multiplier = 2; }
+            else if (rlBetType === '19-36' && num >= 19 && num <= 36) { won = true; multiplier = 2; }
+            else if (rlBetType === 'number' && num === rlBetNumber) { won = true; multiplier = 36; }
+
+            var msgEl = document.getElementById('rl-message');
+            if (won) {
+                var profit = bet * (multiplier - 1);
+                setCasinoBalance(currentUser, bal + profit);
+                msgEl.textContent = '🎉 Gewonnen! +'+profit.toFixed(2)+'€';
+                msgEl.style.color = 'var(--success)';
+            } else {
+                setCasinoBalance(currentUser, bal - bet);
+                msgEl.textContent = '😞 Verloren! -'+bet.toFixed(2)+'€';
+                msgEl.style.color = 'var(--danger)';
+            }
+            rlUpdateUI();
+        }, 1500);
+    }
+
+    // ══════════════ POKER (Texas Hold'em) ══════════════
+    function pkUpdateUI() {
+        var bal = getCasinoBalance(currentUser);
+        var el = document.getElementById('pk-balance');
+        if(el) el.textContent = bal.toFixed(2);
+        if (bal <= 0) showBrokeArea('pk-broke-area', 'pk');
+    }
+
+    function pkJoin() {
+        var g = db.poker || {};
+        if (!g.players) g.players = [];
+        if (Array.isArray(g.players) && g.players.includes(currentUser)) return;
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players);
+        if (g.status === 'playing') { showNotif('❌','Spiel läuft bereits','danger',2000); return; }
+        g.players.push(currentUser);
+        db.poker = g;
+        saveDB();
+    }
+
+    function pkLeave() {
+        var g = db.poker || {};
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        g.players = g.players.filter(function(p){ return p !== currentUser; });
+        if (g.dealer === currentUser) g.dealer = null;
+        db.poker = g;
+        saveDB();
+    }
+
+    function pkStart() {
+        var g = db.poker || {};
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        if (g.players.length < 2) { showNotif('❌','Mindestens 2 Spieler','danger',2000); return; }
+        if (currentUser !== g.players[0]) { showNotif('❌','Nur der erste Spieler kann starten','danger',2000); return; }
+
+        var deck = bjNewDeck();
+        var hands = {};
+        g.players.forEach(function(p){ hands[p] = [deck.pop(), deck.pop()]; });
+        var community = [deck.pop(), deck.pop(), deck.pop(), null, null];
+        var blinds = {small: g.players[0], big: g.players[1] || g.players[0]};
+        var pot = 0;
+        var bets = {};
+        g.players.forEach(function(p){ bets[p] = 0; });
+        // Post blinds
+        var smallBlind = 5, bigBlind = 10;
+        setCasinoBalance(blinds.small, getCasinoBalance(blinds.small) - smallBlind);
+        setCasinoBalance(blinds.big, getCasinoBalance(blinds.big) - bigBlind);
+        bets[blinds.small] = smallBlind;
+        bets[blinds.big] = bigBlind;
+        pot = smallBlind + bigBlind;
+
+        g.status = 'playing';
+        g.deck = deck;
+        g.hands = hands;
+        g.community = community;
+        g.pot = pot;
+        g.bets = bets;
+        g.currentBet = bigBlind;
+        g.street = 'preflop'; // preflop, flop, turn, river, showdown
+        g.currentPlayer = g.players[2] || g.players[0];
+        g.folded = [];
+        g.actedThisStreet = [];
+        db.poker = g;
+        saveDB();
+    }
+
+    function pkRenderGame() {
+        var g = db.poker;
+        if (!g || g.status !== 'playing') {
+            document.getElementById('pk-game').style.display = 'none';
+            document.getElementById('pk-lobby').style.display = 'block';
+            pkRenderLobby();
+            return;
+        }
+        document.getElementById('pk-game').style.display = 'block';
+        document.getElementById('pk-lobby').style.display = 'none';
+
+        // Community cards
+        var comm = Array.isArray(g.community) ? g.community : Object.values(g.community||{});
+        document.getElementById('pk-community').innerHTML = comm.map(function(c){
+            return c ? casinoCard(c.v, c.s) : '<div style="width:52px;height:72px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);border-radius:8px;"></div>';
+        }).join('');
+
+        // Player hand
+        var hand = g.hands && g.hands[currentUser];
+        if (hand) {
+            if (!Array.isArray(hand)) hand = Object.values(hand);
+            document.getElementById('pk-hand').innerHTML = hand.map(function(c){ return casinoCard(c.v, c.s); }).join('');
+            // Show hand rank
+            var visComm = comm.filter(function(c){ return c !== null; });
+            var allCards = hand.concat(visComm);
+            if (allCards.length >= 2) {
+                document.getElementById('pk-hand-rank').textContent = '🃏 ' + pkEvaluateHand(allCards);
+            }
+        }
+
+        // Pot
+        document.getElementById('pk-pot').textContent = 'Pot: '+g.pot+'€  |  Aktuelle Wette: '+(g.currentBet||0)+'€';
+
+        // Message
+        var isFolded = (g.folded||[]).includes(currentUser);
+        var isMyTurn = g.currentPlayer === currentUser;
+        var msg = isFolded ? 'Du hast gefoldet.' : (isMyTurn ? 'Du bist dran!' : (g.currentPlayer+' ist dran...'));
+        var msgEl = document.getElementById('pk-message');
+        msgEl.textContent = msg;
+        msgEl.style.color = isMyTurn ? 'var(--primary)' : 'var(--text-muted)';
+
+        // Actions
+        var actions = document.getElementById('pk-actions');
+        actions.style.display = (isMyTurn && !isFolded) ? 'flex' : 'none';
+        var myBet = (g.bets && g.bets[currentUser]) || 0;
+        var toCall = (g.currentBet||0) - myBet;
+        document.getElementById('pk-call-btn').textContent = toCall > 0 ? 'Call ('+toCall+'€)' : 'Call';
+        document.getElementById('pk-check-btn').style.display = toCall === 0 ? 'block' : 'none';
+        document.getElementById('pk-call-btn').style.display = toCall > 0 ? 'block' : 'none';
+    }
+
+    function pkRenderLobby() {
+        var g = db.poker || {};
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        var el = document.getElementById('pk-players-list');
+        if (!el) return;
+        if (g.players.length === 0) {
+            el.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Noch niemand in der Lobby.</p>';
+        } else {
+            el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Spieler in der Lobby</div>'+
+                g.players.map(function(p){
+                    var bal = getCasinoBalance(p);
+                    return '<div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:6px;font-size:13px;">'+
+                        '<span style="color:var(--text-main);font-weight:700;">'+p+'</span>'+
+                        '<span style="color:var(--success);">'+bal.toFixed(2)+'€</span></div>';
+                }).join('');
+        }
+        var isInLobby = g.players.includes(currentUser);
+        document.getElementById('pk-join-btn').style.display = isInLobby ? 'none' : 'block';
+        document.getElementById('pk-leave-btn').style.display = isInLobby ? 'block' : 'none';
+        document.getElementById('pk-start-btn').style.display = (isInLobby && g.players.length >= 2 && currentUser === g.players[0]) ? 'block' : 'none';
+    }
+
+    function pkAdvanceTurn() {
+        var g = db.poker;
+        if (!g) return;
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        if (!Array.isArray(g.folded)) g.folded = Object.values(g.folded||{});
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = Object.values(g.actedThisStreet||{});
+
+        var active = g.players.filter(function(p){ return !(g.folded||[]).includes(p); });
+
+        // Check if only one player left
+        if (active.length === 1) {
+            pkAwardPot(active[0]);
+            return;
+        }
+
+        // Check if all active players have acted and bets are equal
+        var allActed = active.every(function(p){ return (g.actedThisStreet||[]).includes(p); });
+        var allBetsEqual = active.every(function(p){ return (g.bets[p]||0) === (g.currentBet||0); });
+
+        if (allActed && allBetsEqual) {
+            pkNextStreet();
+            return;
+        }
+
+        // Next player
+        var idx = g.players.indexOf(g.currentPlayer);
+        var next = null;
+        for (var i = 1; i <= g.players.length; i++) {
+            var candidate = g.players[(idx + i) % g.players.length];
+            if (!g.folded.includes(candidate)) { next = candidate; break; }
+        }
+        g.currentPlayer = next;
+        db.poker = g;
+        saveDB();
+    }
+
+    function pkNextStreet() {
+        var g = db.poker;
+        var streets = ['preflop','flop','turn','river','showdown'];
+        var idx = streets.indexOf(g.street);
+        if (!Array.isArray(g.community)) g.community = Object.values(g.community||{});
+
+        g.actedThisStreet = [];
+        g.bets = {};
+        (Array.isArray(g.players)?g.players:Object.values(g.players||{})).forEach(function(p){ g.bets[p] = 0; });
+        g.currentBet = 0;
+
+        if (g.street === 'preflop') { g.street = 'flop'; g.community[3] = null; g.community[4] = null; }
+        else if (g.street === 'flop') {
+            g.street = 'turn';
+            var deck = Array.isArray(g.deck)?g.deck:Object.values(g.deck||{});
+            g.community[3] = deck.pop(); g.deck = deck;
+        }
+        else if (g.street === 'turn') {
+            g.street = 'river';
+            var deck2 = Array.isArray(g.deck)?g.deck:Object.values(g.deck||{});
+            g.community[4] = deck2.pop(); g.deck = deck2;
+        }
+        else if (g.street === 'river') { g.street = 'showdown'; pkShowdown(); return; }
+
+        g.currentPlayer = (Array.isArray(g.players)?g.players:Object.values(g.players||{}))[0];
+        db.poker = g;
+        saveDB();
+    }
+
+    function pkShowdown() {
+        var g = db.poker;
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        if (!Array.isArray(g.folded)) g.folded = [];
+        var active = g.players.filter(function(p){ return !g.folded.includes(p); });
+        var community = Array.isArray(g.community)?g.community:Object.values(g.community||{});
+        community = community.filter(function(c){ return c !== null; });
+
+        var best = null, bestPlayer = null;
+        active.forEach(function(p) {
+            var hand = Array.isArray(g.hands[p])?g.hands[p]:Object.values(g.hands[p]||{});
+            var all = hand.concat(community);
+            var rank = pkHandRank(all);
+            if (!best || rank[0] > best[0] || (rank[0]===best[0] && rank[1]>best[1])) {
+                best = rank; bestPlayer = p;
+            }
+        });
+        pkAwardPot(bestPlayer);
+    }
+
+    function pkAwardPot(winner) {
+        var g = db.poker;
+        var pot = g.pot || 0;
+        setCasinoBalance(winner, getCasinoBalance(winner) + pot);
+        showNotif('🏆 Gewinner!', winner+' gewinnt den Pot von '+pot+'€!', 'success', 5000);
+        g.status = 'ended';
+        g.winner = winner;
+        g.pot = 0;
+        db.poker = g;
+        saveDB();
+        setTimeout(function(){ g.status = 'lobby'; g.players = []; db.poker = g; saveDB(); }, 5000);
+    }
+
+    function pkFold() {
+        var g = db.poker;
+        if (!g || g.currentPlayer !== currentUser) return;
+        if (!Array.isArray(g.folded)) g.folded = [];
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
+        g.folded.push(currentUser);
+        if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
+        db.poker = g;
+        pkAdvanceTurn();
+    }
+
+    function pkCheck() {
+        var g = db.poker;
+        if (!g || g.currentPlayer !== currentUser) return;
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
+        if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
+        db.poker = g;
+        pkAdvanceTurn();
+    }
+
+    function pkCall() {
+        var g = db.poker;
+        if (!g || g.currentPlayer !== currentUser) return;
+        var myBet = (g.bets&&g.bets[currentUser]) || 0;
+        var toCall = (g.currentBet||0) - myBet;
+        var bal = getCasinoBalance(currentUser);
+        var actual = Math.min(toCall, bal);
+        setCasinoBalance(currentUser, bal - actual);
+        g.bets[currentUser] = myBet + actual;
+        g.pot = (g.pot||0) + actual;
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
+        if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
+        db.poker = g;
+        pkAdvanceTurn();
+    }
+
+    function pkRaise() {
+        var ra = document.getElementById('pk-raise-area');
+        ra.style.display = ra.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    function pkConfirmRaise() {
+        var g = db.poker;
+        if (!g || g.currentPlayer !== currentUser) return;
+        var amount = parseFloat(document.getElementById('pk-raise-input').value)||0;
+        if (amount <= 0) return;
+        var bal = getCasinoBalance(currentUser);
+        if (amount > bal) { showNotif('❌','Nicht genug Guthaben','danger',2000); return; }
+        var myBet = (g.bets&&g.bets[currentUser])||0;
+        var total = myBet + amount;
+        setCasinoBalance(currentUser, bal - amount);
+        g.bets[currentUser] = total;
+        g.currentBet = Math.max(g.currentBet||0, total);
+        g.pot = (g.pot||0) + amount;
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
+        g.actedThisStreet = g.actedThisStreet.filter(function(p){ return p === currentUser; });
+        if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
+        document.getElementById('pk-raise-area').style.display = 'none';
+        db.poker = g;
+        pkAdvanceTurn();
+    }
+
+    // Hand evaluation
+    var HAND_RANKS = ['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
+
+    function pkHandRank(cards) {
+        var vals = cards.map(function(c){ return bjCardValue(c); }).sort(function(a,b){return b-a;});
+        var suits = cards.map(function(c){ return c.s; });
+        var counts = {};
+        vals.forEach(function(v){ counts[v]=(counts[v]||0)+1; });
+        var pairs = [], threes = [], fours = [];
+        Object.keys(counts).forEach(function(v){
+            if(counts[v]===2) pairs.push(parseInt(v));
+            if(counts[v]===3) threes.push(parseInt(v));
+            if(counts[v]===4) fours.push(parseInt(v));
+        });
+        var isFlush = suits.filter(function(s,i,a){ return a.indexOf(s)===i; }).length === 1 || 
+            Object.values(suits.reduce(function(acc,s){acc[s]=(acc[s]||0)+1;return acc;},{})).some(function(n){return n>=5;});
+        var sortedVals = vals.slice().sort(function(a,b){return b-a;});
+        var isStraight = false;
+        for(var i=0;i<=sortedVals.length-5;i++){
+            var slice = sortedVals.slice(i,i+5);
+            if(slice[0]-slice[4]===4 && new Set(slice).size===5){ isStraight=true; break; }
+        }
+        if(fours.length) return [7, fours[0]];
+        if(threes.length && pairs.length) return [6, threes[0]];
+        if(isFlush && isStraight) return sortedVals[0]===14 ? [9,14] : [8,sortedVals[0]];
+        if(isFlush) return [5, sortedVals[0]];
+        if(isStraight) return [4, sortedVals[0]];
+        if(threes.length) return [3, threes[0]];
+        if(pairs.length>=2) return [2, Math.max.apply(null,pairs)];
+        if(pairs.length===1) return [1, pairs[0]];
+        return [0, sortedVals[0]];
+    }
+
+    function pkEvaluateHand(cards) {
+        return HAND_RANKS[pkHandRank(cards)[0]];
+    }
+
+    function renderPoker() {
+        var g = db.poker;
+        if (!g || g.status === 'lobby' || g.status === 'ended' || !g.status) {
+            pkRenderLobby();
+            document.getElementById('pk-game').style.display = 'none';
+            document.getElementById('pk-lobby').style.display = 'block';
+        } else {
+            pkRenderGame();
+        }
+        pkUpdateUI();
+    }
+
+    function initCasino() {
+        bjUpdateUI();
+        rlUpdateUI();
+        pkUpdateUI();
+    }
+
     // ================= STATISTIK =================
     function updateStatistik() {
         normalizeDB();
@@ -4205,6 +4990,7 @@
         };
         saveDB();
         renderRangliste();
+        if (db.poker) renderPoker();
     }
 
     function renderRangliste() {
