@@ -3944,38 +3944,25 @@
     }
 
     function showBrokeArea(areaId, game) {
-        var q = TRIVIA_QUESTIONS[Math.floor(Math.random() * TRIVIA_QUESTIONS.length)];
         var el = document.getElementById(areaId);
+        if (!el) return;
         el.style.display = 'block';
-        el.innerHTML = '<div style="background:rgba(255,190,11,.08);border:1px solid rgba(255,190,11,.3);border-radius:12px;padding:16px;">'+
-            '<div style="font-weight:700;color:var(--warning);margin-bottom:8px;">💸 Kein Guthaben mehr!</div>'+
-            '<div style="font-size:14px;color:var(--text-main);margin-bottom:12px;">Beantworte die Frage richtig für +50€:</div>'+
-            '<div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;">'+q.q+'</div>'+
-            '<div style="display:flex;gap:8px;">'+
-            '<input type="text" id="trivia-answer-'+game+'" placeholder="Antwort..." style="flex:1;font-size:13px;">'+
-            '<button onclick="checkTrivia(\''+q.a+'\',\''+game+'\',\''+areaId+'\')" style="width:auto;padding:0 14px;background:rgba(255,190,11,.2);color:var(--warning);border:1px solid rgba(255,190,11,.3);">✓</button>'+
-            '</div>'+
-            '<div id="trivia-result-'+game+'" style="font-size:13px;margin-top:8px;"></div>'+
+        el.innerHTML = '<div style="background:rgba(255,190,11,.08);border:1px solid rgba(255,190,11,.3);border-radius:12px;padding:16px;text-align:center;">' +
+            '<div style="font-size:32px;margin-bottom:8px;">💸</div>' +
+            '<div style="font-weight:700;color:var(--warning);margin-bottom:6px;font-size:15px;">Kein Guthaben mehr!</div>' +
+            '<div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Starte neu mit 150€ Startguthaben.</div>' +
+            '<button onclick="casinoRefund(\'' + areaId + '\',\'' + game + '\')" style="background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">💰 Neues Guthaben erhalten (150€)</button>' +
             '</div>';
     }
 
-    function checkTrivia(correct, game, areaId) {
-        var input = document.getElementById('trivia-answer-'+game);
-        var result = document.getElementById('trivia-result-'+game);
-        if (!input) return;
-        var answer = input.value.trim().toLowerCase();
-        if (answer === correct.toLowerCase() || correct.toLowerCase().includes(answer) && answer.length > 2) {
-            setCasinoBalance(currentUser, getCasinoBalance(currentUser) + 50);
-            result.style.color = 'var(--success)';
-            result.textContent = '✅ Richtig! +50€ Guthaben';
-            document.getElementById(areaId).style.display = 'none';
-            if (game === 'bj') bjUpdateUI();
-            if (game === 'rl') rlUpdateUI();
-            if (game === 'pk') pkUpdateUI();
-        } else {
-            result.style.color = 'var(--danger)';
-            result.textContent = '❌ Falsch! Antwort: '+correct;
-        }
+    function casinoRefund(areaId, game) {
+        setCasinoBalance(currentUser, 150);
+        var el = document.getElementById(areaId);
+        if (el) el.style.display = 'none';
+        if (game === 'bj') bjUpdateUI();
+        if (game === 'rl') rlUpdateUI();
+        if (game === 'pk') pkUpdateUI();
+        showNotif('💰 Guthaben aufgeladen', '150€ Startguthaben erhalten!', 'success', 3000);
     }
 
     // ══════════════ BLACKJACK ══════════════
@@ -4278,9 +4265,13 @@
         var targetNum = Math.floor(Math.random() * 37);
         var targetIdx = RL_NUMBERS.indexOf(targetNum);
         var sliceAngle = (Math.PI*2) / RL_NUMBERS.length;
-        var targetAngle = -(targetIdx * sliceAngle + sliceAngle/2);
-        var spins = 5 + Math.random() * 4;
-        var totalRotation = spins * Math.PI * 2 + (targetAngle - (rlAngle % (Math.PI*2)));
+        // Pointer sits at top = -PI/2. We need slice center at pointer.
+        // Wheel angle when targetIdx is at top: a + targetIdx*sliceAngle + sliceAngle/2 = -PI/2
+        // => a = -PI/2 - targetIdx*sliceAngle - sliceAngle/2
+        var desiredAngle = -Math.PI/2 - targetIdx * sliceAngle - sliceAngle/2;
+        var currentNorm = rlAngle % (Math.PI*2);
+        var spins = 6 + Math.random() * 3;
+        var totalRotation = spins * Math.PI * 2 + (desiredAngle - currentNorm);
         var startWheelAngle = rlAngle;
         var startBallAngle = rlBallAngle;
         var duration = 4500;
