@@ -841,6 +841,7 @@
             <button id="tab-regeln" class="nav-btn" onclick="switchTab('regeln')">📜 Gesetze</button>
             <button id="tab-wetter" class="nav-btn" onclick="switchTab('wetter')">🌤️ Wetter</button>
             <button id="tab-infos" class="nav-btn" onclick="switchTab('infos')">ℹ️ Infos</button>
+            <button id="tab-airbnb" class="nav-btn" onclick="switchTab('airbnb')">🏠 Airbnb</button>
         </div>
 
         <div id="content-finanzen" class="tab-content">
@@ -1172,8 +1173,82 @@
         </div>
 
         
-        
-        
+        <div id="content-airbnb" class="tab-content hidden">
+            <div class="sub-nav-tabs">
+                <button id="subtab-airbnb-infos" class="subnav-btn active" onclick="switchSubTab('airbnb', 'airbnb-infos')">🏠 Airbnb Infos</button>
+                <button id="subtab-checkout" class="subnav-btn" onclick="switchSubTab('airbnb', 'checkout')">✅ Check-out</button>
+            </div>
+
+            <!-- AIRBNB INFOS -->
+            <div id="content-airbnb-infos" class="subtab-content">
+                <div class="card" style="border-top:4px solid var(--primary);">
+                    <h3>🏠 Unsere Unterkunft</h3>
+
+                    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:130px;background:#0f172a;border-radius:12px;padding:14px;border:1px solid var(--glass-border);">
+                            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">✈️ Check-in</div>
+                            <div style="font-weight:800;color:var(--success);font-size:15px;">Mi. 22. Juli</div>
+                            <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">ab 15:00 Uhr</div>
+                        </div>
+                        <div style="flex:1;min-width:130px;background:#0f172a;border-radius:12px;padding:14px;border:1px solid var(--glass-border);">
+                            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">🏠 Check-out</div>
+                            <div style="font-weight:800;color:var(--danger);font-size:15px;">Di. 28. Juli</div>
+                            <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">bis 11:00 Uhr</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div class="law-box"><strong>🚭 Rauchen:</strong> Komplett verboten in der gesamten Wohnung.</div>
+                        <div class="law-box"><strong>🔇 Ruhezeiten:</strong> Lärm minimal halten – Ruhezeiten von <strong>22:00 bis 10:00 Uhr</strong> strikt einhalten.</div>
+                        <div class="law-box" style="border-left-color:#ef4444;background:rgba(239,68,68,0.05);"><strong>⚠️ Hausregeln:</strong> Alle Geräte ausschalten wenn ihr rausgeht. Türen und Fenster schließen und sicherstellen dass die Tür fest verschlossen ist.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHECK-OUT CHECKLISTE -->
+            <div id="content-checkout" class="subtab-content hidden">
+                <div class="card" style="border-top:4px solid var(--warning);">
+                    <h3>✅ Check-out Checkliste</h3>
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Check-out bis <strong style="color:var(--danger);">Di. 28. Juli, 11:00 Uhr</strong>. Hakt alles ab bevor ihr geht!</p>
+                    <div style="display:flex;flex-direction:column;gap:10px;" id="checkout-list">
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🗑️ Müll zu den Mülltonnen außerhalb des Gebäudes gebracht</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🍽️ Benutztes Geschirr gespült und verstaut</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🧹 Wohnung sauber und ordentlich hinterlassen</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🪟 Alle Fenster geschlossen</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🔌 Alle Geräte ausgeschaltet</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🔐 Tür fest verschlossen</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🎒 Alle persönlichen Sachen eingepackt</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" style="width:20px;height:20px;accent-color:var(--success);flex-shrink:0;">
+                            <span style="font-size:14px;color:var(--text-main);">🪪 Reisepass & Personalausweis dabei</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
                 
                 <div id="content-entdecken" class="tab-content hidden">
             <div class="sub-nav-tabs">
@@ -2419,6 +2494,7 @@
 
         if (tabName === 'wetter') loadWetter();
         if (tabName === 'entdecken') { switchSubTab('entdecken', 'restaurants'); setTimeout(function(){ renderEigeneOrteInTabs(); renderCustomCatNav(); }, 200); }
+        if (tabName === 'airbnb') switchSubTab('airbnb', 'airbnb-infos');
         if (tabName === 'spiele') switchSubTab('spiele', 'zufall');
         if (tabName === 'kommunikation') switchSubTab('kommunikation', 'chat');
     }
