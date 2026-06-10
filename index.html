@@ -1182,6 +1182,43 @@
                 </div>
             </div>
 
+            <!-- Fluggastrechte -->
+            <div class="card" style="border-top:4px solid var(--danger);">
+                <h3>⚖️ Eure Fluggastrechte (FRA → BCN)</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Gilt für Condor – Strecke unter 1.500 km. Nur bei Eigenverschulden der Airline (nicht bei Unwetter oder Streik der Flugsicherung).</p>
+
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid var(--warning);">
+                        <div style="font-size:22px;flex-shrink:0;">⏱️</div>
+                        <div>
+                            <div style="font-weight:700;color:var(--text-main);font-size:13px;margin-bottom:3px;">Ab 2h Verspätung (Abflug)</div>
+                            <div style="font-size:12px;color:var(--text-muted);">Kostenlose <strong style="color:var(--text-main);">Verpflegung</strong> (Essen/Trinken) + <strong style="color:var(--text-main);">Kommunikation</strong> (Telefonate, E-Mails)</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(0,255,163,.04);border-radius:10px;border-left:3px solid var(--success);">
+                        <div style="font-size:22px;flex-shrink:0;">💶</div>
+                        <div>
+                            <div style="font-weight:700;color:var(--success);font-size:13px;margin-bottom:3px;">Ab 3h Verspätung (Ankunft)</div>
+                            <div style="font-size:12px;color:var(--text-muted);"><strong style="color:var(--success);">250 € Entschädigung</strong> pro Person – unabhängig vom Ticketpreis</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid var(--primary);">
+                        <div style="font-size:22px;flex-shrink:0;">🚪</div>
+                        <div>
+                            <div style="font-weight:700;color:var(--text-main);font-size:13px;margin-bottom:3px;">Ab 5h Verspätung</div>
+                            <div style="font-size:12px;color:var(--text-muted);">Ihr könnt vom Flug <strong style="color:var(--text-main);">zurücktreten</strong> und bekommt den vollen Ticketpreis erstattet. Die 250 € Entschädigung stehen euch trotzdem zu.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:3px solid var(--accent);">
+                        <div style="font-size:22px;flex-shrink:0;">🏨</div>
+                        <div>
+                            <div style="font-weight:700;color:var(--text-main);font-size:13px;margin-bottom:3px;">Verschiebung auf nächsten Tag</div>
+                            <div style="font-size:12px;color:var(--text-muted);">Condor muss <strong style="color:var(--text-main);">Hotelzimmer + Transfer</strong> bezahlen</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         
@@ -3276,7 +3313,7 @@
                     .join(' · ');
 
                 const rueckInfo = othersInfo ? `<span class="meta-info">Zurückbekommen: ${othersInfo}</span>` : '';
-                historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
+                historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span><button onclick="openEditExpense('${exp.id}')" style="background:none;border:1px solid rgba(0,212,255,0.4);color:var(--primary);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe bearbeiten">✏️</button><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
@@ -4838,6 +4875,98 @@
         pkUpdateUI();
     }
 
+    // ================= AUSGABE BEARBEITEN =================
+    function openEditExpense(expId) {
+        var exp = db.expenses.find(function(e){ return e.id === expId; });
+        if (!exp) return;
+
+        // Permission check
+        var isGroupExp = exp.participants.length > 1;
+        if (isGroupExp && currentUser !== 'Ivo') {
+            showNotif('❌', 'Nur Ivo kann Gruppenausgaben bearbeiten', 'danger', 3000);
+            return;
+        }
+        if (!isGroupExp && exp.payer !== currentUser) {
+            showNotif('❌', 'Du kannst nur eigene Ausgaben bearbeiten', 'danger', 3000);
+            return;
+        }
+
+        document.getElementById('edit-exp-id').value = expId;
+        document.getElementById('edit-exp-amount').value = exp.totalAmount;
+        document.getElementById('edit-exp-purpose').value = exp.purpose;
+        document.getElementById('edit-exp-method').value = exp.method || 'Karte';
+
+        // Show participants for group expenses (Ivo only)
+        var partArea = document.getElementById('edit-exp-participants-area');
+        var partEl = document.getElementById('edit-exp-participants');
+        if (isGroupExp && currentUser === 'Ivo') {
+            partArea.style.display = 'block';
+            partEl.innerHTML = ALL_USERS.map(function(u) {
+                var checked = exp.participants.includes(u) ? 'checked' : '';
+                return '<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">' +
+                    '<input type="checkbox" id="edit-part-' + u + '" ' + checked + ' style="width:16px;height:16px;accent-color:var(--primary);">' +
+                    u + '</label>';
+            }).join('');
+        } else {
+            partArea.style.display = 'none';
+        }
+
+        var modal = document.getElementById('edit-expense-modal');
+        modal.style.display = 'flex';
+    }
+
+    function closeEditExpense() {
+        document.getElementById('edit-expense-modal').style.display = 'none';
+    }
+
+    function saveEditExpense() {
+        var expId = document.getElementById('edit-exp-id').value;
+        var amount = parseFloat(document.getElementById('edit-exp-amount').value);
+        var purpose = document.getElementById('edit-exp-purpose').value.trim();
+        var method = document.getElementById('edit-exp-method').value;
+
+        if (isNaN(amount) || amount <= 0) { showNotif('❌', 'Bitte gültigen Betrag eingeben', 'danger', 2000); return; }
+        if (!purpose) { showNotif('❌', 'Bitte Grund eingeben', 'danger', 2000); return; }
+
+        var expIdx = db.expenses.findIndex(function(e){ return e.id === expId; });
+        if (expIdx === -1) return;
+
+        var exp = db.expenses[expIdx];
+        var oldPurpose = exp.purpose;
+
+        // Update participants if Ivo editing group expense
+        var isGroupExp = exp.participants.length > 1;
+        var newParticipants = exp.participants;
+        if (isGroupExp && currentUser === 'Ivo') {
+            newParticipants = ALL_USERS.filter(function(u) {
+                var cb = document.getElementById('edit-part-' + u);
+                return cb && cb.checked;
+            });
+            if (newParticipants.length === 0) { showNotif('❌', 'Mindestens eine Person auswählen', 'danger', 2000); return; }
+        }
+
+        var shareAmount = parseFloat((amount / newParticipants.length).toFixed(2));
+
+        // Update expense
+        db.expenses[expIdx].totalAmount = amount;
+        db.expenses[expIdx].purpose = purpose;
+        db.expenses[expIdx].method = method;
+        db.expenses[expIdx].participants = newParticipants;
+        db.expenses[expIdx].shareAmount = shareAmount;
+
+        // Update related debts
+        db.debts.forEach(function(d, i) {
+            if (d.expenseId === expId) {
+                db.debts[i].amount = shareAmount;
+                db.debts[i].purpose = purpose;
+            }
+        });
+
+        saveDB();
+        closeEditExpense();
+        showNotif('✅', 'Ausgabe aktualisiert', 'success', 2000);
+    }
+
     // ================= STATISTIK =================
     function updateStatistik() {
         normalizeDB();
@@ -6140,6 +6269,39 @@
                 <button id="tmb-gmaps-btn" style="background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);">🗺️ Google Maps</button>
                 <button id="tmb-app-btn" style="background:linear-gradient(135deg,rgba(255,190,11,.2),rgba(255,140,0,.15));color:var(--warning);border:1px solid rgba(255,190,11,.35);">🚇 TMB Barcelona App</button>
                 <button onclick="document.getElementById('tmb-modal').style.display='none'" style="background:none;border:1px solid var(--glass-border);color:var(--text-muted);box-shadow:none;">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUSGABE BEARBEITEN MODAL -->
+    <div id="edit-expense-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto;align-items:center;justify-content:center;">
+        <div style="max-width:420px;margin:40px auto;padding:20px;">
+            <div class="card" style="border-top:4px solid var(--primary);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 style="margin:0;">✏️ Ausgabe bearbeiten</h3>
+                    <button onclick="closeEditExpense()" style="width:auto;background:none;border:1px solid var(--glass-border);color:var(--text-muted);box-shadow:none;padding:6px 12px;font-size:13px;">✕</button>
+                </div>
+                <input type="hidden" id="edit-exp-id">
+                <div class="form-group">
+                    <label>Betrag (€)</label>
+                    <input type="number" id="edit-exp-amount" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Wofür?</label>
+                    <input type="text" id="edit-exp-purpose" placeholder="z.B. Restaurant, Taxi...">
+                </div>
+                <div class="form-group">
+                    <label>Zahlungsart</label>
+                    <select id="edit-exp-method">
+                        <option value="Karte">💳 Karte</option>
+                        <option value="Bar">💵 Bar</option>
+                    </select>
+                </div>
+                <div class="form-group" id="edit-exp-participants-area" style="display:none;">
+                    <label>Geteilt mit</label>
+                    <div id="edit-exp-participants" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+                </div>
+                <button onclick="saveEditExpense()" style="background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);">💾 Speichern</button>
             </div>
         </div>
     </div>
