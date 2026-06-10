@@ -4373,8 +4373,8 @@
     function pkStart() {
         var g = db.poker || {};
         if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
-        if (g.players.length < 2) { showNotif('❌','Mindestens 2 Spieler','danger',2000); return; }
-        if (currentUser !== g.players[0]) { showNotif('❌','Nur der erste Spieler kann starten','danger',2000); return; }
+        if (g.players.length < 2) { showNotif('❌','Mindestens 2 Spieler benötigt','danger',2000); return; }
+        if (!g.players.includes(currentUser)) { showNotif('❌','Du bist nicht in der Lobby','danger',2000); return; }
 
         var deck = bjNewDeck();
         var hands = {};
@@ -4529,7 +4529,7 @@
         var startBtn = document.getElementById('pk-start-btn');
         if (joinBtn) joinBtn.style.display = isInLobby ? 'none' : 'block';
         if (leaveBtn) leaveBtn.style.display = isInLobby ? 'block' : 'none';
-        if (startBtn) startBtn.style.display = (isInLobby && g.players.length >= 2 && currentUser === g.players[0]) ? 'block' : 'none';
+        if (startBtn) startBtn.style.display = (isInLobby && g.players.length >= 2) ? 'block' : 'none';
     }
 
     function pkAdvanceTurn() {
