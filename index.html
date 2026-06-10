@@ -2372,10 +2372,13 @@
                         <button id="pk-call-btn" onclick="pkCall()" style="flex:1;background:rgba(0,212,255,.1);color:var(--primary);border:1px solid rgba(0,212,255,.3);box-shadow:none;">Call</button>
                         <button id="pk-raise-btn" onclick="pkRaise()" style="flex:1;background:rgba(0,255,163,.1);color:var(--success);border:1px solid rgba(0,255,163,.3);box-shadow:none;">Raise</button>
                     </div>
-                    <div id="pk-raise-area" style="display:none;margin-top:10px;display:flex;gap:8px;">
-                        <input type="number" id="pk-raise-input" min="1" placeholder="Raise Betrag" style="flex:1;font-size:13px;">
+                    <div id="pk-raise-area" style="display:none;margin-top:10px;gap:8px;">
+                        <input type="number" id="pk-raise-input" min="1" placeholder="Raise Betrag (min. Big Blind)" style="flex:1;font-size:13px;">
                         <button onclick="pkConfirmRaise()" style="width:auto;padding:0 14px;background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">✓</button>
                     </div>
+                </div>
+                <div id="pk-admin-area" style="display:none;margin-top:12px;">
+                    <button onclick="pkResetGame()" style="background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;font-size:13px;">⚙️ Spiel zurücksetzen (Admin)</button>
                 </div>
                 <div id="pk-broke-area" style="display:none;margin-top:14px;"></div>
             </div>
@@ -4408,52 +4411,99 @@
     function pkRenderGame() {
         var g = db.poker;
         if (!g || g.status !== 'playing') {
-            document.getElementById('pk-game').style.display = 'none';
-            document.getElementById('pk-lobby').style.display = 'block';
-            pkRenderLobby();
-            return;
+            renderPoker(); return;
         }
-        document.getElementById('pk-game').style.display = 'block';
-        document.getElementById('pk-lobby').style.display = 'none';
+        var pkGame = document.getElementById('pk-game');
+        var pkLobby = document.getElementById('pk-lobby');
+        if (!pkGame || !pkLobby) return;
+        pkGame.style.display = 'block';
+        pkLobby.style.display = 'none';
+
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        if (!Array.isArray(g.folded)) g.folded = Object.values(g.folded||{});
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = Object.values(g.actedThisStreet||{});
 
         // Community cards
         var comm = Array.isArray(g.community) ? g.community : Object.values(g.community||{});
-        document.getElementById('pk-community').innerHTML = comm.map(function(c){
-            return c ? casinoCard(c.v, c.s) : '<div style="width:52px;height:72px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);border-radius:8px;"></div>';
+        var commEl = document.getElementById('pk-community');
+        if (commEl) commEl.innerHTML = comm.map(function(c){
+            return c ? casinoCard(c.v, c.s) : '<div style="width:52px;height:72px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;opacity:.3;">?</div>';
         }).join('');
 
         // Player hand
         var hand = g.hands && g.hands[currentUser];
+        var handEl = document.getElementById('pk-hand');
+        var rankEl = document.getElementById('pk-hand-rank');
         if (hand) {
             if (!Array.isArray(hand)) hand = Object.values(hand);
-            document.getElementById('pk-hand').innerHTML = hand.map(function(c){ return casinoCard(c.v, c.s); }).join('');
-            // Show hand rank
-            var visComm = comm.filter(function(c){ return c !== null; });
-            var allCards = hand.concat(visComm);
-            if (allCards.length >= 2) {
-                document.getElementById('pk-hand-rank').textContent = '🃏 ' + pkEvaluateHand(allCards);
+            var isFoldedPlayer = g.folded.includes(currentUser);
+            if (handEl) handEl.innerHTML = hand.map(function(c){
+                return isFoldedPlayer ?
+                    '<div style="opacity:.4;">'+casinoCard(c.v, c.s)+'</div>' :
+                    casinoCard(c.v, c.s);
+            }).join('');
+            if (rankEl && !isFoldedPlayer) {
+                var visComm = comm.filter(function(c){ return c !== null; });
+                var allCards = hand.concat(visComm);
+                rankEl.textContent = allCards.length >= 5 ? '🃏 ' + pkEvaluateHand(allCards) :
+                    allCards.length >= 2 ? '🃏 ' + pkEvaluateHand(allCards) : '';
             }
         }
 
-        // Pot
-        document.getElementById('pk-pot').textContent = 'Pot: '+g.pot+'€  |  Aktuelle Wette: '+(g.currentBet||0)+'€';
+        // Players info
+        var playersInfo = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">';
+        g.players.forEach(function(p) {
+            var isCurrent = p === g.currentPlayer;
+            var isFolded2 = g.folded.includes(p);
+            var bal = getCasinoBalance(p);
+            var bet = (g.bets && g.bets[p]) || 0;
+            playersInfo += '<div style="flex:1;min-width:80px;padding:6px 8px;border-radius:8px;font-size:11px;text-align:center;'+
+                'background:'+(isCurrent?'rgba(0,212,255,.15)':isFolded2?'rgba(255,255,255,.02)':'rgba(255,255,255,.04)')+';'+
+                'border:1px solid '+(isCurrent?'rgba(0,212,255,.4)':isFolded2?'rgba(255,255,255,.06)':'var(--glass-border)')+';">'+
+                '<div style="font-weight:700;color:'+(isFolded2?'var(--text-muted)':'var(--text-main)')+';">'+p+(p===currentUser?' 👤':'')+'</div>'+
+                '<div style="color:var(--success);">'+bal.toFixed(0)+'€</div>'+
+                (bet>0?'<div style="color:var(--warning);">Wette: '+bet+'€</div>':'')+
+                (isFolded2?'<div style="color:var(--danger);">Fold</div>':'')+
+                (isCurrent?'<div style="color:var(--primary);">← dran</div>':'')+
+                '</div>';
+        });
+        playersInfo += '</div>';
+
+        var potEl = document.getElementById('pk-pot');
+        if (potEl) potEl.innerHTML = playersInfo +
+            '<div style="text-align:center;background:rgba(255,190,11,.08);border:1px solid rgba(255,190,11,.2);border-radius:10px;padding:8px;font-size:14px;">'+
+            '💰 Pot: <strong style="color:var(--warning);">'+(g.pot||0)+'€</strong>'+
+            ' &nbsp;|&nbsp; Aktuelle Wette: <strong style="color:var(--primary);">'+(g.currentBet||0)+'€</strong>'+
+            ' &nbsp;|&nbsp; Street: <strong style="color:var(--text-main);">'+pkStreetLabel(g.street)+'</strong>'+
+            '</div>';
 
         // Message
-        var isFolded = (g.folded||[]).includes(currentUser);
+        var isFolded3 = g.folded.includes(currentUser);
         var isMyTurn = g.currentPlayer === currentUser;
-        var msg = isFolded ? 'Du hast gefoldet.' : (isMyTurn ? 'Du bist dran!' : (g.currentPlayer+' ist dran...'));
         var msgEl = document.getElementById('pk-message');
-        msgEl.textContent = msg;
-        msgEl.style.color = isMyTurn ? 'var(--primary)' : 'var(--text-muted)';
+        if (msgEl) {
+            if (isFolded3) { msgEl.textContent = '😔 Du hast gefoldet – warte auf das Ergebnis.'; msgEl.style.color = 'var(--text-muted)'; }
+            else if (isMyTurn) { msgEl.textContent = '⭐ Du bist dran!'; msgEl.style.color = 'var(--primary)'; }
+            else { msgEl.textContent = g.currentPlayer+' ist dran...'; msgEl.style.color = 'var(--text-muted)'; }
+        }
 
         // Actions
-        var actions = document.getElementById('pk-actions');
-        actions.style.display = (isMyTurn && !isFolded) ? 'flex' : 'none';
+        var actionsEl = document.getElementById('pk-actions');
+        if (actionsEl) actionsEl.style.display = (isMyTurn && !isFolded3) ? 'flex' : 'none';
         var myBet = (g.bets && g.bets[currentUser]) || 0;
-        var toCall = (g.currentBet||0) - myBet;
-        document.getElementById('pk-call-btn').textContent = toCall > 0 ? 'Call ('+toCall+'€)' : 'Call';
-        document.getElementById('pk-check-btn').style.display = toCall === 0 ? 'block' : 'none';
-        document.getElementById('pk-call-btn').style.display = toCall > 0 ? 'block' : 'none';
+        var toCall = Math.max(0, (g.currentBet||0) - myBet);
+        var callBtn = document.getElementById('pk-call-btn');
+        var checkBtn = document.getElementById('pk-check-btn');
+        if (callBtn) { callBtn.textContent = 'Call ('+toCall+'€)'; callBtn.style.display = toCall > 0 ? 'block' : 'none'; }
+        if (checkBtn) checkBtn.style.display = toCall === 0 ? 'block' : 'none';
+
+        // Admin reset button for Ivo
+        var adminArea = document.getElementById('pk-admin-area');
+        if (adminArea) adminArea.style.display = currentUser === 'Ivo' ? 'block' : 'none';
+    }
+
+    function pkStreetLabel(s) {
+        return {preflop:'Pre-Flop',flop:'Flop',turn:'Turn',river:'River',showdown:'Showdown'}[s] || s;
     }
 
     function pkRenderLobby() {
@@ -4489,16 +4539,16 @@
         if (!Array.isArray(g.folded)) g.folded = Object.values(g.folded||{});
         if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = Object.values(g.actedThisStreet||{});
 
-        var active = g.players.filter(function(p){ return !(g.folded||[]).includes(p); });
+        var active = g.players.filter(function(p){ return !g.folded.includes(p); });
 
-        // Check if only one player left
+        // Only one player left = wins
         if (active.length === 1) {
             pkAwardPot(active[0]);
             return;
         }
 
-        // Check if all active players have acted and bets are equal
-        var allActed = active.every(function(p){ return (g.actedThisStreet||[]).includes(p); });
+        // Check if betting round is complete
+        var allActed = active.every(function(p){ return g.actedThisStreet.includes(p); });
         var allBetsEqual = active.every(function(p){ return (g.bets[p]||0) === (g.currentBet||0); });
 
         if (allActed && allBetsEqual) {
@@ -4506,11 +4556,12 @@
             return;
         }
 
-        // Next player
-        var idx = g.players.indexOf(g.currentPlayer);
+        // Find next active player after current
+        var players = g.players;
+        var idx = players.indexOf(g.currentPlayer);
         var next = null;
-        for (var i = 1; i <= g.players.length; i++) {
-            var candidate = g.players[(idx + i) % g.players.length];
+        for (var i = 1; i <= players.length; i++) {
+            var candidate = players[(idx + i) % players.length];
             if (!g.folded.includes(candidate)) { next = candidate; break; }
         }
         g.currentPlayer = next;
@@ -4520,29 +4571,35 @@
 
     function pkNextStreet() {
         var g = db.poker;
-        var streets = ['preflop','flop','turn','river','showdown'];
-        var idx = streets.indexOf(g.street);
         if (!Array.isArray(g.community)) g.community = Object.values(g.community||{});
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        if (!Array.isArray(g.deck)) g.deck = Object.values(g.deck||{});
+        if (!Array.isArray(g.folded)) g.folded = [];
 
+        // Reset betting for new street
         g.actedThisStreet = [];
         g.bets = {};
-        (Array.isArray(g.players)?g.players:Object.values(g.players||{})).forEach(function(p){ g.bets[p] = 0; });
+        g.players.forEach(function(p){ g.bets[p] = 0; });
         g.currentBet = 0;
 
-        if (g.street === 'preflop') { g.street = 'flop'; g.community[3] = null; g.community[4] = null; }
-        else if (g.street === 'flop') {
-            g.street = 'turn';
-            var deck = Array.isArray(g.deck)?g.deck:Object.values(g.deck||{});
-            g.community[3] = deck.pop(); g.deck = deck;
-        }
-        else if (g.street === 'turn') {
-            g.street = 'river';
-            var deck2 = Array.isArray(g.deck)?g.deck:Object.values(g.deck||{});
-            g.community[4] = deck2.pop(); g.deck = deck2;
-        }
-        else if (g.street === 'river') { g.street = 'showdown'; pkShowdown(); return; }
+        // First active player after dealer starts
+        var active = g.players.filter(function(p){ return !g.folded.includes(p); });
 
-        g.currentPlayer = (Array.isArray(g.players)?g.players:Object.values(g.players||{}))[0];
+        if (g.street === 'preflop') {
+            // Flop: first 3 community cards already dealt, reveal them
+            g.street = 'flop';
+        } else if (g.street === 'flop') {
+            g.street = 'turn';
+            g.community[3] = g.deck.pop();
+        } else if (g.street === 'turn') {
+            g.street = 'river';
+            g.community[4] = g.deck.pop();
+        } else if (g.street === 'river') {
+            pkShowdown();
+            return;
+        }
+
+        g.currentPlayer = active[0];
         db.poker = g;
         saveDB();
     }
@@ -4557,27 +4614,47 @@
 
         var best = null, bestPlayer = null;
         active.forEach(function(p) {
-            var hand = Array.isArray(g.hands[p])?g.hands[p]:Object.values(g.hands[p]||{});
+            var hand = g.hands[p];
+            if (!Array.isArray(hand)) hand = Object.values(hand||{});
             var all = hand.concat(community);
             var rank = pkHandRank(all);
             if (!best || rank[0] > best[0] || (rank[0]===best[0] && rank[1]>best[1])) {
                 best = rank; bestPlayer = p;
             }
         });
-        pkAwardPot(bestPlayer);
+
+        // Show all hands
+        g.status = 'showdown';
+        db.poker = g;
+        saveDB();
+
+        setTimeout(function() { pkAwardPot(bestPlayer); }, 2000);
     }
 
     function pkAwardPot(winner) {
         var g = db.poker;
         var pot = g.pot || 0;
-        setCasinoBalance(winner, getCasinoBalance(winner) + pot);
-        showNotif('🏆 Gewinner!', winner+' gewinnt den Pot von '+pot+'€!', 'success', 5000);
+        if (pot > 0) {
+            setCasinoBalance(winner, getCasinoBalance(winner) + pot);
+            showNotif('🏆 Gewinner!', winner+' gewinnt den Pot von '+pot+'€!', 'success', 5000);
+        }
         g.status = 'ended';
         g.winner = winner;
         g.pot = 0;
         db.poker = g;
         saveDB();
-        setTimeout(function(){ g.status = 'lobby'; g.players = []; db.poker = g; saveDB(); }, 5000);
+        setTimeout(function(){
+            db.poker = { players: [], status: 'lobby' };
+            saveDB();
+        }, 4000);
+    }
+
+    function pkResetGame() {
+        if (currentUser !== 'Ivo') return;
+        if (!confirm('Pokerspiel zurücksetzen?')) return;
+        db.poker = { players: [], status: 'lobby' };
+        saveDB();
+        renderPoker();
     }
 
     function pkFold() {
@@ -4585,7 +4662,7 @@
         if (!g || g.currentPlayer !== currentUser) return;
         if (!Array.isArray(g.folded)) g.folded = [];
         if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
-        g.folded.push(currentUser);
+        if (!g.folded.includes(currentUser)) g.folded.push(currentUser);
         if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
         db.poker = g;
         pkAdvanceTurn();
@@ -4594,6 +4671,9 @@
     function pkCheck() {
         var g = db.poker;
         if (!g || g.currentPlayer !== currentUser) return;
+        var myBet = (g.bets && g.bets[currentUser]) || 0;
+        var toCall = (g.currentBet||0) - myBet;
+        if (toCall > 0) { showNotif('❌','Du musst callen oder raisen!','danger',2000); return; }
         if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
         if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
         db.poker = g;
@@ -4603,14 +4683,16 @@
     function pkCall() {
         var g = db.poker;
         if (!g || g.currentPlayer !== currentUser) return;
-        var myBet = (g.bets&&g.bets[currentUser]) || 0;
-        var toCall = (g.currentBet||0) - myBet;
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
+        var myBet = (g.bets && g.bets[currentUser]) || 0;
+        var toCall = Math.max(0, (g.currentBet||0) - myBet);
+        if (toCall === 0) { pkCheck(); return; }
         var bal = getCasinoBalance(currentUser);
         var actual = Math.min(toCall, bal);
         setCasinoBalance(currentUser, bal - actual);
+        if (!g.bets) g.bets = {};
         g.bets[currentUser] = myBet + actual;
         g.pot = (g.pot||0) + actual;
-        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
         if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
         db.poker = g;
         pkAdvanceTurn();
@@ -4618,75 +4700,101 @@
 
     function pkRaise() {
         var ra = document.getElementById('pk-raise-area');
-        ra.style.display = ra.style.display === 'none' ? 'flex' : 'none';
+        if (ra) ra.style.display = ra.style.display === 'none' || ra.style.display === '' ? 'flex' : 'none';
     }
 
     function pkConfirmRaise() {
         var g = db.poker;
         if (!g || g.currentPlayer !== currentUser) return;
-        var amount = parseFloat(document.getElementById('pk-raise-input').value)||0;
-        if (amount <= 0) return;
+        var raiseInput = document.getElementById('pk-raise-input');
+        var amount = parseFloat(raiseInput ? raiseInput.value : 0) || 0;
+        if (amount <= 0) { showNotif('❌','Bitte Raise-Betrag eingeben','danger',2000); return; }
         var bal = getCasinoBalance(currentUser);
         if (amount > bal) { showNotif('❌','Nicht genug Guthaben','danger',2000); return; }
-        var myBet = (g.bets&&g.bets[currentUser])||0;
-        var total = myBet + amount;
-        setCasinoBalance(currentUser, bal - amount);
-        g.bets[currentUser] = total;
-        g.currentBet = Math.max(g.currentBet||0, total);
-        g.pot = (g.pot||0) + amount;
         if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
-        g.actedThisStreet = g.actedThisStreet.filter(function(p){ return p === currentUser; });
-        if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
-        document.getElementById('pk-raise-area').style.display = 'none';
+        if (!g.bets) g.bets = {};
+        var myBet = g.bets[currentUser] || 0;
+        var newTotal = myBet + amount;
+        var minRaise = (g.currentBet || 0) + 1;
+        if (newTotal < minRaise) { showNotif('❌','Raise muss mindestens '+(minRaise - myBet)+'€ sein','danger',2000); return; }
+        setCasinoBalance(currentUser, bal - amount);
+        g.bets[currentUser] = newTotal;
+        g.currentBet = newTotal;
+        g.pot = (g.pot||0) + amount;
+        // Reset others so they must act again
+        g.actedThisStreet = [currentUser];
+        var ra = document.getElementById('pk-raise-area');
+        if (ra) ra.style.display = 'none';
+        if (raiseInput) raiseInput.value = '';
         db.poker = g;
         pkAdvanceTurn();
     }
 
-    // Hand evaluation
+    // Hand evaluation - finds best 5-card hand from 7 cards
     var HAND_RANKS = ['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
 
+    function pkCardVal(c) {
+        if (!c) return 0;
+        if (c.v === 'A') return 14;
+        if (c.v === 'K') return 13;
+        if (c.v === 'Q') return 12;
+        if (c.v === 'J') return 11;
+        return parseInt(c.v) || 0;
+    }
+
     function pkHandRank(cards) {
-        var vals = cards.map(function(c){ return bjCardValue(c); }).sort(function(a,b){return b-a;});
-        var suits = cards.map(function(c){ return c.s; });
+        if (!cards || cards.length < 2) return [0, 0];
+        var vals = cards.map(pkCardVal).sort(function(a,b){return b-a;});
+        var suits = cards.map(function(c){ return c ? c.s : ''; });
         var counts = {};
         vals.forEach(function(v){ counts[v]=(counts[v]||0)+1; });
-        var pairs = [], threes = [], fours = [];
+        var pairs=[], threes=[], fours=[];
         Object.keys(counts).forEach(function(v){
-            if(counts[v]===2) pairs.push(parseInt(v));
-            if(counts[v]===3) threes.push(parseInt(v));
-            if(counts[v]===4) fours.push(parseInt(v));
+            if(counts[v]===4) fours.push(+v);
+            else if(counts[v]===3) threes.push(+v);
+            else if(counts[v]===2) pairs.push(+v);
         });
-        var isFlush = suits.filter(function(s,i,a){ return a.indexOf(s)===i; }).length === 1 || 
-            Object.values(suits.reduce(function(acc,s){acc[s]=(acc[s]||0)+1;return acc;},{})).some(function(n){return n>=5;});
-        var sortedVals = vals.slice().sort(function(a,b){return b-a;});
-        var isStraight = false;
-        for(var i=0;i<=sortedVals.length-5;i++){
-            var slice = sortedVals.slice(i,i+5);
-            if(slice[0]-slice[4]===4 && new Set(slice).size===5){ isStraight=true; break; }
+        // Flush check - 5 of same suit
+        var suitCount = {};
+        suits.forEach(function(s){ suitCount[s]=(suitCount[s]||0)+1; });
+        var flushSuit = null;
+        Object.keys(suitCount).forEach(function(s){ if(suitCount[s]>=5) flushSuit=s; });
+        var isFlush = !!flushSuit;
+        // Straight check
+        var uniqVals = vals.filter(function(v,i,a){ return a.indexOf(v)===i; });
+        var isStraight = false, straightHigh = 0;
+        // Check wheel (A-2-3-4-5)
+        if (uniqVals.includes(14) && uniqVals.includes(2) && uniqVals.includes(3) && uniqVals.includes(4) && uniqVals.includes(5)) {
+            isStraight = true; straightHigh = 5;
         }
-        if(fours.length) return [7, fours[0]];
-        if(threes.length && pairs.length) return [6, threes[0]];
-        if(isFlush && isStraight) return sortedVals[0]===14 ? [9,14] : [8,sortedVals[0]];
-        if(isFlush) return [5, sortedVals[0]];
-        if(isStraight) return [4, sortedVals[0]];
-        if(threes.length) return [3, threes[0]];
-        if(pairs.length>=2) return [2, Math.max.apply(null,pairs)];
-        if(pairs.length===1) return [1, pairs[0]];
-        return [0, sortedVals[0]];
+        for (var i=0; i<=uniqVals.length-5; i++) {
+            var sl = uniqVals.slice(i,i+5);
+            if (sl[0]-sl[4]===4) { isStraight=true; straightHigh=sl[0]; break; }
+        }
+        if (fours.length) return [7, Math.max.apply(null,fours)];
+        if (threes.length && pairs.length) return [6, Math.max.apply(null,threes)];
+        if (isFlush && isStraight) return straightHigh===14&&vals[0]===14 ? [9,14] : [8,straightHigh];
+        if (isFlush) return [5, vals[0]];
+        if (isStraight) return [4, straightHigh];
+        if (threes.length) return [3, Math.max.apply(null,threes)];
+        if (pairs.length>=2) return [2, Math.max.apply(null,pairs)];
+        if (pairs.length===1) return [1, pairs[0]];
+        return [0, vals[0]];
     }
 
     function pkEvaluateHand(cards) {
-        return HAND_RANKS[pkHandRank(cards)[0]];
+        if (!cards || cards.length < 2) return 'High Card';
+        return HAND_RANKS[pkHandRank(cards)[0]] || 'High Card';
     }
 
     function renderPoker() {
         var g = db.poker;
-        if (!g) db.poker = { players: [], status: 'lobby' };
-        g = db.poker;
+        if (!g) { db.poker = { players: [], status: 'lobby' }; g = db.poker; }
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
         var pkGame = document.getElementById('pk-game');
         var pkLobby = document.getElementById('pk-lobby');
         if (!pkGame || !pkLobby) return;
-        if (g.status === 'playing') {
+        if (g.status === 'playing' || g.status === 'showdown') {
             pkRenderGame();
         } else {
             pkRenderLobby();
@@ -4695,6 +4803,7 @@
         }
         pkUpdateUI();
     }
+
 
     function initCasino() {
         bjUpdateUI();
