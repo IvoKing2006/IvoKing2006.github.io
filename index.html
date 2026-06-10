@@ -2563,7 +2563,10 @@
         normalizeDB();
 
         showSyncPulse();
-        if (currentUser) updateUI();
+        if (currentUser) {
+            updateUI();
+            renderPoker();
+        }
     });
 
     function saveDB() {
@@ -4535,9 +4538,7 @@
     function pkAdvanceTurn() {
         var g = db.poker;
         if (!g) return;
-        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
-        if (!Array.isArray(g.folded)) g.folded = Object.values(g.folded||{});
-        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = Object.values(g.actedThisStreet||{});
+        g = pkNormalize(g);
 
         var active = g.players.filter(function(p){ return !g.folded.includes(p); });
 
@@ -4567,6 +4568,7 @@
         g.currentPlayer = next;
         db.poker = g;
         saveDB();
+        renderPoker();
     }
 
     function pkNextStreet() {
@@ -4602,6 +4604,7 @@
         g.currentPlayer = active[0];
         db.poker = g;
         saveDB();
+        renderPoker();
     }
 
     function pkShowdown() {
@@ -4643,9 +4646,11 @@
         g.pot = 0;
         db.poker = g;
         saveDB();
+        renderPoker();
         setTimeout(function(){
             db.poker = { players: [], status: 'lobby' };
             saveDB();
+            renderPoker();
         }, 4000);
     }
 
@@ -4657,11 +4662,29 @@
         renderPoker();
     }
 
+    function pkNormalize(g) {
+        if (!g) return g;
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
+        if (!Array.isArray(g.folded)) g.folded = Object.values(g.folded||{});
+        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = Object.values(g.actedThisStreet||{});
+        if (!Array.isArray(g.community)) g.community = Object.values(g.community||{});
+        if (!Array.isArray(g.deck)) g.deck = Object.values(g.deck||{});
+        if (!g.bets || Array.isArray(g.bets)) g.bets = {};
+        if (!g.hands || Array.isArray(g.hands)) g.hands = {};
+        // Normalize hands
+        g.players.forEach(function(p) {
+            if (g.hands[p] && !Array.isArray(g.hands[p])) {
+                g.hands[p] = Object.values(g.hands[p]);
+            }
+        });
+        return g;
+    }
+
     function pkFold() {
         var g = db.poker;
-        if (!g || g.currentPlayer !== currentUser) return;
-        if (!Array.isArray(g.folded)) g.folded = [];
-        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
+        if (!g) return;
+        g = pkNormalize(g);
+        if (g.currentPlayer !== currentUser) { showNotif('⏳','Nicht dein Zug!','warning',1500); return; }
         if (!g.folded.includes(currentUser)) g.folded.push(currentUser);
         if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
         db.poker = g;
@@ -4670,11 +4693,12 @@
 
     function pkCheck() {
         var g = db.poker;
-        if (!g || g.currentPlayer !== currentUser) return;
-        var myBet = (g.bets && g.bets[currentUser]) || 0;
+        if (!g) return;
+        g = pkNormalize(g);
+        if (g.currentPlayer !== currentUser) { showNotif('⏳','Nicht dein Zug!','warning',1500); return; }
+        var myBet = g.bets[currentUser] || 0;
         var toCall = (g.currentBet||0) - myBet;
         if (toCall > 0) { showNotif('❌','Du musst callen oder raisen!','danger',2000); return; }
-        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
         if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
         db.poker = g;
         pkAdvanceTurn();
@@ -4682,15 +4706,15 @@
 
     function pkCall() {
         var g = db.poker;
-        if (!g || g.currentPlayer !== currentUser) return;
-        if (!Array.isArray(g.actedThisStreet)) g.actedThisStreet = [];
-        var myBet = (g.bets && g.bets[currentUser]) || 0;
+        if (!g) return;
+        g = pkNormalize(g);
+        if (g.currentPlayer !== currentUser) { showNotif('⏳','Nicht dein Zug!','warning',1500); return; }
+        var myBet = g.bets[currentUser] || 0;
         var toCall = Math.max(0, (g.currentBet||0) - myBet);
         if (toCall === 0) { pkCheck(); return; }
         var bal = getCasinoBalance(currentUser);
         var actual = Math.min(toCall, bal);
         setCasinoBalance(currentUser, bal - actual);
-        if (!g.bets) g.bets = {};
         g.bets[currentUser] = myBet + actual;
         g.pot = (g.pot||0) + actual;
         if (!g.actedThisStreet.includes(currentUser)) g.actedThisStreet.push(currentUser);
@@ -4705,7 +4729,9 @@
 
     function pkConfirmRaise() {
         var g = db.poker;
-        if (!g || g.currentPlayer !== currentUser) return;
+        if (!g) return;
+        g = pkNormalize(g);
+        if (g.currentPlayer !== currentUser) { showNotif('⏳','Nicht dein Zug!','warning',1500); return; }
         var raiseInput = document.getElementById('pk-raise-input');
         var amount = parseFloat(raiseInput ? raiseInput.value : 0) || 0;
         if (amount <= 0) { showNotif('❌','Bitte Raise-Betrag eingeben','danger',2000); return; }
