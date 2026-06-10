@@ -4346,14 +4346,15 @@
     }
 
     function pkJoin() {
-        var g = db.poker || {};
-        if (!g.players) g.players = [];
-        if (Array.isArray(g.players) && g.players.includes(currentUser)) return;
-        if (!Array.isArray(g.players)) g.players = Object.values(g.players);
+        if (!db.poker) db.poker = { players: [], status: 'lobby' };
+        var g = db.poker;
+        if (!Array.isArray(g.players)) g.players = Object.values(g.players || {});
+        if (g.players.includes(currentUser)) { showNotif('ℹ️','Du bist bereits in der Lobby','warning',2000); return; }
         if (g.status === 'playing') { showNotif('❌','Spiel läuft bereits','danger',2000); return; }
         g.players.push(currentUser);
         db.poker = g;
         saveDB();
+        renderPoker();
     }
 
     function pkLeave() {
@@ -4363,6 +4364,7 @@
         if (g.dealer === currentUser) g.dealer = null;
         db.poker = g;
         saveDB();
+        renderPoker();
     }
 
     function pkStart() {
@@ -4400,6 +4402,7 @@
         g.actedThisStreet = [];
         db.poker = g;
         saveDB();
+        renderPoker();
     }
 
     function pkRenderGame() {
@@ -4454,25 +4457,29 @@
     }
 
     function pkRenderLobby() {
-        var g = db.poker || {};
+        var g = db.poker || { players: [], status: 'lobby' };
         if (!Array.isArray(g.players)) g.players = Object.values(g.players||{});
         var el = document.getElementById('pk-players-list');
         if (!el) return;
         if (g.players.length === 0) {
-            el.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Noch niemand in der Lobby.</p>';
+            el.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Noch niemand in der Lobby. Tritt bei um zu spielen!</p>';
         } else {
-            el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Spieler in der Lobby</div>'+
+            el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Spieler in der Lobby ('+g.players.length+')</div>'+
                 g.players.map(function(p){
                     var bal = getCasinoBalance(p);
-                    return '<div style="display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:6px;font-size:13px;">'+
-                        '<span style="color:var(--text-main);font-weight:700;">'+p+'</span>'+
+                    var isMe = p === currentUser;
+                    return '<div style="display:flex;justify-content:space-between;padding:8px 12px;background:'+(isMe?'rgba(124,58,237,.1)':'rgba(255,255,255,.03)')+';border-radius:8px;margin-bottom:6px;font-size:13px;border:1px solid '+(isMe?'rgba(124,58,237,.3)':'var(--glass-border)')+';">'+
+                        '<span style="color:var(--text-main);font-weight:700;">'+p+(isMe?' (Du)':'')+'</span>'+
                         '<span style="color:var(--success);">'+bal.toFixed(2)+'€</span></div>';
                 }).join('');
         }
         var isInLobby = g.players.includes(currentUser);
-        document.getElementById('pk-join-btn').style.display = isInLobby ? 'none' : 'block';
-        document.getElementById('pk-leave-btn').style.display = isInLobby ? 'block' : 'none';
-        document.getElementById('pk-start-btn').style.display = (isInLobby && g.players.length >= 2 && currentUser === g.players[0]) ? 'block' : 'none';
+        var joinBtn = document.getElementById('pk-join-btn');
+        var leaveBtn = document.getElementById('pk-leave-btn');
+        var startBtn = document.getElementById('pk-start-btn');
+        if (joinBtn) joinBtn.style.display = isInLobby ? 'none' : 'block';
+        if (leaveBtn) leaveBtn.style.display = isInLobby ? 'block' : 'none';
+        if (startBtn) startBtn.style.display = (isInLobby && g.players.length >= 2 && currentUser === g.players[0]) ? 'block' : 'none';
     }
 
     function pkAdvanceTurn() {
@@ -4674,12 +4681,17 @@
 
     function renderPoker() {
         var g = db.poker;
-        if (!g || g.status === 'lobby' || g.status === 'ended' || !g.status) {
-            pkRenderLobby();
-            document.getElementById('pk-game').style.display = 'none';
-            document.getElementById('pk-lobby').style.display = 'block';
-        } else {
+        if (!g) db.poker = { players: [], status: 'lobby' };
+        g = db.poker;
+        var pkGame = document.getElementById('pk-game');
+        var pkLobby = document.getElementById('pk-lobby');
+        if (!pkGame || !pkLobby) return;
+        if (g.status === 'playing') {
             pkRenderGame();
+        } else {
+            pkRenderLobby();
+            pkGame.style.display = 'none';
+            pkLobby.style.display = 'block';
         }
         pkUpdateUI();
     }
@@ -5194,7 +5206,7 @@
         };
         saveDB();
         renderRangliste();
-        if (db.poker) renderPoker();
+        renderPoker();
     }
 
     function renderRangliste() {
