@@ -5084,11 +5084,20 @@
         }
 
         // Determine target - fixed for Raul, random for others
+        // Timmy can ONLY be given to Raul - remove Timmy from others' targets
         var target;
         if (SHIRT_FIXED[currentUser] && targets.includes(SHIRT_FIXED[currentUser])) {
+            // Raul always gets Timmy
             target = SHIRT_FIXED[currentUser];
         } else {
-            target = targets[Math.floor(Math.random() * targets.length)];
+            // Everyone else: Timmy is not available
+            var filteredTargets = targets.filter(function(t) {
+                // Remove Timmy unless currentUser is Raul
+                return t !== 'Timmy' || currentUser === 'Raul';
+            });
+            // Fallback if no targets left after filtering
+            if (filteredTargets.length === 0) filteredTargets = targets;
+            target = filteredTargets[Math.floor(Math.random() * filteredTargets.length)];
         }
 
         // Find target index on wheel
