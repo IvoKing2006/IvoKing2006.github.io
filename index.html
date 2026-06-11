@@ -5103,10 +5103,15 @@
         // Find target index on wheel
         var targetIdx = SHIRT_PLAYERS.indexOf(target);
         var sliceAngle = (Math.PI * 2) / SHIRT_PLAYERS.length;
+        // Pointer at top = -PI/2. Slice center must land there.
+        // shirtAngle + targetIdx * sliceAngle + sliceAngle/2 = -PI/2
         var desiredAngle = -Math.PI/2 - targetIdx * sliceAngle - sliceAngle/2;
-        var spins = 5 + Math.random() * 4;
-        var currentNorm = shirtAngle % (Math.PI * 2);
-        var totalRotation = spins * Math.PI * 2 + (desiredAngle - currentNorm);
+        var spins = 6 + Math.random() * 3;
+        var currentNorm = ((shirtAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+        var desiredNorm = ((desiredAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+        var diff = desiredNorm - currentNorm;
+        if (diff > 0) diff -= Math.PI*2;
+        var totalRotation = spins * Math.PI * 2 + diff;
 
         shirtSpinning = true;
         document.getElementById('shirt-result').textContent = '🌀 dreht...';
