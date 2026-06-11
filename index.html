@@ -2255,6 +2255,7 @@
                 <button id="subtab-blackjack" class="subnav-btn" onclick="switchSubTab('spiele', 'blackjack')">🃏 Blackjack</button>
                 <button id="subtab-roulette" class="subnav-btn" onclick="switchSubTab('spiele', 'roulette')">🎡 Roulette</button>
                 <button id="subtab-poker" class="subnav-btn" onclick="switchSubTab('spiele', 'poker')">♠️ Poker</button>
+                <button id="subtab-shirttausch" class="subnav-btn" onclick="switchSubTab('spiele', 'shirttausch')">👕 Shirt-Tausch</button>
             </div>
         <div id="content-zufall" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent); text-align: center; padding: 40px 20px;">
@@ -2420,6 +2421,39 @@
                 <div id="pk-broke-area" style="display:none;margin-top:14px;"></div>
             </div>
         </div>
+
+        <!-- SHIRT TAUSCH -->
+        <div id="content-shirttausch" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid var(--warning);">
+                <h3 style="text-align:center;">👕 Flughafen Shirt-Tausch</h3>
+                <p style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:20px;">Jeder dreht das Rad – und erfährt wem er sein Shirt geben muss!</p>
+
+                <!-- Wheel -->
+                <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;">
+                    <div style="position:relative;margin-bottom:16px;">
+                        <canvas id="shirt-canvas" width="280" height="280" style="border-radius:50%;box-shadow:0 0 30px rgba(255,190,11,0.3);"></canvas>
+                        <!-- Pointer -->
+                        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:24px;">▼</div>
+                    </div>
+                    <div id="shirt-result" style="font-size:20px;font-weight:900;text-align:center;min-height:36px;color:var(--primary);"></div>
+                </div>
+
+                <!-- Current spinner -->
+                <div id="shirt-current-info" style="text-align:center;margin-bottom:16px;font-size:15px;color:var(--text-muted);"></div>
+
+                <!-- Spin button -->
+                <button id="shirt-spin-btn" onclick="shirtSpin()" style="background:linear-gradient(135deg,rgba(255,190,11,.25),rgba(243,156,18,.18));color:var(--warning);border:1px solid rgba(255,190,11,.4);margin-bottom:14px;">🎡 Drehen!</button>
+
+                <!-- Results list -->
+                <div id="shirt-results-list" style="margin-top:8px;"></div>
+
+                <!-- Reset (Ivo only) -->
+                <div id="shirt-admin" style="display:none;margin-top:12px;">
+                    <button onclick="shirtReset()" style="background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;font-size:13px;">🔄 Spiel zurücksetzen</button>
+                </div>
+            </div>
+        </div>
+
         </div>
 
         <div id="content-kommunikation" class="tab-content hidden">
@@ -2603,6 +2637,7 @@
         if (currentUser) {
             updateUI();
             renderPoker();
+            if (db.shirttausch) { shirtRenderResults(); updateShirtInfo(); }
         }
     });
 
@@ -2684,6 +2719,7 @@
         }
         if (tabName === 'chat') renderChat();
         if (tabName === 'schwimmen') renderSchwimmen();
+        if (tabName === 'shirttausch') { setTimeout(shirtInit, 100); }
         if (tabName === 'notizen') renderNotizen();
     }
 
@@ -4965,6 +5001,208 @@
         saveDB();
         closeEditExpense();
         showNotif('✅', 'Ausgabe aktualisiert', 'success', 2000);
+    }
+
+    // ================= SHIRT TAUSCH =================
+    var SHIRT_PLAYERS = ['Ivo', 'Romeo', 'Anton', 'Raul', 'Timmy'];
+    var SHIRT_FIXED = { 'Raul': 'Timmy' }; // fest: Raul gibt Timmy
+    var shirtAngle = 0;
+    var shirtSpinning = false;
+
+    function shirtInit() {
+        if (!db.shirttausch) db.shirttausch = { results: {}, order: [] };
+        shirtDrawWheel();
+        shirtRenderResults();
+        var adminEl = document.getElementById('shirt-admin');
+        if (adminEl) adminEl.style.display = currentUser === 'Ivo' ? 'block' : 'none';
+        updateShirtInfo();
+    }
+
+    function shirtGetRemaining() {
+        var results = db.shirttausch ? (db.shirttausch.results || {}) : {};
+        return SHIRT_PLAYERS.filter(function(p) { return !results[p]; });
+    }
+
+    function shirtGetAvailableTargets(spinner) {
+        var results = db.shirttausch ? (db.shirttausch.results || {}) : {};
+        // Already assigned targets
+        var taken = Object.values(results);
+        // Can't give to yourself, can't give to already taken
+        return SHIRT_PLAYERS.filter(function(p) {
+            return p !== spinner && !taken.includes(p);
+        });
+    }
+
+    function updateShirtInfo() {
+        var el = document.getElementById('shirt-current-info');
+        var btnEl = document.getElementById('shirt-spin-btn');
+        if (!el) return;
+        var results = db.shirttausch ? (db.shirttausch.results || {}) : {};
+        var remaining = shirtGetRemaining();
+
+        if (remaining.length === 0) {
+            el.textContent = '🎉 Alle haben gedreht!';
+            if (btnEl) btnEl.style.display = 'none';
+            return;
+        }
+
+        var next = remaining[0];
+        if (btnEl) btnEl.style.display = 'block';
+
+        if (results[currentUser]) {
+            el.innerHTML = '✅ Du hast bereits gedreht. Warte auf die anderen...';
+            if (btnEl) btnEl.style.display = 'none';
+        } else if (currentUser === next || remaining.includes(currentUser)) {
+            if (currentUser === next) {
+                el.innerHTML = '<strong style="color:var(--primary);">👕 Du bist dran! Dreh das Rad!</strong>';
+            } else {
+                el.innerHTML = 'Warte... <strong style="color:var(--warning);">' + next + '</strong> ist gerade dran.';
+                if (btnEl) btnEl.style.display = 'none';
+            }
+        }
+    }
+
+    function shirtSpin() {
+        if (shirtSpinning) return;
+        var results = db.shirttausch ? (db.shirttausch.results || {}) : {};
+
+        if (results[currentUser]) {
+            showNotif('ℹ️', 'Du hast bereits gedreht!', 'warning', 2000);
+            return;
+        }
+
+        var remaining = shirtGetRemaining();
+        if (remaining[0] !== currentUser) {
+            showNotif('⏳', remaining[0] + ' muss zuerst drehen!', 'warning', 2000);
+            return;
+        }
+
+        var targets = shirtGetAvailableTargets(currentUser);
+        if (targets.length === 0) {
+            showNotif('❌', 'Keine Ziele mehr verfügbar!', 'danger', 2000);
+            return;
+        }
+
+        // Determine target - fixed for Raul, random for others
+        var target;
+        if (SHIRT_FIXED[currentUser] && targets.includes(SHIRT_FIXED[currentUser])) {
+            target = SHIRT_FIXED[currentUser];
+        } else {
+            target = targets[Math.floor(Math.random() * targets.length)];
+        }
+
+        // Find target index on wheel
+        var targetIdx = SHIRT_PLAYERS.indexOf(target);
+        var sliceAngle = (Math.PI * 2) / SHIRT_PLAYERS.length;
+        var desiredAngle = -Math.PI/2 - targetIdx * sliceAngle - sliceAngle/2;
+        var spins = 5 + Math.random() * 4;
+        var currentNorm = shirtAngle % (Math.PI * 2);
+        var totalRotation = spins * Math.PI * 2 + (desiredAngle - currentNorm);
+
+        shirtSpinning = true;
+        document.getElementById('shirt-result').textContent = '🌀 dreht...';
+        var startAngle = shirtAngle;
+        var duration = 4000;
+        var startTime = null;
+
+        function ease(t) { return 1 - Math.pow(1-t, 4); }
+        function animate(ts) {
+            if (!startTime) startTime = ts;
+            var progress = Math.min((ts - startTime) / duration, 1);
+            shirtAngle = startAngle + totalRotation * ease(progress);
+            shirtDrawWheel();
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                shirtSpinning = false;
+                // Save result
+                if (!db.shirttausch) db.shirttausch = { results: {}, order: [] };
+                db.shirttausch.results[currentUser] = target;
+                saveDB();
+                document.getElementById('shirt-result').textContent = '👕 ' + currentUser + ' gibt ' + target + '!';
+                shirtRenderResults();
+                updateShirtInfo();
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function shirtDrawWheel() {
+        var canvas = document.getElementById('shirt-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var W = canvas.width, H = canvas.height;
+        var cx = W/2, cy = H/2, r = W/2 - 6;
+        ctx.clearRect(0, 0, W, H);
+
+        var players = SHIRT_PLAYERS;
+        var n = players.length;
+        var slice = (Math.PI * 2) / n;
+        var colors = ['#f59e0b','#3b82f6','#10b981','#ef4444','#a855f7'];
+        var results = db.shirttausch ? (db.shirttausch.results || {}) : {};
+
+        players.forEach(function(p, i) {
+            var start = shirtAngle + i * slice;
+            var end = start + slice;
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.closePath();
+            ctx.fillStyle = results[p] ? 'rgba(100,100,100,0.4)' : colors[i];
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Name
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(start + slice/2);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = results[p] ? 'rgba(255,255,255,0.4)' : '#fff';
+            ctx.font = 'bold 14px Inter,sans-serif';
+            ctx.fillText(p, r - 12, 5);
+            ctx.restore();
+        });
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, 22, 0, Math.PI*2);
+        ctx.fillStyle = '#0f172a';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,190,11,0.4)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('👕', cx, cy+6);
+    }
+
+    function shirtRenderResults() {
+        var el = document.getElementById('shirt-results-list');
+        if (!el) return;
+        var results = db.shirttausch ? (db.shirttausch.results || {}) : {};
+        var keys = Object.keys(results);
+        if (keys.length === 0) { el.innerHTML = ''; return; }
+
+        el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Ergebnisse</div>' +
+            keys.map(function(p) {
+                return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:8px;border:1px solid var(--glass-border);">' +
+                    '<span style="font-size:20px;">👕</span>' +
+                    '<span style="font-size:14px;color:var(--text-main);"><strong>' + p + '</strong> gibt sein Shirt an <strong style="color:var(--primary);">' + results[p] + '</strong></span>' +
+                    '</div>';
+            }).join('');
+    }
+
+    function shirtReset() {
+        if (currentUser !== 'Ivo') return;
+        if (!confirm('Shirt-Tausch zurücksetzen?')) return;
+        db.shirttausch = { results: {}, order: [] };
+        saveDB();
+        shirtInit();
+        document.getElementById('shirt-result').textContent = '';
     }
 
     // ================= STATISTIK =================
