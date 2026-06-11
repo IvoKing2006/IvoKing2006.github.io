@@ -133,7 +133,24 @@
             50% { transform: scaleX(0); }
             100% { transform: scaleX(1); }
         }
+        @keyframes cardSwapUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            40% { transform: translateY(-60px) scale(1.15); opacity: 1; }
+            60% { transform: translateY(-60px) scale(1.15); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 0; }
+        }
+        @keyframes cardSwapDown {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            40% { transform: translateY(60px) scale(1.15); opacity: 0; }
+            60% { transform: translateY(60px) scale(1.15); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes cardSwapIn {
+            0% { transform: scale(0.7) translateY(-30px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
         .schw-card.flipping { animation: cardFlip 0.4s ease-in-out; }
+        .schw-swapping { pointer-events: none; }
         .hidden { display: none !important; }
 
         /* LOGIN SCREEN */
@@ -5988,20 +6005,19 @@
         return d;
     }
 
-    function schwCard(c, faceDown, selected, onclick) {
-        if (faceDown || !c) return `<div class="schw-card schw-card-back" style="animation:cardDeal 0.3s ease-out;"></div>`;
+    function schwCard(c, faceDown, selected, onclick, cardId) {
+        const idAttr = cardId ? `id="${cardId}"` : '';
+        if (faceDown || !c) return `<div class="schw-card schw-card-back" style="animation:cardDeal 0.3s ease-out;" ${idAttr}></div>`;
         const sym = SCHW_SUITS[c.suit]||'?';
         const col = SCHW_COLORS[c.suit]||'#111';
         const val = {B:'J',D:'Q',K:'K',A:'A'}[c.value] || c.value;
-        const isRed = col !== '#f0f6ff' && col !== '#fff' && col !== '#e2e8f0';
+        const isRed = col === '#cc0000';
         const textCol = isRed ? '#cc0000' : '#111';
-        // Selected: lift card with gold glow
         const sel = selected
             ? 'transform:translateY(-16px) rotate(-2deg);box-shadow:0 0 0 3px #f59e0b,0 16px 32px rgba(245,158,11,0.5);'
             : '';
         const oc = onclick ? `onclick="${onclick}"` : '';
-        // Card face: white with subtle texture
-        return `<div class="schw-card" style="color:${textCol};${sel};animation:cardDeal 0.3s ease-out;" ${oc}>
+        return `<div class="schw-card" style="color:${textCol};${sel};animation:cardDeal 0.3s ease-out;" ${oc} ${idAttr}>
             <div style="position:absolute;inset:0;border-radius:10px;background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(240,240,240,0.4));pointer-events:none;"></div>
             <div class="schw-card-corner schw-card-tl" style="color:${textCol};">${val}<br><span style="font-size:14px;">${sym}</span></div>
             <div class="schw-card-center" style="color:${textCol};text-shadow:0 1px 3px rgba(0,0,0,0.15);">${sym}</div>
@@ -6132,16 +6148,27 @@
         if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
         if (!Array.isArray(g.log)) g.log = [];
         if (!Array.isArray(g.skippedThisRound)) g.skippedThisRound = [];
-        const h = [...(g.hands[currentUser]||[])];
-        const m = [...(g.middle||[])];
-        [h[hi], m[mi]] = [m[mi], h[hi]];
-        g.hands[currentUser] = h; g.middle = m;
-        g.log.unshift(currentUser+' tauscht 1 Karte.');
-        _schwSelectedHandCard = null;
-        g.skippedThisRound = [];
-        if (schwIstFeuer(h)) { schwimmenEndRoundFeuer(currentUser); return; }
-        if (schwScore(h) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
-        schwimmenNextTurn();
+
+        // Animate swap
+        const handCard = document.getElementById('schw-hand-'+hi);
+        const midCard = document.getElementById('schw-mid-'+mi);
+        if (handCard && midCard) {
+            handCard.style.animation = 'cardSwapUp 0.5s ease-in-out forwards';
+            midCard.style.animation = 'cardSwapDown 0.5s ease-in-out forwards';
+        }
+
+        setTimeout(function() {
+            const h = [...(g.hands[currentUser]||[])];
+            const m = [...(g.middle||[])];
+            [h[hi], m[mi]] = [m[mi], h[hi]];
+            g.hands[currentUser] = h; g.middle = m;
+            g.log.unshift(currentUser+' tauscht 1 Karte.');
+            _schwSelectedHandCard = null;
+            g.skippedThisRound = [];
+            if (schwIstFeuer(h)) { schwimmenEndRoundFeuer(currentUser); return; }
+            if (schwScore(h) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
+            schwimmenNextTurn();
+        }, 500);
     }
 
     function schwimmenSwapAll() {
@@ -6151,15 +6178,26 @@
         if (!Array.isArray(g.turnOrder)) g.turnOrder = Object.values(g.turnOrder || {});
         if (!Array.isArray(g.log)) g.log = [];
         if (!Array.isArray(g.skippedThisRound)) g.skippedThisRound = [];
-        const oldH = [...(g.hands[currentUser]||[])];
-        g.hands[currentUser] = [...g.middle];
-        g.middle = oldH;
-        g.log.unshift(currentUser+' tauscht alle 3 Karten.');
-        _schwSelectedHandCard = null;
-        g.skippedThisRound = [];
-        if (schwIstFeuer(g.hands[currentUser])) { schwimmenEndRoundFeuer(currentUser); return; }
-        if (schwScore(g.hands[currentUser]) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
-        schwimmenNextTurn();
+
+        // Animate all 3 cards
+        [0,1,2].forEach(function(i) {
+            const hc = document.getElementById('schw-hand-'+i);
+            const mc = document.getElementById('schw-mid-'+i);
+            if (hc) hc.style.animation = 'cardSwapUp 0.5s ease-in-out '+(i*60)+'ms forwards';
+            if (mc) mc.style.animation = 'cardSwapDown 0.5s ease-in-out '+(i*60)+'ms forwards';
+        });
+
+        setTimeout(function() {
+            const oldH = [...(g.hands[currentUser]||[])];
+            g.hands[currentUser] = [...g.middle];
+            g.middle = oldH;
+            g.log.unshift(currentUser+' tauscht alle 3 Karten.');
+            _schwSelectedHandCard = null;
+            g.skippedThisRound = [];
+            if (schwIstFeuer(g.hands[currentUser])) { schwimmenEndRoundFeuer(currentUser); return; }
+            if (schwScore(g.hands[currentUser]) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
+            schwimmenNextTurn();
+        }, 650);
     }
 
     function schwimmenSkip() {
@@ -6418,8 +6456,8 @@
                     <span style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">🎯 Mitte</span>
                     ${isMyTurn && _schwSelectedHandCard!==null ? '<span style="font-size:12px;color:var(--primary);animation:pulse 1s infinite;">👆 Mittelkarte wählen</span>' : ''}
                 </div>
-                <div style="display:flex;gap:10px;justify-content:center;">
-                    ${(g.middle||[]).map((c,i) => schwCard(c, false, false, isMyTurn && _schwSelectedHandCard!==null ? `schwimmenSelectMiddle(${i})` : '')).join('')}
+                <div style="display:flex;gap:10px;justify-content:center;" id="schw-middle-area">
+                    ${(g.middle||[]).map((c,i) => schwCard(c, false, false, isMyTurn && _schwSelectedHandCard!==null ? `schwimmenSelectMiddle(${i})` : '', 'schw-mid-'+i)).join('')}
                 </div>
             </div>
             <div class="card" style="${isMyTurn?'border-color:rgba(0,255,163,0.45);box-shadow:0 0 24px rgba(0,255,163,0.1);':''}">
@@ -6429,8 +6467,8 @@
                     </span>
                     <span style="font-size:16px;font-weight:900;color:var(--primary);">${myScore} Punkte</span>
                 </div>
-                <div style="display:flex;gap:10px;justify-content:center;margin-bottom:${isMyTurn?'16':'0'}px;">
-                    ${myHand.map((c,i) => schwCard(c, false, _schwSelectedHandCard===i, isMyTurn ? `schwimmenSelectHand(${i})` : '')).join('')}
+                <div style="display:flex;gap:10px;justify-content:center;margin-bottom:${isMyTurn?'16':'0'}px;" id="schw-hand-area">
+                    ${myHand.map((c,i) => schwCard(c, false, _schwSelectedHandCard===i, isMyTurn ? `schwimmenSelectHand(${i})` : '', 'schw-hand-'+i)).join('')}
                 </div>
                 ${isMyTurn ? `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
