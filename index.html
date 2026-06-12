@@ -2222,6 +2222,7 @@
                             <option value="apotheke">💊 Apotheke</option>
                             <option value="supermarkt">🛒 Supermärkte</option>
                             <option value="orte">🧭 Orte</option>
+                            <option value="kaffee">☕ Kaffee &amp; Kuchen</option>
                             <option value="neu">✨ Neue Kategorie erstellen</option>
                         </select>
                     </div>
@@ -3950,7 +3951,7 @@
 
     function renderEigeneOrteInTabs() {
         var orte = db.eigeneOrte || [];
-        var cats = ['restaurants','tabak','apotheke','supermarkt','orte'];
+        var cats = ['restaurants','tabak','apotheke','supermarkt','orte','kaffee'];
 
         // Also get custom cat ids
         (db.customCats || []).forEach(function(c){ cats.push(c.id); });
