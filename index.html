@@ -1313,10 +1313,17 @@
                 </div>
             </div>
 
+            <!-- COCKTAIL GENERATOR -->
+            <div class="card" style="border-top:4px solid #a855f7;">
+                <h3>🍹 Cocktail-Generator</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">25 Cocktails — alle in Barcelona safe erhältlich. Drücken und Glück haben!</p>
+                <button onclick="cocktailZufall()" id="cocktail-btn" style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(124,58,237,.2));color:#c084fc;border:1px solid rgba(168,85,247,.4);font-size:16px;font-weight:800;padding:16px;letter-spacing:.04em;">🎲 Zufälligen Cocktail wählen</button>
+                <div id="cocktail-result" style="display:none;margin-top:16px;"></div>
+            </div>
+
         </div>
 
         
-        <div id="content-airbnb" class="tab-content hidden">
             <div class="sub-nav-tabs">
                 <button id="subtab-airbnb-infos" class="subnav-btn active" onclick="switchSubTab('airbnb', 'airbnb-infos')">🏠 Airbnb Infos</button>
                 <button id="subtab-checkout" class="subnav-btn" onclick="switchSubTab('airbnb', 'checkout')">✅ Check-out</button>
@@ -3897,6 +3904,66 @@
             errorEl.style.display = 'block';
             errorEl.textContent = '❌ GPS nicht verfügbar. Bitte GPS-Zugriff erlauben.';
         }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+
+    var COCKTAILS = [
+        { name: 'Mojito', emoji: '🌿', zutaten: ['Weißer Rum', 'Limettensaft', 'Rohrzucker', 'Minze', 'Sodawasser', 'Eis'], beschreibung: 'Der Klassiker schlechthin — frisch, minzig, erfrischend.' },
+        { name: 'Gin Tonic', emoji: '🫙', zutaten: ['Gin', 'Tonic Water', 'Limettenscheibe', 'Eis'], beschreibung: 'In Barcelona riesig — oft mit Botanicals serviert.' },
+        { name: 'Aperol Spritz', emoji: '🍊', zutaten: ['Aperol', 'Prosecco/Cava', 'Sodawasser', 'Eiswürfel', 'Orangenscheibe'], beschreibung: 'Leicht bitter, prickelnd — perfekt für den Sundowner.' },
+        { name: 'Sangria', emoji: '🍷', zutaten: ['Rotwein', 'Orangensaft', 'Brandy', 'Zucker', 'Früchte', 'Eis'], beschreibung: 'Das spanische Nationalgetränk — süß, fruchtig, tückisch.' },
+        { name: 'Margarita', emoji: '🍋', zutaten: ['Tequila', 'Triple Sec', 'Limettensaft', 'Salzrand', 'Eis'], beschreibung: 'Sauer, salzig, perfekt. Klassiker der Mexikanischen Küche.' },
+        { name: 'Daiquiri', emoji: '🍓', zutaten: ['Weißer Rum', 'Limettensaft', 'Zuckersirup', 'Eis'], beschreibung: 'Einfach aber brilliant — oft auch mit Erdbeere.' },
+        { name: 'Piña Colada', emoji: '🍍', zutaten: ['Weißer Rum', 'Kokosmilch', 'Ananassaft', 'Crushed Ice'], beschreibung: 'Tropisch und cremig — schmeckt nach Urlaub.' },
+        { name: 'Sex on the Beach', emoji: '🏖️', zutaten: ['Wodka', 'Pfirsichlikör', 'Orangensaft', 'Cranberrysaft', 'Eis'], beschreibung: 'Fruchtig, süß, perfekt am Strand.' },
+        { name: 'Cosmopolitan', emoji: '🍸', zutaten: ['Wodka', 'Triple Sec', 'Cranberrysaft', 'Limettensaft', 'Eis'], beschreibung: 'Der Sex and the City Cocktail — elegant und herb.' },
+        { name: 'Long Island Iced Tea', emoji: '🥃', zutaten: ['Wodka', 'Gin', 'Rum', 'Tequila', 'Triple Sec', 'Zitronensaft', 'Cola'], beschreibung: 'Vorsicht — schmeckt wie Eistee, haut aber rein wie ein Vorschlaghammer.' },
+        { name: 'Espresso Martini', emoji: '☕', zutaten: ['Wodka', 'Kaffeelikör', 'Espresso', 'Zuckersirup', 'Eis'], beschreibung: 'Wach bleiben und Party — der perfekte Spätnacht-Drink.' },
+        { name: 'Negroni', emoji: '🍊', zutaten: ['Gin', 'Campari', 'Roter Wermut', 'Eis', 'Orangenschale'], beschreibung: 'Bitter, komplex, ein Erwachsenen-Drink. 1:1:1.' },
+        { name: 'Paloma', emoji: '🍹', zutaten: ['Tequila', 'Grapefruitlimo (Squirt)', 'Limettensaft', 'Salz', 'Eis'], beschreibung: 'In Mexiko beliebter als die Margarita — hier in Barcelona auch.' },
+        { name: 'Cuba Libre', emoji: '🥤', zutaten: ['Rum', 'Cola', 'Limettensaft', 'Eis', 'Limettenscheibe'], beschreibung: 'Rum-Cola mit Limette — einfach und gut.' },
+        { name: 'Tequila Sunrise', emoji: '🌅', zutaten: ['Tequila', 'Orangensaft', 'Grenadine', 'Eis'], beschreibung: 'Sieht wie ein Sonnenaufgang aus — ideal für den Morgen danach.' },
+        { name: 'Caipirinha', emoji: '🍈', zutaten: ['Cachaça', 'Limette', 'Rohrzucker', 'Crushed Ice'], beschreibung: 'Brasilianischer Nationaldrink — frisch und stark.' },
+        { name: 'Whisky Sour', emoji: '🥃', zutaten: ['Bourbon Whisky', 'Zitronensaft', 'Zuckersirup', 'Eiweiß (optional)', 'Eis'], beschreibung: 'Sauer trifft Whisky — mit Schaum obendrauf ein Gedicht.' },
+        { name: 'Dry Martini', emoji: '🍸', zutaten: ['Gin', 'Trockener Wermut', 'Eiswürfel', 'Olive oder Zitronenschale'], beschreibung: 'Gerührt, nicht geschüttelt. Der King.' },
+        { name: 'Moscow Mule', emoji: '🫚', zutaten: ['Wodka', 'Ginger Beer', 'Limettensaft', 'Eis', 'Minze'], beschreibung: 'Scharf vom Ingwer, frisch von der Limette.' },
+        { name: 'Penicillin', emoji: '🍯', zutaten: ['Scotch Whisky', 'Zitronensaft', 'Honig-Ingwer-Sirup', 'Islay Whisky (float)'], beschreibung: 'Moderner Klassiker — rauchig, süß, sauer. Gehört auf jede Karte.' },
+        { name: 'Cava Sangria', emoji: '🥂', zutaten: ['Cava (Spanischer Sekt)', 'Orangensaft', 'Brandy', 'Früchte', 'Eis'], beschreibung: 'Die Barceloner Version — leichter und prickelnder als normale Sangria.' },
+        { name: 'Carajillo', emoji: '☕', zutaten: ['Espresso', 'Licor 43', 'Eis (optional)'], beschreibung: 'Das katalanische Kultgetränk — Kaffee mit Licor 43. Süß und stark.' },
+        { name: 'Agua de Valencia', emoji: '🍊', zutaten: ['Cava', 'Orangensaft', 'Wodka', 'Gin', 'Zucker'], beschreibung: 'Valencianischer Export — süß, gefährlich, wird in großen Karaffen serviert.' },
+        { name: 'Rebujito', emoji: '🌿', zutaten: ['Manzanilla Sherry', 'Sprite oder 7UP', 'Minze', 'Eis'], beschreibung: 'Andalusischer Partyklassiker — leicht, frisch, geht runter wie Wasser.' },
+        { name: 'Vermut', emoji: '🫒', zutaten: ['Roter Wermut', 'Soda (optional)', 'Eiswürfel', 'Olive', 'Orangenscheibe'], beschreibung: 'In Barcelona Tradition zum Mittag — "La hora del vermut" ist heilig.' }
+    ];
+
+    var _letzterCocktailIdx = -1;
+
+    function cocktailZufall() {
+        var idx;
+        do { idx = Math.floor(Math.random() * COCKTAILS.length); } while (idx === _letzterCocktailIdx && COCKTAILS.length > 1);
+        _letzterCocktailIdx = idx;
+        var c = COCKTAILS[idx];
+
+        var el = document.getElementById('cocktail-result');
+        el.style.display = 'block';
+        el.innerHTML =
+            '<div style="background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(124,58,237,.08));border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:18px;">' +
+                '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+                    '<div style="font-size:48px;line-height:1;">' + c.emoji + '</div>' +
+                    '<div>' +
+                        '<div style="font-size:22px;font-weight:900;color:#c084fc;">' + c.name + '</div>' +
+                        '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + c.beschreibung + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;padding:12px 14px;">' +
+                    '<div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:700;">🧪 Zutaten</div>' +
+                    '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+                        c.zutaten.map(function(z){ return '<span style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:20px;padding:4px 10px;font-size:13px;color:#e9d5ff;">' + z + '</span>'; }).join('') +
+                    '</div>' +
+                '</div>' +
+                '<div style="margin-top:10px;font-size:12px;color:var(--text-muted);text-align:right;">' + (idx+1) + ' / ' + COCKTAILS.length + ' Cocktails</div>' +
+            '</div>';
+
+        var btn = document.getElementById('cocktail-btn');
+        btn.textContent = '🎲 Nochmal würfeln';
     }
 
     function startOfflineBanner() {
