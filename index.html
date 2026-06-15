@@ -3947,6 +3947,7 @@
     ];
 
     var _cocktailLiveListener = null;
+    var _letzterCocktailIdx = -1;
 
     function cocktailStartLive() {
         if (_cocktailLiveListener) return;
@@ -3955,7 +3956,6 @@
             var list = document.getElementById('cocktail-live-list');
             if (!list) return;
 
-            // Reset-Button nur für Ivo
             var resetBtn = document.getElementById('cocktail-reset-btn');
             if (resetBtn) resetBtn.style.display = currentUser === 'Ivo' ? 'block' : 'none';
 
@@ -3975,16 +3975,19 @@
                         '</div>';
                 }
                 var c = e.data;
+                // Firebase speichert Arrays manchmal als Objekte — normalisieren
+                var zutaten = Array.isArray(c.zutaten) ? c.zutaten : Object.values(c.zutaten || {});
                 return '<div style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(124,58,237,.06));border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:12px 14px;">' +
                     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-                        '<div style="font-size:28px;">' + c.emoji + '</div>' +
+                        '<div style="font-size:28px;">' + (c.emoji || '🍹') + '</div>' +
                         '<div>' +
                             '<div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">' + e.user + '</div>' +
                             '<div style="font-size:17px;font-weight:800;color:#c084fc;">' + c.name + '</div>' +
+                            '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + (c.beschreibung || '') + '</div>' +
                         '</div>' +
                     '</div>' +
                     '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
-                        c.zutaten.map(function(z){ return '<span style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.25);border-radius:20px;padding:3px 8px;font-size:11px;color:#e9d5ff;">' + z + '</span>'; }).join('') +
+                        zutaten.map(function(z){ return '<span style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.25);border-radius:20px;padding:3px 8px;font-size:11px;color:#e9d5ff;">' + z + '</span>'; }).join('') +
                     '</div>' +
                 '</div>';
             }).join('');
@@ -3997,7 +4000,7 @@
         _letzterCocktailIdx = idx;
         var c = COCKTAILS[idx];
 
-        // In Firebase speichern
+        // Zutaten als echtes Array in Firebase speichern
         database.ref('cocktails/' + currentUser).set({
             name: c.name,
             emoji: c.emoji,
@@ -4006,7 +4009,6 @@
             ts: Date.now()
         });
 
-        // Eigenes Ergebnis kurz anzeigen
         var el = document.getElementById('cocktail-mein-result');
         if (el) {
             el.style.display = 'block';
@@ -4015,6 +4017,9 @@
 
         var btn = document.getElementById('cocktail-btn');
         if (btn) btn.textContent = '🎲 Nochmal würfeln';
+
+        // Live-Listener starten falls noch nicht aktiv
+        cocktailStartLive();
     }
 
     function cocktailReset() {
@@ -4022,10 +4027,11 @@
         if (!confirm('Alle Cocktails zurücksetzen?')) return;
         database.ref('cocktails').remove();
         var el = document.getElementById('cocktail-mein-result');
-        if (el) { el.style.display = 'none'; }
+        if (el) el.style.display = 'none';
         var btn = document.getElementById('cocktail-btn');
         if (btn) btn.textContent = '🎲 Meinen Cocktail würfeln';
         _letzterCocktailIdx = -1;
+        _cocktailLiveListener = null;
     }
 
     function startOfflineBanner() {
