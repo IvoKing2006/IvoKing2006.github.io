@@ -3735,9 +3735,70 @@
         }, 480);
     }
 
+    function adminRefreshFirebaseStatus() {
+        var el = document.getElementById('admin-firebase-status');
+        if (!el) return;
+        el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">⏳ Lade...</div>';
+
+        // Eigene Firebase-Verbindung prüfen
+        var connRef = database.ref('.info/connected');
+        connRef.once('value', function(snap) {
+            var selfConnected = snap.val() === true;
+
+            // Online-Status aller User aus DB
+            database.ref('online').once('value', function(onlineSnap) {
+                var onlineData = onlineSnap.val() || {};
+                var now = Date.now();
+
+                var html = ALL_USERS.map(function(user) {
+                    var info = onlineData[user] || {};
+                    var isOnline = info.online === true;
+                    var lastSeen = info.lastSeen ? info.lastSeen : null;
+                    var lastSeenStr = lastSeen ? timeAgo(lastSeen) : 'Unbekannt';
+                    var lagMs = lastSeen ? (now - lastSeen) : null;
+
+                    // Verbindungsqualität einschätzen
+                    var quality = '';
+                    var qualityColor = '';
+                    if (!isOnline) {
+                        quality = '🔴 Offline';
+                        qualityColor = 'var(--danger)';
+                    } else if (lagMs !== null && lagMs < 30000) {
+                        quality = '🟢 Verbunden';
+                        qualityColor = 'var(--success)';
+                    } else if (lagMs !== null && lagMs < 120000) {
+                        quality = '🟡 Schwach';
+                        qualityColor = 'var(--warning)';
+                    } else {
+                        quality = '🔴 Getrennt';
+                        qualityColor = 'var(--danger)';
+                    }
+
+                    return '<div style="background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">'
+                        + '<div>'
+                        + '<div style="font-weight:700;font-size:14px;">' + user + (user === currentUser ? ' <span style="font-size:11px;color:var(--text-muted)">(du)</span>' : '') + '</div>'
+                        + '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Zuletzt: ' + lastSeenStr + '</div>'
+                        + '</div>'
+                        + '<div style="font-weight:700;font-size:13px;color:' + qualityColor + ';">' + quality + '</div>'
+                        + '</div>';
+                }).join('');
+
+                // Eigene Verbindung zur DB
+                html += '<div style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;">'
+                    + '<div style="font-size:13px;font-weight:600;">Firebase DB</div>'
+                    + '<div style="font-weight:700;font-size:13px;color:' + (selfConnected ? 'var(--success)' : 'var(--danger)') + ';">'
+                    + (selfConnected ? '🟢 Verbunden' : '🔴 Getrennt') + '</div>'
+                    + '</div>';
+
+                el.innerHTML = html;
+            });
+        });
+    }
+
     function openAdminModal() {
         document.getElementById('admin-modal').style.display = 'block';
         renderAdminPassListModal();
+        adminRefreshFirebaseStatus();
     }
 
     function closeAdminModal() {
@@ -6787,6 +6848,11 @@
                 <div id="ivo-pass-error" style="font-size:13px;color:var(--danger);margin-bottom:8px;display:none;"></div>
                 <div id="ivo-pass-success" style="font-size:13px;color:var(--success);margin-bottom:8px;display:none;">✅ Passwort geändert!</div>
                 <button onclick="ivoChangePassword()" style="width:100%;background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.15));color:var(--primary);border:1px solid rgba(0,212,255,.35);margin-bottom:20px;">💾 Passwort speichern</button>
+
+                <!-- Firebase Verbindungsstatus -->
+                <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">📡 Firebase Verbindungsstatus</h4>
+                <div id="admin-firebase-status" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+                <button onclick="adminRefreshFirebaseStatus()" style="width:100%;background:rgba(0,212,255,.1);color:var(--primary);border:1px solid rgba(0,212,255,.3);box-shadow:none;margin-bottom:20px;font-size:13px;">🔄 Aktualisieren</button>
 
                 <!-- Reset -->
                 <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">⚠️ Gefahrenzone</h4>
