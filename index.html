@@ -875,7 +875,7 @@
         </div>
 
         <div id="countdown-banner" style="background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(56,189,248,0.15)); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-            <span style="font-size:14px; color:var(--text-muted);">✈️ Barcelona in:</span>
+            <span id="countdown-banner-label" style="font-size:14px; color:var(--text-muted);">✈️ Bis Barcelona</span>
             <span id="countdown-banner-text" style="font-size:16px; font-weight:800; color:var(--primary); letter-spacing:1px;">...</span>
         </div>
 
@@ -2767,6 +2767,7 @@
         // Special handlers
         if (tabName === 'restaurants' || tabName === 'tabak' || tabName === 'apotheke' || tabName === 'orte') {
             startLiveTracking();
+            reapplySortOrder();
         }
         if (tabName === 'chat') renderChat();
         if (tabName === 'schwimmen') renderSchwimmen();
@@ -3305,11 +3306,19 @@
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
+    function reapplySortOrder() {
+        document.querySelectorAll('.restaurant-grid').forEach(grid => {
+            const cards = Array.from(grid.querySelectorAll(':scope > .card[data-distance]'));
+            if (cards.length === 0) return;
+            cards.sort((a, b) => parseFloat(a.getAttribute('data-distance')) - parseFloat(b.getAttribute('data-distance')));
+            cards.forEach((card, i) => card.style.order = i);
+        });
+    }
+
     function updateDistances(position) {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
 
-        // Update distances
         document.querySelectorAll('[data-lat][data-lng]').forEach(card => {
             const restLat = parseFloat(card.getAttribute('data-lat'));
             const restLng = parseFloat(card.getAttribute('data-lng'));
@@ -3323,12 +3332,7 @@
             if (distEl) distEl.innerHTML = distanceStr;
         });
 
-        // Sort using CSS order (no DOM moves - safe!)
-        document.querySelectorAll('.restaurant-grid').forEach(grid => {
-            const cards = Array.from(grid.querySelectorAll(':scope > .card[data-distance]'));
-            cards.sort((a, b) => parseFloat(a.getAttribute('data-distance')) - parseFloat(b.getAttribute('data-distance')));
-            cards.forEach((card, i) => card.style.order = i);
-        });
+        reapplySortOrder();
     }
 
         function handleTrackingError(error) {
@@ -5158,12 +5162,37 @@
         db.expenses[expIdx].participants = newParticipants;
         db.expenses[expIdx].shareAmount = shareAmount;
 
-        // Update related debts
+        // Alte Schulden dieser Ausgabe komplett löschen (nur unbeglichene)
+        // Beglichene bleiben als Nachweis erhalten, werden aber neu berechnet
+        db.debts = db.debts.filter(function(d) {
+            return d.expenseId !== expId || d.resolved;
+        });
+
+        // Beglichene Schulden mit neuem Betrag/Zweck aktualisieren
         db.debts.forEach(function(d, i) {
-            if (d.expenseId === expId) {
+            if (d.expenseId === expId && d.resolved) {
                 db.debts[i].amount = shareAmount;
                 db.debts[i].purpose = purpose;
             }
+        });
+
+        // Neue Schulden für aktuelle Teilnehmer erstellen (nur unbeglichene)
+        newParticipants.forEach(function(person) {
+            if (person === exp.payer) return;
+            // Keine neue Schuld wenn bereits eine beglichene existiert
+            var alreadyResolved = db.debts.find(function(d) {
+                return d.expenseId === expId && d.from === person && d.resolved;
+            });
+            if (alreadyResolved) return;
+            db.debts.push({
+                id: expId + '_' + person,
+                expenseId: expId,
+                from: person,
+                to: exp.payer,
+                amount: shareAmount,
+                purpose: purpose,
+                resolved: false
+            });
         });
 
         saveDB();
@@ -5652,13 +5681,21 @@
     function updateLoginCountdown() {
         var el = document.getElementById('login-countdown-banner');
         if (!el) return;
-        var target = new Date("2026-07-22T06:00:00");
+        var abflug = new Date("2026-07-22T06:00:00");
+        var abreise = new Date("2026-07-28T17:00:00");
         var now = new Date();
-        var diff = target - now;
-        if (diff <= 0) {
-            el.innerHTML = '🌴 Es ist soweit – Barcelona wartet!';
+        if (now >= abreise) {
+            el.innerHTML = '🏠 Wieder zuhause – was eine Reise!';
             return;
         }
+        if (now >= abflug) {
+            var diff2 = abreise - now;
+            var days2 = Math.floor(diff2 / (1000 * 60 * 60 * 24));
+            var hours2 = Math.floor((diff2 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            el.innerHTML = '🏖️ Noch <span>' + days2 + ' Tage</span> und <span>' + hours2 + ' Stunden</span> bis zur Abreise';
+            return;
+        }
+        var diff = abflug - now;
         var days = Math.floor(diff / (1000 * 60 * 60 * 24));
         var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         el.innerHTML = '✈️ Noch <span>' + days + ' Tage</span> und <span>' + hours + ' Stunden</span> bis Barcelona';
@@ -5696,20 +5733,32 @@
     setInterval(updateLoginCountdown, 60000);
 
     function updateCountdown() {
-        var target = new Date("2026-07-22T06:00:00");
+        var abflug = new Date("2026-07-22T06:00:00");
+        var abreise = new Date("2026-07-28T17:00:00");
         var now = new Date();
-        var diff = target - now;
         var el = document.getElementById("countdown-banner-text");
+        var label = document.getElementById("countdown-banner-label");
         if (!el) return;
-        if (diff <= 0) {
-            el.innerText = "🎉 Es geht los!";
+        if (now >= abreise) {
+            el.innerText = "🏠 Wieder zuhause!";
+            if (label) label.innerText = "";
             return;
         }
+        if (now >= abflug) {
+            var diff2 = abreise - now;
+            var totalMins = Math.ceil(diff2 / (1000*60));
+            el.innerText = totalMins.toLocaleString('de-DE') + " Minuten";
+            if (label) label.innerText = "⏳ Bis zur Abreise";
+            setTimeout(updateCountdown, 60000);
+            return;
+        }
+        var diff = abflug - now;
         var days = Math.floor(diff / (1000*60*60*24));
         var hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
         var mins = Math.floor((diff % (1000*60*60)) / (1000*60));
         var secs = Math.floor((diff % (1000*60)) / 1000);
         el.innerText = `${days}T  ${hours}Std  ${mins}Min  ${secs}Sek`;
+        if (label) label.innerText = "✈️ Bis Barcelona";
         setTimeout(updateCountdown, 1000);
     }
 
@@ -6074,6 +6123,12 @@
         return hand.every(c => c.value === 'A');
     }
 
+    function schwLog(g, msg) {
+        if (!Array.isArray(g.log)) g.log = [];
+        g.log.unshift(msg);
+        if (g.log.length > 30) g.log = g.log.slice(0, 30);
+    }
+
     function schwimmenEndRoundFeuer(feuerPlayer) {
         const g = db.schwimmen;
         if (!Array.isArray(g.log)) g.log = [];
@@ -6082,7 +6137,7 @@
         const alive = gamePlayers.filter(u => !(g.eliminated||[]).includes(u));
         g.roundScores = {};
         alive.forEach(u => g.roundScores[u] = schwScore(g.hands[u]||[]));
-        g.log.unshift('🔥 FEUER! '+feuerPlayer+' hat 3 Asse – alle anderen verlieren ein Leben!');
+        schwLog(g, '🔥 FEUER! '+feuerPlayer+' hat 3 Asse – alle anderen verlieren ein Leben!');
         g.feuerPlayer = feuerPlayer;
         // Alle außer feuerPlayer verlieren ein Leben
         alive.forEach(u => {
@@ -6097,15 +6152,15 @@
                             // Swimmer lost again - out, slot permanently gone
                             g.eliminated.push(u);
                             g.swimmer = 'used';
-                            g.log.unshift('💀 '+u+' ist raus!');
+                            schwLog(g, '💀 '+u+' ist raus!');
                         } else if (!g.swimmer || g.swimmer === null) {
                             // First to reach 0 lives - becomes swimmer
                             g.swimmer = u;
-                            g.log.unshift('🌊 '+u+' schwimmt jetzt!');
+                            schwLog(g, '🌊 '+u+' schwimmt jetzt!');
                         } else {
                             // Swimmer slot taken or used - eliminated directly
                             g.eliminated.push(u);
-                            g.log.unshift('💀 '+u+' ist raus!');
+                            schwLog(g, '💀 '+u+' ist raus!');
                         }
                     }
                 }
@@ -6254,19 +6309,19 @@
         if (choice === 'A') {
             g.hands[g.dealer] = [...g.dealerSetA];
             g.middle = [...g.dealerSetB];
-            g.log.unshift(g.dealer+' behält Stapel A.');
+            schwLog(g, g.dealer+' behält Stapel A.');
         } else {
             g.hands[g.dealer] = [...g.dealerSetB];
             g.middle = [...g.dealerSetA];
-            g.log.unshift(g.dealer+' wechselt blind zu Stapel B.');
+            schwLog(g, g.dealer+' wechselt blind zu Stapel B.');
         }
         g.dealerSetA = []; g.dealerSetB = [];
         if (schwIstFeuer(g.hands[g.dealer])) {
-            g.log.unshift('🔥 FEUER! '+g.dealer+' hat sofort 3 Asse!');
+            schwLog(g, '🔥 FEUER! '+g.dealer+' hat sofort 3 Asse!');
             schwimmenEndRoundFeuer(g.dealer); return;
         }
         if (schwScore(g.hands[g.dealer]) === 31) {
-            g.log.unshift('🎉 '+g.dealer+' hat sofort 31!');
+            schwLog(g, '🎉 '+g.dealer+' hat sofort 31!');
             schwimmenEndRound(); return;
         }
         g.currentPlayer = g.turnOrder[0];
@@ -6295,11 +6350,11 @@
             const m = [...(g.middle||[])];
             [h[hi], m[mi]] = [m[mi], h[hi]];
             g.hands[currentUser] = h; g.middle = m;
-            g.log.unshift(currentUser+' tauscht 1 Karte.');
+            schwLog(g, currentUser+' tauscht 1 Karte.');
             _schwSelectedHandCard = null;
             g.skippedThisRound = [];
             if (schwIstFeuer(h)) { schwimmenEndRoundFeuer(currentUser); return; }
-            if (schwScore(h) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
+            if (schwScore(h) === 31) { schwLog(g, '🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
             schwimmenNextTurn();
         }, 500);
     }
@@ -6324,11 +6379,11 @@
             const oldH = [...(g.hands[currentUser]||[])];
             g.hands[currentUser] = [...g.middle];
             g.middle = oldH;
-            g.log.unshift(currentUser+' tauscht alle 3 Karten.');
+            schwLog(g, currentUser+' tauscht alle 3 Karten.');
             _schwSelectedHandCard = null;
             g.skippedThisRound = [];
             if (schwIstFeuer(g.hands[currentUser])) { schwimmenEndRoundFeuer(currentUser); return; }
-            if (schwScore(g.hands[currentUser]) === 31) { g.log.unshift('🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
+            if (schwScore(g.hands[currentUser]) === 31) { schwLog(g, '🎉 '+currentUser+' hat 31!'); schwimmenEndRound(); return; }
             schwimmenNextTurn();
         }, 650);
     }
@@ -6343,13 +6398,13 @@
         if (!Array.isArray(g.eliminated)) g.eliminated = [];
         if (!Array.isArray(g.log)) g.log = [];
         if (!g.skippedThisRound.includes(currentUser)) g.skippedThisRound.push(currentUser);
-        g.log.unshift(currentUser+' passt.');
+        schwLog(g, currentUser+' passt.');
         const gamePlayers = Array.isArray(g.joinedPlayers) ? g.joinedPlayers : ALL_USERS;
         const alive = gamePlayers.filter(u=>!g.eliminated.includes(u));
         if (alive.every(u=>g.skippedThisRound.includes(u))) {
             if (Array.isArray(g.deck) && g.deck.length >= 3) {
                 g.middle = [g.deck.pop(), g.deck.pop(), g.deck.pop()];
-                g.log.unshift('🔄 Alle gepasst – neue Karten in die Mitte!');
+                schwLog(g, '🔄 Alle gepasst – neue Karten in die Mitte!');
             }
             g.skippedThisRound = [];
         }
@@ -6372,7 +6427,7 @@
         }
         g.roundClosedBy = currentUser;
         g.closedPlayersDone = [currentUser];
-        g.log.unshift('🔔 '+currentUser+' klopft! Jeder noch ein Zug.');
+        schwLog(g, '🔔 '+currentUser+' klopft! Jeder noch ein Zug.');
         schwimmenNextTurn();
     }
 
@@ -6421,27 +6476,27 @@
                     g.eliminated = g.eliminated||[];
                     g.eliminated.push(loser);
                     g.swimmer = 'used'; // mark as used so nobody else can get it
-                    g.log.unshift('💀 '+loser+' ist raus!');
+                    schwLog(g, '💀 '+loser+' ist raus!');
                 } else if (!g.swimmer || g.swimmer === null) {
                     // First player to reach 0 lives - becomes swimmer
                     g.swimmer = loser;
-                    g.log.unshift('🌊 '+loser+' schwimmt jetzt!');
+                    schwLog(g, '🌊 '+loser+' schwimmt jetzt!');
                 } else {
                     // Swimmer slot already used - eliminated directly
                     g.eliminated = g.eliminated||[];
                     g.eliminated.push(loser);
-                    g.log.unshift('💀 '+loser+' ist raus!');
+                    schwLog(g, '💀 '+loser+' ist raus!');
                 }
             }
         });
 
-        g.log.unshift('📊 Runde '+g.roundNumber+' – Verlierer: '+losers.join(', '));
+        schwLog(g, '📊 Runde '+g.roundNumber+' – Verlierer: '+losers.join(', '));
         const aliveNow = gamePlayers.filter(u=>!(g.eliminated||[]).includes(u));
 
         if (aliveNow.length <= 1) {
             g.status = 'gameEnd';
             g.winner = aliveNow[0] || '?';
-            if (aliveNow.length === 1) g.log.unshift('🏆 '+aliveNow[0]+' gewinnt!');
+            if (aliveNow.length === 1) schwLog(g, '🏆 '+aliveNow[0]+' gewinnt!');
         } else {
             const di = aliveNow.indexOf(g.dealer);
             g.dealer = aliveNow[(di+1)%aliveNow.length];
