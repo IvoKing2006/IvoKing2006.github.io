@@ -1313,14 +1313,6 @@
                 </div>
             </div>
 
-            <!-- COCKTAIL GENERATOR -->
-            <div class="card" style="border-top:4px solid #a855f7;">
-                <h3>🍹 Cocktail-Generator</h3>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">25 Cocktails — alle in Barcelona safe erhältlich. Drücken und Glück haben!</p>
-                <button onclick="cocktailZufall()" id="cocktail-btn" style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(124,58,237,.2));color:#c084fc;border:1px solid rgba(168,85,247,.4);font-size:16px;font-weight:800;padding:16px;letter-spacing:.04em;">🎲 Zufälligen Cocktail wählen</button>
-                <div id="cocktail-result" style="display:none;margin-top:16px;"></div>
-            </div>
-
         </div>
 
         <div id="content-airbnb" class="tab-content hidden">
@@ -2368,12 +2360,22 @@
         <div id="content-spiele" class="tab-content hidden">
             <div class="sub-nav-tabs">
                 <button id="subtab-zufall" class="subnav-btn active" onclick="switchSubTab('spiele', 'zufall')">🎲 Zufall</button>
+                <button id="subtab-cocktail" class="subnav-btn" onclick="switchSubTab('spiele', 'cocktail')">🍹 Cocktail</button>
                 <button id="subtab-schwimmen" class="subnav-btn" onclick="switchSubTab('spiele', 'schwimmen')">🃏 Schwimmen</button>
                 <button id="subtab-blackjack" class="subnav-btn" onclick="switchSubTab('spiele', 'blackjack')">🃏 Blackjack</button>
                 <button id="subtab-roulette" class="subnav-btn" onclick="switchSubTab('spiele', 'roulette')">🎡 Roulette</button>
                 <button id="subtab-poker" class="subnav-btn" onclick="switchSubTab('spiele', 'poker')">♠️ Poker</button>
                 <button id="subtab-shirttausch" class="subnav-btn" onclick="switchSubTab('spiele', 'shirttausch')">👕 Shirt-Tausch</button>
             </div>
+        <div id="content-cocktail" class="subtab-content hidden">
+            <div class="card" style="border-top:4px solid #a855f7;">
+                <h3>🍹 Cocktail-Generator</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">25 Cocktails — alle in Barcelona safe erhältlich. Drücken und Glück haben!</p>
+                <button onclick="cocktailZufall()" id="cocktail-btn" style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(124,58,237,.2));color:#c084fc;border:1px solid rgba(168,85,247,.4);font-size:16px;font-weight:800;padding:16px;letter-spacing:.04em;">🎲 Zufälligen Cocktail wählen</button>
+                <div id="cocktail-result" style="display:none;margin-top:16px;"></div>
+            </div>
+        </div>
+
         <div id="content-zufall" class="subtab-content">
             <div class="card" style="border-top: 4px solid var(--accent); text-align: center; padding: 40px 20px;">
                 <h3 style="font-size: 24px; margin-bottom: 10px;">🎲 Allgemeiner Zufallsgenerator</h3>
