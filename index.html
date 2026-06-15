@@ -2704,7 +2704,6 @@
 
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtoV0hDcbWfyac_c5iu1vO4DERrUec7-A&libraries=places"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
@@ -2842,17 +2841,6 @@
         document.getElementById(`content-${tabName}`).classList.remove('hidden');
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
-        if (tabName === 'infos') {
-            if (window.google && window.google.maps && !window._taxiAutocomplete) {
-                var input = document.getElementById('taxi-dest');
-                if (input) {
-                    window._taxiAutocomplete = new google.maps.places.Autocomplete(input, {
-                        componentRestrictions: { country: 'es' },
-                        fields: ['formatted_address', 'name']
-                    });
-                }
-            }
-        }
         if (tabName === 'entdecken') {
             switchSubTab('entdecken', 'restaurants');
             setTimeout(function(){ renderEigeneOrteInTabs(); renderCustomCatNav(); }, 200);
@@ -3824,90 +3812,86 @@
         resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">📍 GPS wird ermittelt...</div>';
 
         navigator.geolocation.getCurrentPosition(function(pos) {
-            var origin = pos.coords.latitude + ',' + pos.coords.longitude;
-            resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Route wird berechnet...</div>';
+            var userLat = pos.coords.latitude;
+            var userLng = pos.coords.longitude;
+            resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Ziel wird gesucht...</div>';
 
-            // Google Maps Distance Matrix API
-            var service = new google.maps.DistanceMatrixService();
-            service.getDistanceMatrix({
-                origins: [{ lat: pos.coords.latitude, lng: pos.coords.longitude }],
-                destinations: [dest + ', Barcelona'],
-                travelMode: google.maps.TravelMode.DRIVING,
-                unitSystem: google.maps.UnitSystem.METRIC
-            }, function(response, status) {
-                if (status !== 'OK' || !response.rows[0].elements[0] || response.rows[0].elements[0].status !== 'OK') {
+            // Nominatim Geocoding (kein API Key nötig)
+            var query = encodeURIComponent(dest + ', Barcelona');
+            fetch('https://nominatim.openstreetmap.org/search?q=' + query + '&format=json&limit=1&countrycodes=es')
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    if (!data || data.length === 0) {
+                        resultEl.innerHTML = '';
+                        errorEl.style.display = 'block';
+                        errorEl.textContent = '❌ Ziel nicht gefunden. Bitte genauer eingeben (z.B. "Sagrada Família, Barcelona").';
+                        return;
+                    }
+                    var destLat = parseFloat(data[0].lat);
+                    var destLng = parseFloat(data[0].lon);
+                    var destName = data[0].display_name;
+
+                    // Luftlinien-Distanz (Haversine) × 1.35 Faktor für Straßen
+                    var R = 6371;
+                    var dLat = (destLat - userLat) * Math.PI / 180;
+                    var dLon = (destLng - userLng) * Math.PI / 180;
+                    var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(userLat*Math.PI/180)*Math.cos(destLat*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+                    var luftlinie = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    var distanceKm = luftlinie * 1.35; // Straßen-Faktor
+
+                    // Fahrzeit schätzen: ~25 km/h Durchschnitt in Barcelona
+                    var durationMin = Math.ceil((distanceKm / 25) * 60);
+
+                    // Tarif bestimmen
+                    var now = new Date();
+                    var h = now.getHours();
+                    var day = now.getDay();
+                    var isT2;
+                    if (tarifMode === 'auto') {
+                        isT2 = (day === 0 || day === 6 || h < 8 || h >= 20);
+                    } else {
+                        isT2 = tarifMode === 't2';
+                    }
+
+                    var kmPreis = isT2 ? 1.62 : 1.32;
+                    var preis = 2.75 + (distanceKm * kmPreis);
+
+                    // Zuschläge
+                    var zuschläge = 0;
+                    var zuschlagTexte = [];
+                    if (taxiType === 'van') { zuschläge += 4.50; zuschlagTexte.push('Van +4,50€'); }
+                    if (flughafen) { zuschläge += 4.50; zuschlagTexte.push('Flughafen +4,50€'); }
+                    if (sants) { zuschläge += 2.50; zuschlagTexte.push('Sants +2,50€'); }
+                    if (fira) { zuschläge += 3.30; zuschlagTexte.push('Fira +3,30€'); }
+                    preis += zuschläge;
+
+                    if (flughafen && preis < 21) preis = 21;
+                    if (preis < 8.00) preis = 8.00;
+
+                    var preisMin = (preis * 0.90).toFixed(2);
+                    var preisMax = (preis * 1.20).toFixed(2);
+
+                    resultEl.innerHTML =
+                        '<div style="background:linear-gradient(135deg,rgba(255,190,11,.12),rgba(255,140,0,.08));border:1px solid rgba(255,190,11,.3);border-radius:14px;padding:18px;margin-top:4px;">' +
+                        '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 ' + destName.split(',').slice(0,3).join(',') + '</div>' +
+                        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">' +
+                            '<div><div style="font-size:12px;color:var(--text-muted);">Strecke (ca.)</div><div style="font-size:20px;font-weight:800;color:var(--text-main);">' + distanceKm.toFixed(1) + ' km</div></div>' +
+                            '<div><div style="font-size:12px;color:var(--text-muted);">Fahrzeit (ca.)</div><div style="font-size:20px;font-weight:800;color:var(--text-main);">~' + durationMin + ' Min</div></div>' +
+                            '<div style="text-align:right;"><div style="font-size:12px;color:var(--text-muted);">Geschätzter Preis</div><div style="font-size:24px;font-weight:900;color:var(--warning);">' + preisMin + '€ – ' + preisMax + '€</div></div>' +
+                        '</div>' +
+                        '<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">' +
+                            '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">' + (isT2 ? '🌙 T2 Nachttarif' : '☀️ T1 Tagtarif') + '</span>' +
+                            '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">2,75€ + ' + distanceKm.toFixed(1) + 'km × ' + kmPreis + '€</span>' +
+                            (zuschlagTexte.map(function(z){ return '<span style="background:rgba(255,190,11,.1);border:1px solid rgba(255,190,11,.3);border-radius:6px;padding:3px 8px;color:var(--warning);">' + z + '</span>'; }).join('')) +
+                        '</div>' +
+                        '<div style="margin-top:10px;font-size:11px;color:var(--text-muted);">⚠️ Schätzung auf Basis offizieller AMB-Tarife 2025. Stau & Wartezeit können den Preis erhöhen.</div>' +
+                        '</div>';
+                })
+                .catch(function() {
                     resultEl.innerHTML = '';
                     errorEl.style.display = 'block';
-                    errorEl.textContent = '❌ Ziel nicht gefunden. Bitte genauer eingeben (z.B. "Sagrada Família, Barcelona").';
-                    return;
-                }
-
-                var element = response.rows[0].elements[0];
-                var distanceKm = element.distance.value / 1000;
-                var durationMin = Math.ceil(element.duration.value / 60);
-                var destName = response.destinationAddresses[0];
-
-                // Tarif bestimmen
-                var now = new Date();
-                var h = now.getHours();
-                var day = now.getDay(); // 0=So, 6=Sa
-                var isT2;
-                if (tarifMode === 'auto') {
-                    isT2 = (day === 0 || day === 6 || h < 8 || h >= 20);
-                } else {
-                    isT2 = tarifMode === 't2';
-                }
-
-                var kmPreis = isT2 ? 1.62 : 1.32;
-                var grundgebühr = 2.75;
-                var mindest = 8.00;
-
-                // Preis berechnen
-                var preis = grundgebühr + (distanceKm * kmPreis);
-
-                // Zuschläge
-                var zuschläge = 0;
-                var zuschlagTexte = [];
-                if (taxiType === 'van') { zuschläge += 4.50; zuschlagTexte.push('Van +4,50€'); }
-                if (flughafen) { zuschläge += 4.50; zuschlagTexte.push('Flughafen +4,50€'); }
-                if (sants) { zuschläge += 2.50; zuschlagTexte.push('Sants +2,50€'); }
-                if (fira) { zuschläge += 3.30; zuschlagTexte.push('Fira +3,30€'); }
-
-                preis += zuschläge;
-
-                // Mindestpreis
-                if (flughafen && preis < 21) preis = 21;
-                if (preis < mindest) preis = mindest;
-
-                // Schwankungsbereich ±15%
-                var preisMin = (preis * 0.9).toFixed(2);
-                var preisMax = (preis * 1.15).toFixed(2);
-
-                resultEl.innerHTML =
-                    '<div style="background:linear-gradient(135deg,rgba(255,190,11,.12),rgba(255,140,0,.08));border:1px solid rgba(255,190,11,.3);border-radius:14px;padding:18px;margin-top:4px;">' +
-                    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">📍 ' + destName + '</div>' +
-                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
-                        '<div>' +
-                            '<div style="font-size:13px;color:var(--text-muted);">Strecke</div>' +
-                            '<div style="font-size:18px;font-weight:800;color:var(--text-main);">' + distanceKm.toFixed(1) + ' km</div>' +
-                        '</div>' +
-                        '<div>' +
-                            '<div style="font-size:13px;color:var(--text-muted);">Fahrzeit</div>' +
-                            '<div style="font-size:18px;font-weight:800;color:var(--text-main);">~' + durationMin + ' Min</div>' +
-                        '</div>' +
-                        '<div style="text-align:right;">' +
-                            '<div style="font-size:13px;color:var(--text-muted);">Geschätzter Preis</div>' +
-                            '<div style="font-size:26px;font-weight:900;color:var(--warning);">' + parseFloat(preisMin).toFixed(2) + '€ – ' + parseFloat(preisMax).toFixed(2) + '€</div>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;">' +
-                        '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">' + (isT2 ? '🌙 T2 Nachttarif' : '☀️ T1 Tagstarif') + '</span>' +
-                        '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">2,75€ + ' + distanceKm.toFixed(1) + 'km × ' + kmPreis + '€</span>' +
-                        (zuschlagTexte.length ? zuschlagTexte.map(function(z){ return '<span style="background:rgba(255,190,11,.1);border:1px solid rgba(255,190,11,.3);border-radius:6px;padding:3px 8px;color:var(--warning);">' + z + '</span>'; }).join('') : '') +
-                    '</div>' +
-                    '<div style="margin-top:10px;font-size:11px;color:var(--text-muted);">⚠️ Schätzung basierend auf offiziellen AMB-Tarifen. Stau und Wartezeiten können den Preis erhöhen.</div>' +
-                    '</div>';
-            });
+                    errorEl.textContent = '❌ Fehler bei der Suche. Bitte Internetverbindung prüfen.';
+                });
         }, function() {
             resultEl.innerHTML = '';
             errorEl.style.display = 'block';
