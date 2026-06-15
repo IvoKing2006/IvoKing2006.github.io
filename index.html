@@ -2370,9 +2370,18 @@
         <div id="content-cocktail" class="subtab-content hidden">
             <div class="card" style="border-top:4px solid #a855f7;">
                 <h3>🍹 Cocktail-Generator</h3>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">25 Cocktails — alle in Barcelona safe erhältlich. Drücken und Glück haben!</p>
-                <button onclick="cocktailZufall()" id="cocktail-btn" style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(124,58,237,.2));color:#c084fc;border:1px solid rgba(168,85,247,.4);font-size:16px;font-weight:800;padding:16px;letter-spacing:.04em;">🎲 Zufälligen Cocktail wählen</button>
-                <div id="cocktail-result" style="display:none;margin-top:16px;"></div>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Drücken und einen zufälligen Cocktail ziehen — wird für alle live angezeigt!</p>
+                <button onclick="cocktailZufall()" id="cocktail-btn" style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(124,58,237,.2));color:#c084fc;border:1px solid rgba(168,85,247,.4);font-size:16px;font-weight:800;padding:16px;letter-spacing:.04em;">🎲 Meinen Cocktail würfeln</button>
+                <div id="cocktail-mein-result" style="display:none;margin-top:12px;"></div>
+            </div>
+            <div class="card" style="border-top:4px solid rgba(168,85,247,.4);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <h3 style="margin:0;">👥 Aktuelle Runde</h3>
+                    <button id="cocktail-reset-btn" onclick="cocktailReset()" style="display:none;width:auto;padding:6px 12px;font-size:12px;background:rgba(255,77,109,.15);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;">🗑️ Reset</button>
+                </div>
+                <div id="cocktail-live-list" style="display:flex;flex-direction:column;gap:8px;">
+                    <div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Noch niemand hat gewürfelt...</div>
+                </div>
             </div>
         </div>
 
@@ -2841,6 +2850,7 @@
         if (tabName === 'schwimmen') renderSchwimmen();
         if (tabName === 'shirttausch') { setTimeout(shirtInit, 100); }
         if (tabName === 'notizen') renderNotizen();
+        if (tabName === 'cocktail') cocktailStartLive();
     }
 
     function switchTab(tabName) {
@@ -3936,7 +3946,50 @@
         { name: 'Vermut', emoji: '🫒', zutaten: ['Roter Wermut', 'Soda (optional)', 'Eiswürfel', 'Olive', 'Orangenscheibe'], beschreibung: 'In Barcelona Tradition zum Mittag — "La hora del vermut" ist heilig.' }
     ];
 
-    var _letzterCocktailIdx = -1;
+    var _cocktailLiveListener = null;
+
+    function cocktailStartLive() {
+        if (_cocktailLiveListener) return;
+        _cocktailLiveListener = database.ref('cocktails').on('value', function(snap) {
+            var data = snap.val() || {};
+            var list = document.getElementById('cocktail-live-list');
+            if (!list) return;
+
+            // Reset-Button nur für Ivo
+            var resetBtn = document.getElementById('cocktail-reset-btn');
+            if (resetBtn) resetBtn.style.display = currentUser === 'Ivo' ? 'block' : 'none';
+
+            var entries = ALL_USERS.map(function(user) { return { user: user, data: data[user] || null }; });
+            var hasAny = entries.some(function(e){ return e.data; });
+
+            if (!hasAny) {
+                list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Noch niemand hat gewürfelt...</div>';
+                return;
+            }
+
+            list.innerHTML = entries.map(function(e) {
+                if (!e.data) {
+                    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(255,255,255,.02);border:1px solid var(--glass-border);border-radius:10px;opacity:.4;">' +
+                        '<div style="font-size:24px;">🎲</div>' +
+                        '<div style="font-size:14px;color:var(--text-muted);">' + e.user + ' hat noch nicht gewürfelt</div>' +
+                        '</div>';
+                }
+                var c = e.data;
+                return '<div style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(124,58,237,.06));border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:12px 14px;">' +
+                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                        '<div style="font-size:28px;">' + c.emoji + '</div>' +
+                        '<div>' +
+                            '<div style="font-size:11px;color:var(--text-muted);margin-bottom:2px;">' + e.user + '</div>' +
+                            '<div style="font-size:17px;font-weight:800;color:#c084fc;">' + c.name + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
+                        c.zutaten.map(function(z){ return '<span style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.25);border-radius:20px;padding:3px 8px;font-size:11px;color:#e9d5ff;">' + z + '</span>'; }).join('') +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        });
+    }
 
     function cocktailZufall() {
         var idx;
@@ -3944,28 +3997,35 @@
         _letzterCocktailIdx = idx;
         var c = COCKTAILS[idx];
 
-        var el = document.getElementById('cocktail-result');
-        el.style.display = 'block';
-        el.innerHTML =
-            '<div style="background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(124,58,237,.08));border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:18px;">' +
-                '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
-                    '<div style="font-size:48px;line-height:1;">' + c.emoji + '</div>' +
-                    '<div>' +
-                        '<div style="font-size:22px;font-weight:900;color:#c084fc;">' + c.name + '</div>' +
-                        '<div style="font-size:13px;color:var(--text-muted);margin-top:2px;">' + c.beschreibung + '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;padding:12px 14px;">' +
-                    '<div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:700;">🧪 Zutaten</div>' +
-                    '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
-                        c.zutaten.map(function(z){ return '<span style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:20px;padding:4px 10px;font-size:13px;color:#e9d5ff;">' + z + '</span>'; }).join('') +
-                    '</div>' +
-                '</div>' +
-                '<div style="margin-top:10px;font-size:12px;color:var(--text-muted);text-align:right;">' + (idx+1) + ' / ' + COCKTAILS.length + ' Cocktails</div>' +
-            '</div>';
+        // In Firebase speichern
+        database.ref('cocktails/' + currentUser).set({
+            name: c.name,
+            emoji: c.emoji,
+            zutaten: c.zutaten,
+            beschreibung: c.beschreibung,
+            ts: Date.now()
+        });
+
+        // Eigenes Ergebnis kurz anzeigen
+        var el = document.getElementById('cocktail-mein-result');
+        if (el) {
+            el.style.display = 'block';
+            el.innerHTML = '<div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:#c084fc;">✅ Dein Cocktail: <strong>' + c.emoji + ' ' + c.name + '</strong> — ' + c.beschreibung + '</div>';
+        }
 
         var btn = document.getElementById('cocktail-btn');
-        btn.textContent = '🎲 Nochmal würfeln';
+        if (btn) btn.textContent = '🎲 Nochmal würfeln';
+    }
+
+    function cocktailReset() {
+        if (currentUser !== 'Ivo') return;
+        if (!confirm('Alle Cocktails zurücksetzen?')) return;
+        database.ref('cocktails').remove();
+        var el = document.getElementById('cocktail-mein-result');
+        if (el) { el.style.display = 'none'; }
+        var btn = document.getElementById('cocktail-btn');
+        if (btn) btn.textContent = '🎲 Meinen Cocktail würfeln';
+        _letzterCocktailIdx = -1;
     }
 
     function startOfflineBanner() {
