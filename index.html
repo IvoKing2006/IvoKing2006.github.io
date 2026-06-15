@@ -766,7 +766,9 @@
 <body>
 
 <div id="notif-container"></div>
-
+<div id="offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:10000;background:rgba(255,77,109,0.95);backdrop-filter:blur(8px);color:white;text-align:center;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:0.02em;box-shadow:0 2px 16px rgba(255,77,109,0.4);">
+    📡 Keine Internetverbindung — Änderungen werden nicht gespeichert
+</div>
 <!-- SCHULDEN VOLLBILD-MODAL -->
 <div id="debt-warning-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999; background:rgba(2,8,23,0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
     <div style="max-width:500px; width:100%; background:linear-gradient(135deg, rgba(255,77,109,0.12), rgba(20,10,30,0.98)); border:2px solid rgba(255,77,109,0.5); border-radius:24px; padding:36px 32px; box-shadow:0 0 80px rgba(255,77,109,0.3), 0 32px 64px rgba(0,0,0,0.7); text-align:center; animation:debtModalIn 0.45s cubic-bezier(0.34,1.56,0.64,1);">
@@ -2833,6 +2835,7 @@
 
 
     function logout() {
+        if (_autoLogoutTimer) clearTimeout(_autoLogoutTimer);
         setOnlineStatus(false);
         if (window._heartbeat) clearInterval(window._heartbeat);
         localStorage.removeItem('bcn_saved_user');
@@ -3732,7 +3735,39 @@
             window.addEventListener('beforeunload', function(){ setOnlineStatus(false); });
             document.addEventListener('visibilitychange', function(){ setOnlineStatus(!document.hidden); });
             setOnlineStatus(true);
+            startOfflineBanner();
+            startAutoLogout();
         }, 480);
+    }
+
+    function startOfflineBanner() {
+        var banner = document.getElementById('offline-banner');
+        function update() {
+            if (!banner) return;
+            banner.style.display = navigator.onLine ? 'none' : 'block';
+        }
+        update();
+        window.addEventListener('online', update);
+        window.addEventListener('offline', update);
+    }
+
+    var _autoLogoutTimer = null;
+    var AUTO_LOGOUT_MS = 15 * 60 * 1000; // 15 Minuten
+
+    function startAutoLogout() {
+        resetAutoLogout();
+        ['click','touchstart','keydown','mousemove','scroll'].forEach(function(evt) {
+            document.addEventListener(evt, resetAutoLogout, { passive: true });
+        });
+    }
+
+    function resetAutoLogout() {
+        if (_autoLogoutTimer) clearTimeout(_autoLogoutTimer);
+        _autoLogoutTimer = setTimeout(function() {
+            if (!currentUser) return;
+            showNotif('⏱️ Automatisch ausgeloggt', 'Du warst 15 Minuten inaktiv.', 'warning', 5000);
+            setTimeout(function() { logout(); }, 1500);
+        }, AUTO_LOGOUT_MS);
     }
 
     function adminRefreshFirebaseStatus() {
