@@ -1082,6 +1082,63 @@
                 <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">Offiziell nur die <strong style="color:var(--text-main);">schwarzen Taxis mit gelben Türen</strong>. Billiger nachts oder spät abends weil kein Stau ist – die Uhr läuft im Stau weiter und dann kann es teuer werden.</p>
             </div>
 
+            <!-- TAXI PREISRECHNER -->
+            <div class="card" style="border-top:4px solid var(--warning);">
+                <h3>🧮 Taxi-Preisrechner</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Offizielle AMB-Tarife 2025. Berechnung vom aktuellen GPS-Standort zum Ziel.</p>
+
+                <div class="form-group">
+                    <label>Ziel eingeben</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="taxi-dest" placeholder="z.B. Sagrada Família, Barcelona" style="flex:1;">
+                        <button onclick="taxiBerechnen()" style="width:auto;padding:12px 16px;background:linear-gradient(135deg,rgba(255,190,11,.25),rgba(255,140,0,.2));color:var(--warning);border:1px solid rgba(255,190,11,.4);box-shadow:none;white-space:nowrap;">🔍 Berechnen</button>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:140px;">
+                        <label style="display:block;margin-bottom:6px;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Taxiart</label>
+                        <select id="taxi-type" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;font-size:14px;color:var(--text-main);">
+                            <option value="standard">🚕 Standard (max. 4 Pers.)</option>
+                            <option value="van">🚐 Van (5–8 Pers., +4,50€)</option>
+                        </select>
+                    </div>
+                    <div style="flex:1;min-width:140px;">
+                        <label style="display:block;margin-bottom:6px;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Uhrzeit</label>
+                        <select id="taxi-tarif" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;font-size:14px;color:var(--text-main);">
+                            <option value="auto">🕐 Automatisch (jetzt)</option>
+                            <option value="t1">☀️ T1 – Tag (Mo–Fr 08–20 Uhr)</option>
+                            <option value="t2">🌙 T2 – Nacht / Wochenende</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                    <label style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;width:100%;margin-bottom:4px;">Zuschläge</label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;flex:1;min-width:140px;">
+                        <input type="checkbox" id="taxi-flughafen" style="width:16px;height:16px;accent-color:var(--warning);"> ✈️ Flughafen (+4,50€, min. 21€)
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;flex:1;min-width:140px;">
+                        <input type="checkbox" id="taxi-sants" style="width:16px;height:16px;accent-color:var(--warning);"> 🚂 Bahnhof Sants (+2,50€)
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;flex:1;min-width:140px;">
+                        <input type="checkbox" id="taxi-fira" style="width:16px;height:16px;accent-color:var(--warning);"> 🏛️ Messe Fira (+3,30€)
+                    </label>
+                </div>
+
+                <div id="taxi-result" style="display:none;"></div>
+                <div id="taxi-error" style="display:none;color:var(--danger);font-size:13px;margin-top:8px;"></div>
+
+                <div style="margin-top:14px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:10px;border:1px solid var(--glass-border);">
+                    <div style="font-size:11px;color:var(--text-muted);line-height:1.7;">
+                        📋 <strong style="color:var(--text-main);">Offizielle AMB-Tarife 2025:</strong><br>
+                        T1 (Mo–Fr 08–20h): 2,75€ Grundgebühr + 1,32€/km · Mindest: 8,00€<br>
+                        T2 (Nacht/Sa/So/Feiertage): 2,75€ Grundgebühr + 1,62€/km · Mindest: 8,00€<br>
+                        Van (5–8 Pers.): +4,50€ Zuschlag · Gepäck: kostenlos
+                    </div>
+                </div>
+            </div>
+
             <div class="card" style="border-top:4px solid var(--accent);">
                 <h3>📱 Taxi über Free Now App</h3>
                 <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">Entspannter zu bestellen, ein kleines bisschen teurer. <strong style="color:var(--text-main);">Bei Stau bleibt der Preis fest</strong>, man zahlt direkt in der App. In Barcelona viel besser als Uber, da private Uber nicht mehr erlaubt sind.</p>
@@ -2647,6 +2704,7 @@
 
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtoV0hDcbWfyac_c5iu1vO4DERrUec7-A&libraries=places"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
@@ -2784,7 +2842,17 @@
         document.getElementById(`content-${tabName}`).classList.remove('hidden');
         document.getElementById(`tab-${tabName}`).classList.add('active');
 
-        if (tabName === 'wetter') loadWetter();
+        if (tabName === 'infos') {
+            if (window.google && window.google.maps && !window._taxiAutocomplete) {
+                var input = document.getElementById('taxi-dest');
+                if (input) {
+                    window._taxiAutocomplete = new google.maps.places.Autocomplete(input, {
+                        componentRestrictions: { country: 'es' },
+                        fields: ['formatted_address', 'name']
+                    });
+                }
+            }
+        }
         if (tabName === 'entdecken') {
             switchSubTab('entdecken', 'restaurants');
             setTimeout(function(){ renderEigeneOrteInTabs(); renderCustomCatNav(); }, 200);
@@ -3738,6 +3806,113 @@
             startOfflineBanner();
             startAutoLogout();
         }, 480);
+    }
+
+    function taxiBerechnen() {
+        var dest = document.getElementById('taxi-dest').value.trim();
+        var taxiType = document.getElementById('taxi-type').value;
+        var tarifMode = document.getElementById('taxi-tarif').value;
+        var flughafen = document.getElementById('taxi-flughafen').checked;
+        var sants = document.getElementById('taxi-sants').checked;
+        var fira = document.getElementById('taxi-fira').checked;
+        var resultEl = document.getElementById('taxi-result');
+        var errorEl = document.getElementById('taxi-error');
+
+        if (!dest) { errorEl.style.display='block'; errorEl.textContent='Bitte ein Ziel eingeben.'; return; }
+        errorEl.style.display = 'none';
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">📍 GPS wird ermittelt...</div>';
+
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            var origin = pos.coords.latitude + ',' + pos.coords.longitude;
+            resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Route wird berechnet...</div>';
+
+            // Google Maps Distance Matrix API
+            var service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix({
+                origins: [{ lat: pos.coords.latitude, lng: pos.coords.longitude }],
+                destinations: [dest + ', Barcelona'],
+                travelMode: google.maps.TravelMode.DRIVING,
+                unitSystem: google.maps.UnitSystem.METRIC
+            }, function(response, status) {
+                if (status !== 'OK' || !response.rows[0].elements[0] || response.rows[0].elements[0].status !== 'OK') {
+                    resultEl.innerHTML = '';
+                    errorEl.style.display = 'block';
+                    errorEl.textContent = '❌ Ziel nicht gefunden. Bitte genauer eingeben (z.B. "Sagrada Família, Barcelona").';
+                    return;
+                }
+
+                var element = response.rows[0].elements[0];
+                var distanceKm = element.distance.value / 1000;
+                var durationMin = Math.ceil(element.duration.value / 60);
+                var destName = response.destinationAddresses[0];
+
+                // Tarif bestimmen
+                var now = new Date();
+                var h = now.getHours();
+                var day = now.getDay(); // 0=So, 6=Sa
+                var isT2;
+                if (tarifMode === 'auto') {
+                    isT2 = (day === 0 || day === 6 || h < 8 || h >= 20);
+                } else {
+                    isT2 = tarifMode === 't2';
+                }
+
+                var kmPreis = isT2 ? 1.62 : 1.32;
+                var grundgebühr = 2.75;
+                var mindest = 8.00;
+
+                // Preis berechnen
+                var preis = grundgebühr + (distanceKm * kmPreis);
+
+                // Zuschläge
+                var zuschläge = 0;
+                var zuschlagTexte = [];
+                if (taxiType === 'van') { zuschläge += 4.50; zuschlagTexte.push('Van +4,50€'); }
+                if (flughafen) { zuschläge += 4.50; zuschlagTexte.push('Flughafen +4,50€'); }
+                if (sants) { zuschläge += 2.50; zuschlagTexte.push('Sants +2,50€'); }
+                if (fira) { zuschläge += 3.30; zuschlagTexte.push('Fira +3,30€'); }
+
+                preis += zuschläge;
+
+                // Mindestpreis
+                if (flughafen && preis < 21) preis = 21;
+                if (preis < mindest) preis = mindest;
+
+                // Schwankungsbereich ±15%
+                var preisMin = (preis * 0.9).toFixed(2);
+                var preisMax = (preis * 1.15).toFixed(2);
+
+                resultEl.innerHTML =
+                    '<div style="background:linear-gradient(135deg,rgba(255,190,11,.12),rgba(255,140,0,.08));border:1px solid rgba(255,190,11,.3);border-radius:14px;padding:18px;margin-top:4px;">' +
+                    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">📍 ' + destName + '</div>' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+                        '<div>' +
+                            '<div style="font-size:13px;color:var(--text-muted);">Strecke</div>' +
+                            '<div style="font-size:18px;font-weight:800;color:var(--text-main);">' + distanceKm.toFixed(1) + ' km</div>' +
+                        '</div>' +
+                        '<div>' +
+                            '<div style="font-size:13px;color:var(--text-muted);">Fahrzeit</div>' +
+                            '<div style="font-size:18px;font-weight:800;color:var(--text-main);">~' + durationMin + ' Min</div>' +
+                        '</div>' +
+                        '<div style="text-align:right;">' +
+                            '<div style="font-size:13px;color:var(--text-muted);">Geschätzter Preis</div>' +
+                            '<div style="font-size:26px;font-weight:900;color:var(--warning);">' + parseFloat(preisMin).toFixed(2) + '€ – ' + parseFloat(preisMax).toFixed(2) + '€</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;">' +
+                        '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">' + (isT2 ? '🌙 T2 Nachttarif' : '☀️ T1 Tagstarif') + '</span>' +
+                        '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">2,75€ + ' + distanceKm.toFixed(1) + 'km × ' + kmPreis + '€</span>' +
+                        (zuschlagTexte.length ? zuschlagTexte.map(function(z){ return '<span style="background:rgba(255,190,11,.1);border:1px solid rgba(255,190,11,.3);border-radius:6px;padding:3px 8px;color:var(--warning);">' + z + '</span>'; }).join('') : '') +
+                    '</div>' +
+                    '<div style="margin-top:10px;font-size:11px;color:var(--text-muted);">⚠️ Schätzung basierend auf offiziellen AMB-Tarifen. Stau und Wartezeiten können den Preis erhöhen.</div>' +
+                    '</div>';
+            });
+        }, function() {
+            resultEl.innerHTML = '';
+            errorEl.style.display = 'block';
+            errorEl.textContent = '❌ GPS nicht verfügbar. Bitte GPS-Zugriff erlauben.';
+        }, { enableHighAccuracy: true, timeout: 8000 });
     }
 
     function startOfflineBanner() {
