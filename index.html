@@ -2302,7 +2302,7 @@
                 <button id="subtab-cocktail" class="subnav-btn" onclick="switchSubTab('spiele', 'cocktail')">🍹 Cocktail</button>
                 <button id="subtab-schwimmen" class="subnav-btn" onclick="switchSubTab('spiele', 'schwimmen')">🃏 Schwimmen</button>
                 <button id="subtab-blackjack" class="subnav-btn" onclick="switchSubTab('spiele', 'blackjack')">🃏 Blackjack</button>
-                <button id="subtab-roulette" class="subnav-btn" onclick="switchSubTab('spiele', 'roulette')">🎡 Roulette</button>
+
                 <button id="subtab-poker" class="subnav-btn" onclick="switchSubTab('spiele', 'poker')">♠️ Poker</button>
                 <button id="subtab-shirttausch" class="subnav-btn" onclick="switchSubTab('spiele', 'shirttausch')">👕 Shirt-Tausch</button>
             </div>
@@ -2380,76 +2380,6 @@
         </div>
 
         <!-- ROULETTE -->
-        <div id="content-roulette" class="subtab-content hidden">
-            <div class="card" style="border-top:4px solid var(--danger);padding:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                    <h3 style="margin:0;">🎡 Roulette</h3>
-                    <div style="background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--danger);">💰 <span id="rl-balance">0</span> €</div>
-                </div>
-
-                <!-- ROULETTE WHEEL CANVAS -->
-                <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px;">
-                    <canvas id="rl-canvas" width="260" height="260" style="border-radius:50%;box-shadow:0 0 30px rgba(255,77,109,0.3);"></canvas>
-                    <div id="rl-result-display" style="margin-top:12px;text-align:center;min-height:40px;">
-                        <div id="rl-result-num" style="font-size:36px;font-weight:900;"></div>
-                        <div id="rl-result-color" style="font-size:13px;color:var(--text-muted);"></div>
-                    </div>
-                </div>
-
-                <div id="rl-message" style="text-align:center;font-size:15px;font-weight:700;margin-bottom:14px;min-height:22px;"></div>
-
-                <!-- ACTIVE BETS -->
-                <div id="rl-active-bets-display" style="margin-bottom:12px;"></div>
-
-                <!-- BET TABLE -->
-                <div style="margin-bottom:14px;">
-                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Tisch – Wette auswählen + Betrag</div>
-
-                    <!-- Chip selector -->
-                    <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center;">
-                        <span style="font-size:12px;color:var(--text-muted);">Chip:</span>
-                        <button onclick="rlSelectChip(1)" id="rl-chip-1" style="width:36px;height:36px;border-radius:50%;padding:0;background:#4ade80;color:#000;font-weight:900;font-size:12px;border:2px solid #16a34a;box-shadow:none;">1</button>
-                        <button onclick="rlSelectChip(5)" id="rl-chip-5" style="width:36px;height:36px;border-radius:50%;padding:0;background:#60a5fa;color:#000;font-weight:900;font-size:12px;border:2px solid #2563eb;box-shadow:none;">5</button>
-                        <button onclick="rlSelectChip(10)" id="rl-chip-10" style="width:36px;height:36px;border-radius:50%;padding:0;background:#f59e0b;color:#000;font-weight:900;font-size:12px;border:2px solid #d97706;box-shadow:none;">10</button>
-                        <button onclick="rlSelectChip(25)" id="rl-chip-25" style="width:36px;height:36px;border-radius:50%;padding:0;background:#ef4444;color:#fff;font-weight:900;font-size:12px;border:2px solid #b91c1c;box-shadow:none;">25</button>
-                        <button onclick="rlSelectChip(50)" id="rl-chip-50" style="width:36px;height:36px;border-radius:50%;padding:0;background:#a855f7;color:#fff;font-weight:900;font-size:12px;border:2px solid #7e22ce;box-shadow:none;">50</button>
-                        <span id="rl-chip-selected" style="font-size:13px;color:var(--primary);font-weight:700;margin-left:4px;"></span>
-                    </div>
-
-                    <!-- Outside bets -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;">
-                        <button onclick="rlPlaceBet('1-12')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">1–12<br><small style="opacity:.6;">2:1</small><span id="rl-chip-1-12" class="rl-chip-overlay"></span></button>
-                        <button onclick="rlPlaceBet('13-24')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">13–24<br><small style="opacity:.6;">2:1</small><span id="rl-chip-13-24" class="rl-chip-overlay"></span></button>
-                        <button onclick="rlPlaceBet('25-36')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">25–36<br><small style="opacity:.6;">2:1</small><span id="rl-chip-25-36" class="rl-chip-overlay"></span></button>
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
-                        <button onclick="rlPlaceBet('red')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:#ef4444;box-shadow:none;border-radius:8px;position:relative;">🔴 Rot<br><small style="opacity:.7;">1:1</small><span id="rl-chip-red" class="rl-chip-overlay"></span></button>
-                        <button onclick="rlPlaceBet('black')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">⚫ Schwarz<br><small style="opacity:.6;">1:1</small><span id="rl-chip-black" class="rl-chip-overlay"></span></button>
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;">
-                        <button onclick="rlPlaceBet('even')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">Gerade<br><small style="opacity:.6;">1:1</small><span id="rl-chip-even" class="rl-chip-overlay"></span></button>
-                        <button onclick="rlPlaceBet('odd')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">Ungerade<br><small style="opacity:.6;">1:1</small><span id="rl-chip-odd" class="rl-chip-overlay"></span></button>
-                        <button onclick="rlPlaceBet('green')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.3);color:var(--success);box-shadow:none;border-radius:8px;position:relative;">🟢 Zero<br><small style="opacity:.7;">35:1</small><span id="rl-chip-green" class="rl-chip-overlay"></span></button>
-                    </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
-                        <button onclick="rlPlaceBet('1-18')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">1–18<br><small style="opacity:.6;">1:1</small><span id="rl-chip-1-18" class="rl-chip-overlay"></span></button>
-                        <button onclick="rlPlaceBet('19-36')" class="rl-bet-btn" style="padding:10px 4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;border-radius:8px;position:relative;">19–36<br><small style="opacity:.6;">1:1</small><span id="rl-chip-19-36" class="rl-chip-overlay"></span></button>
-                    </div>
-                    <!-- Number bet -->
-                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
-                        <input type="number" id="rl-num-input" min="0" max="36" placeholder="Zahl 0–36" style="flex:1;padding:8px 12px;font-size:13px;">
-                        <button onclick="rlPlaceBet('number')" style="width:auto;padding:8px 14px;font-size:13px;background:rgba(255,190,11,.15);color:var(--warning);border:1px solid rgba(255,190,11,.3);box-shadow:none;border-radius:8px;">Zahl (35:1)</button>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:8px;">
-                    <button onclick="rlClearBets()" style="flex:1;background:rgba(255,255,255,.05);color:var(--text-muted);border:1px solid var(--glass-border);box-shadow:none;font-size:13px;">🗑️ Löschen</button>
-                    <button id="rl-spin-btn" onclick="rlSpin()" style="flex:2;background:linear-gradient(135deg,rgba(255,77,109,.25),rgba(180,0,50,.18));color:var(--danger);border:1px solid rgba(255,77,109,.4);">🎡 Drehen!</button>
-                </div>
-                <div id="rl-broke-area" style="display:none;margin-top:14px;"></div>
-            </div>
-        </div>
-
         <!-- POKER -->
         <div id="content-poker" class="subtab-content hidden">
             <div class="card" style="border-top:4px solid var(--accent);">
@@ -2745,28 +2675,6 @@
     }
 
     // ZUFALLSGENERATOR LOGIK
-    function runRoulette() {
-        const res = document.getElementById('roulette-result');
-        const btn = document.getElementById('btn-roulette');
-        
-        btn.disabled = true;
-        btn.innerText = "Würfelt...";
-        
-        let counter = 0;
-        const interval = setInterval(() => {
-            res.innerText = ALL_USERS[Math.floor(Math.random() * ALL_USERS.length)];
-            res.style.color = "var(--text-main)";
-            counter++;
-            
-            if (counter > 15) {
-                clearInterval(interval);
-                const winner = ALL_USERS[Math.floor(Math.random() * ALL_USERS.length)];
-                res.innerHTML = "🎉 <span style='color: white;'>" + winner + "</span> 🎉";
-                btn.disabled = false;
-                btn.innerText = "🎯 Noch mal würfeln!";
-            }
-        }, 80);
-    }
 
 
     function switchSubTab(group, tabName) {
@@ -4634,7 +4542,6 @@
         var el = document.getElementById(areaId);
         if (el) el.style.display = 'none';
         if (game === 'bj') bjUpdateUI();
-        if (game === 'rl') rlUpdateUI();
         if (game === 'pk') pkUpdateUI();
         showNotif('💰 Guthaben aufgeladen', '150€ Startguthaben erhalten!', 'success', 3000);
     }
@@ -4751,265 +4658,7 @@
         bjUpdateUI();
     }
 
-    // ══════════════ ROULETTE ══════════════
-    // ══════════════ ROULETTE ══════════════
-    var RL_REDS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-    var RL_NUMBERS = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
-    var rlActiveBets = {};
-    var rlSelectedChip = 5;
-    var rlSpinning = false;
-    var rlAngle = 0;
-    var rlBallAngle = 0;
-    var rlAnimFrame = null;
-    var CHIP_COLORS = {1:'#4ade80',5:'#60a5fa',10:'#f59e0b',25:'#ef4444',50:'#a855f7'};
-
-    function rlUpdateUI() {
-        var bal = getCasinoBalance(currentUser);
-        var el = document.getElementById('rl-balance');
-        if (el) el.textContent = bal.toFixed(2);
-        if (bal <= 0 && !rlSpinning) showBrokeArea('rl-broke-area', 'rl');
-        rlUpdateBetsDisplay();
-        rlDrawWheel(rlAngle);
-    }
-
-    function rlSelectChip(val) {
-        rlSelectedChip = val;
-        [1,5,10,25,50].forEach(function(v){
-            var el = document.getElementById('rl-chip-'+v);
-            if (el) el.classList.toggle('selected', v === val);
-        });
-        var sel = document.getElementById('rl-chip-selected');
-        if (sel) sel.textContent = val+'€ Chip';
-    }
-
-    function rlPlaceBet(type) {
-        if (rlSpinning) return;
-        var betType = type;
-        if (type === 'number') {
-            var num = parseInt(document.getElementById('rl-num-input').value);
-            if (isNaN(num) || num < 0 || num > 36) { showNotif('❌','Bitte gültige Zahl 0–36 eingeben','danger',2000); return; }
-            betType = 'num-'+num;
-        }
-        var totalBets = Object.values(rlActiveBets).reduce(function(a,b){return a+b;},0);
-        if (totalBets + rlSelectedChip > getCasinoBalance(currentUser)) {
-            showNotif('❌','Nicht genug Guthaben','danger',2000); return;
-        }
-        rlActiveBets[betType] = (rlActiveBets[betType]||0) + rlSelectedChip;
-        rlUpdateBetsDisplay();
-        rlShowChipOnButton(betType);
-    }
-
-    function rlShowChipOnButton(betType) {
-        var chipId = 'rl-chip-'+betType;
-        var el = document.getElementById(chipId);
-        if (!el) return;
-        var amt = rlActiveBets[betType];
-        el.className = 'rl-chip-overlay active';
-        el.style.background = CHIP_COLORS[rlSelectedChip] || '#f59e0b';
-        el.textContent = amt >= 100 ? amt+'€' : amt;
-    }
-
-    function rlUpdateBetsDisplay() {
-        var el = document.getElementById('rl-active-bets-display');
-        if (!el) return;
-        var bets = Object.keys(rlActiveBets);
-        if (bets.length === 0) { el.innerHTML = ''; return; }
-        var total = bets.reduce(function(s,k){return s+rlActiveBets[k];},0);
-        el.innerHTML = '<div style="background:rgba(255,190,11,.08);border:1px solid rgba(255,190,11,.2);border-radius:10px;padding:10px 12px;margin-bottom:10px;">' +
-            '<div style="font-size:12px;color:var(--warning);font-weight:700;margin-bottom:6px;">Aktive Wetten – Gesamt: '+total+'€</div>' +
-            bets.map(function(k){
-                return '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);">' +
-                    '<span>'+rlBetLabel(k)+'</span><span style="color:var(--warning);font-weight:700;">'+rlActiveBets[k]+'€</span></div>';
-            }).join('')+'</div>';
-    }
-
-    function rlBetLabel(k) {
-        var labels = {red:'🔴 Rot',black:'⚫ Schwarz',green:'🟢 Zero',even:'Gerade',odd:'Ungerade',
-            '1-12':'1. Drittel (1–12)','13-24':'2. Drittel (13–24)','25-36':'3. Drittel (25–36)',
-            '1-18':'1–18','19-36':'19–36'};
-        if (labels[k]) return labels[k];
-        if (k.startsWith('num-')) return 'Zahl '+k.replace('num-','');
-        return k;
-    }
-
-    function rlClearBets() {
-        rlActiveBets = {};
-        rlUpdateBetsDisplay();
-        document.querySelectorAll('.rl-chip-overlay').forEach(function(el){
-            el.className = 'rl-chip-overlay';
-            el.textContent = '';
-        });
-    }
-
-    function rlDrawWheel(angle) {
-        var canvas = document.getElementById('rl-canvas');
-        if (!canvas) return;
-        var ctx = canvas.getContext('2d');
-        var W = canvas.width, H = canvas.height;
-        var cx = W/2, cy = H/2, r = W/2 - 4;
-        ctx.clearRect(0,0,W,H);
-        var nums = RL_NUMBERS;
-        var sliceAngle = (Math.PI*2) / nums.length;
-
-        // Outer ring
-        ctx.beginPath();
-        ctx.arc(cx,cy,r+2,0,Math.PI*2);
-        ctx.fillStyle = '#7c3aed';
-        ctx.fill();
-
-        nums.forEach(function(num, i) {
-            var start = angle + i * sliceAngle;
-            var end = start + sliceAngle;
-            ctx.beginPath();
-            ctx.moveTo(cx,cy);
-            ctx.arc(cx,cy,r,start,end);
-            ctx.closePath();
-            var isRed = RL_REDS.includes(num);
-            ctx.fillStyle = num===0?'#166534':(isRed?'#991b1b':'#1e293b');
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-
-            ctx.save();
-            ctx.translate(cx,cy);
-            ctx.rotate(start + sliceAngle/2);
-            ctx.textAlign = 'right';
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.font = 'bold 8px Inter,sans-serif';
-            ctx.fillText(num, r-5, 3);
-            ctx.restore();
-        });
-
-        // Center
-        ctx.beginPath();
-        ctx.arc(cx,cy,20,0,Math.PI*2);
-        var cg = ctx.createRadialGradient(cx,cy,0,cx,cy,20);
-        cg.addColorStop(0,'#1e293b');
-        cg.addColorStop(1,'#0f172a');
-        ctx.fillStyle = cg;
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(124,58,237,0.5)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Ball
-        var ballR = r - 16;
-        var bx = cx + Math.cos(rlBallAngle) * ballR;
-        var by = cy + Math.sin(rlBallAngle) * ballR;
-        ctx.beginPath();
-        ctx.arc(bx,by,6,0,Math.PI*2);
-        var bg = ctx.createRadialGradient(bx-2,by-2,0,bx,by,6);
-        bg.addColorStop(0,'#fff');
-        bg.addColorStop(1,'#ccc');
-        ctx.fillStyle = bg;
-        ctx.shadowColor = 'rgba(255,255,255,0.6)';
-        ctx.shadowBlur = 8;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Pointer triangle at top
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - r + 3);
-        ctx.lineTo(cx-7, cy - r + 18);
-        ctx.lineTo(cx+7, cy - r + 18);
-        ctx.closePath();
-        ctx.fillStyle = '#f59e0b';
-        ctx.fill();
-    }
-
-    function rlSpin() {
-        if (rlSpinning) return;
-        var bets = Object.keys(rlActiveBets);
-        if (bets.length === 0) {
-            document.getElementById('rl-message').textContent = 'Bitte zuerst Wetten platzieren!';
-            return;
-        }
-        var totalBet = bets.reduce(function(s,k){return s+rlActiveBets[k];},0);
-        var bal = getCasinoBalance(currentUser);
-        if (totalBet > bal) {
-            document.getElementById('rl-message').textContent = 'Nicht genug Guthaben!';
-            return;
-        }
-        document.getElementById('rl-broke-area').style.display = 'none';
-        document.getElementById('rl-message').textContent = '🎡 Dreht...';
-        setCasinoBalance(currentUser, bal - totalBet);
-        rlSpinning = true;
-
-        var targetNum = Math.floor(Math.random() * 37);
-        var targetIdx = RL_NUMBERS.indexOf(targetNum);
-        var sliceAngle = (Math.PI*2) / RL_NUMBERS.length;
-        // Pointer sits at top = -PI/2. We need slice center at pointer.
-        // Wheel angle when targetIdx is at top: a + targetIdx*sliceAngle + sliceAngle/2 = -PI/2
-        // => a = -PI/2 - targetIdx*sliceAngle - sliceAngle/2
-        var desiredAngle = -Math.PI/2 - targetIdx * sliceAngle - sliceAngle/2;
-        var currentNorm = rlAngle % (Math.PI*2);
-        var spins = 6 + Math.random() * 3;
-        var totalRotation = spins * Math.PI * 2 + (desiredAngle - currentNorm);
-        var startWheelAngle = rlAngle;
-        var startBallAngle = rlBallAngle;
-        var duration = 4500;
-        var startTime = null;
-
-        function easeOut(t) { return 1 - Math.pow(1-t, 4); }
-
-        function animateSpin(ts) {
-            if (!startTime) startTime = ts;
-            var elapsed = ts - startTime;
-            var progress = Math.min(elapsed/duration, 1);
-            var eased = easeOut(progress);
-            rlAngle = startWheelAngle + totalRotation * eased;
-            rlBallAngle = startBallAngle - totalRotation * 2.5 * eased;
-            rlDrawWheel(rlAngle);
-            if (progress < 1) {
-                rlAnimFrame = requestAnimationFrame(animateSpin);
-            } else {
-                rlSpinning = false;
-                rlShowResult(targetNum, totalBet, bal - totalBet);
-            }
-        }
-        rlAnimFrame = requestAnimationFrame(animateSpin);
-    }
-
-    function rlShowResult(num, totalBet, balAfterBet) {
-        var isRed = RL_REDS.includes(num);
-        var color = num===0?'green':(isRed?'red':'black');
-        var resNumEl = document.getElementById('rl-result-num');
-        var resColEl = document.getElementById('rl-result-color');
-        if (resNumEl) { resNumEl.textContent = num; resNumEl.style.color = num===0?'var(--success)':(isRed?'var(--danger)':'var(--text-main)'); }
-        if (resColEl) resColEl.textContent = num===0?'🟢 Grün':(isRed?'🔴 Rot':'⚫ Schwarz');
-
-        var totalWin = 0;
-        Object.keys(rlActiveBets).forEach(function(k) {
-            var bet = rlActiveBets[k];
-            var m = 0;
-            if (k==='red'&&color==='red') m=2;
-            else if (k==='black'&&color==='black') m=2;
-            else if (k==='green'&&num===0) m=36;
-            else if (k==='even'&&num>0&&num%2===0) m=2;
-            else if (k==='odd'&&num%2===1) m=2;
-            else if (k==='1-18'&&num>=1&&num<=18) m=2;
-            else if (k==='19-36'&&num>=19&&num<=36) m=2;
-            else if (k==='1-12'&&num>=1&&num<=12) m=3;
-            else if (k==='13-24'&&num>=13&&num<=24) m=3;
-            else if (k==='25-36'&&num>=25&&num<=36) m=3;
-            else if (k.startsWith('num-')&&parseInt(k.replace('num-',''))===num) m=36;
-            if (m>0) totalWin += bet * m;
-        });
-
-        setCasinoBalance(currentUser, balAfterBet + totalWin);
-        var profit = totalWin - totalBet;
-        var msgEl = document.getElementById('rl-message');
-        if (totalWin > 0) {
-            msgEl.textContent = '🎉 Gewonnen! +'+profit.toFixed(2)+'€';
-            msgEl.style.color = 'var(--success)';
-        } else {
-            msgEl.textContent = '😞 Verloren! -'+totalBet.toFixed(2)+'€';
-            msgEl.style.color = 'var(--danger)';
-        }
-        rlClearBets();
-        rlUpdateUI();
-    }
+    // ══════════════ POKER (Texas Hold'em) ══════════════
 
     // ══════════════ POKER (Texas Hold'em) ══════════════
     function pkUpdateUI() {
@@ -5501,8 +5150,6 @@
 
     function initCasino() {
         bjUpdateUI();
-        rlUpdateUI();
-        rlSelectChip(5);
         pkUpdateUI();
     }
 
