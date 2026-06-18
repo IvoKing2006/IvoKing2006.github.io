@@ -3532,7 +3532,7 @@
         db.expenses.forEach(exp => {
             if (_expenseTab === 'vororte' && isFixkosten(exp.purpose)) return;
             if (exp.payer === currentUser && exp.participants.includes(currentUser)) {
-                const myPart = exp.totalAmount / exp.participants.length;
+                const myPart = exp.shareAmount;
                 if (exp.method === 'Karte') sumKarte += myPart;
                 else sumBar += myPart;
             } else if (exp.payer !== currentUser && exp.participants.includes(currentUser)) {
@@ -3605,6 +3605,7 @@
         const dayMap = {};
 
         db.expenses.forEach(exp => {
+            if (isFixkosten(exp.purpose)) return;
             if (exp.payer !== currentUser || !exp.timestamp) return;
             const match = exp.timestamp.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
             if (!match) return;
@@ -3614,6 +3615,7 @@
         });
 
         db.expenses.forEach(exp => {
+            if (isFixkosten(exp.purpose)) return;
             if (exp.payer === currentUser || !exp.participants.includes(currentUser)) return;
             const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
             if (!debt || !debt.resolved || !exp.timestamp) return;
