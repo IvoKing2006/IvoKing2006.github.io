@@ -3581,8 +3581,7 @@
         ALL_USERS.forEach(u => totals[u] = 0);
         db.expenses.forEach(exp => {
             if (isFixkosten(exp.purpose)) return;
-            // Vorgestrecktes Geld (Payer nicht in participants) nicht zählen
-            if (!exp.participants.includes(exp.payer)) return;
+            if (!exp.participants.includes(exp.payer)) return; // Vorgelegt — niemanden zählen
             const payerShare = exp.shareAmount;
             totals[exp.payer] = (totals[exp.payer] || 0) + payerShare;
             exp.participants.forEach(p => {
@@ -3631,6 +3630,8 @@
         db.expenses.forEach(exp => {
             if (isFixkosten(exp.purpose)) return;
             if (exp.payer === currentUser || !exp.participants.includes(currentUser)) return;
+            // Vorgelegt — nicht zählen (Payer war nicht selbst Teilnehmer)
+            if (!exp.participants.includes(exp.payer)) return;
             const debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
             if (!debt || !debt.resolved || !exp.timestamp) return;
             const match = exp.timestamp.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
