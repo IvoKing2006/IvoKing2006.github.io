@@ -3581,7 +3581,9 @@
         ALL_USERS.forEach(u => totals[u] = 0);
         db.expenses.forEach(exp => {
             if (isFixkosten(exp.purpose)) return;
-            const payerShare = exp.participants.includes(exp.payer) ? exp.shareAmount : exp.totalAmount;
+            // Vorgestrecktes Geld (Payer nicht in participants) nicht zählen
+            if (!exp.participants.includes(exp.payer)) return;
+            const payerShare = exp.shareAmount;
             totals[exp.payer] = (totals[exp.payer] || 0) + payerShare;
             exp.participants.forEach(p => {
                 if (p === exp.payer) return;
@@ -3617,11 +3619,13 @@
         db.expenses.forEach(exp => {
             if (isFixkosten(exp.purpose)) return;
             if (exp.payer !== currentUser || !exp.timestamp) return;
+            // Vorgestrecktes Geld nicht zählen
+            if (!exp.participants.includes(currentUser)) return;
             const match = exp.timestamp.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
             if (!match) return;
             const key = match[1]+'.'+match[2]+'.'+match[3];
             if (!dayMap[key]) dayMap[key] = { label: match[1]+'.'+match[2]+'.', total: 0, date: new Date(parseInt(match[3]), parseInt(match[2])-1, parseInt(match[1])) };
-            dayMap[key].total += exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
+            dayMap[key].total += exp.shareAmount;
         });
 
         db.expenses.forEach(exp => {
