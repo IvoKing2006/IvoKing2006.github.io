@@ -326,10 +326,11 @@
             transform: translateY(-1px);
         }
         .nav-btn.active {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
+            background: linear-gradient(135deg, rgba(0,212,255,0.22), rgba(124,58,237,0.18));
             color: var(--primary);
-            border-color: rgba(0, 212, 255, 0.4);
-            box-shadow: 0 0 16px rgba(0, 212, 255, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+            border-color: rgba(0,212,255,0.45);
+            box-shadow: 0 0 20px rgba(0,212,255,0.25), 0 0 40px rgba(0,212,255,0.08), inset 0 1px 0 rgba(255,255,255,0.12);
+            text-shadow: 0 0 12px rgba(0,212,255,0.6);
         }
 
         /* FORMS */
@@ -370,7 +371,7 @@
         /* BUTTONS */
         button {
             width: 100%;
-            background: linear-gradient(135deg, #00d4ff, #0090c8);
+            background: linear-gradient(135deg, #00d4ff 0%, #0090c8 60%, #006fa0 100%);
             color: #020817;
             border: none;
             padding: 14px;
@@ -378,16 +379,16 @@
             font-size: 15px;
             cursor: pointer;
             font-weight: 700;
-            transition: all 0.2s;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 20px rgba(0,212,255,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
             font-family: 'Inter', sans-serif;
             letter-spacing: 0.01em;
         }
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(0, 212, 255, 0.45);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 35px rgba(0,212,255,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
         }
-        button:active { transform: translateY(0); }
+        button:active { transform: translateY(0) scale(0.99); transition-duration: 0.1s; }
 
         .btn-logout {
             background: rgba(255,255,255,0.06);
@@ -456,20 +457,21 @@
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .packing-grid { grid-template-columns: 1fr; } }
 
         .card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 20px;
-            border-radius: 18px;
-            border: 1px solid var(--glass-border);
+            background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 22px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 20px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
         }
-        .card:hover { border-color: rgba(0,212,255,0.2); box-shadow: 0 0 24px rgba(0,212,255,0.06); }
+        .card:hover { border-color: rgba(0,212,255,0.28); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 30px rgba(0,212,255,0.07), inset 0 1px 0 rgba(255,255,255,0.09); transform: translateY(-1px); }
         .card h3 {
             font-size: 17px;
             margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             padding-bottom: 10px;
             color: var(--text-main);
         }
@@ -6929,96 +6931,282 @@
             canvas.height = H * dpr;
             canvas.style.width  = W + 'px';
             canvas.style.height = H + 'px';
+            ctx.setTransform(1,0,0,1,0,0);
             ctx.scale(dpr, dpr);
         }
         resize();
-        window.addEventListener('resize', function() { ctx.setTransform(1,0,0,1,0,0); resize(); });
+        window.addEventListener('resize', resize);
 
-        // Fish
+        // ── FISH ──
         var fishes = [];
-        var FISH_COUNT = 12;
         var fishTypes = [
-            { color: '#00d4ff', accent: '#0090c8', size: 18 },
-            { color: '#00ffa3', accent: '#00a066', size: 14 },
-            { color: '#ff9a40', accent: '#c86000', size: 22 },
-            { color: '#a78bfa', accent: '#6d28d9', size: 12 },
-            { color: '#ffbe0b', accent: '#c8900a', size: 16 },
+            { color: '#00d4ff', accent: '#0070a8', size: 22 },
+            { color: '#00ffa3', accent: '#00805a', size: 15 },
+            { color: '#ff9a40', accent: '#c85000', size: 26 },
+            { color: '#a78bfa', accent: '#5b21b6', size: 14 },
+            { color: '#ffbe0b', accent: '#a07000', size: 18 },
+            { color: '#ff6b9d', accent: '#a0204d', size: 12 },
+            { color: '#38bdf8', accent: '#0369a1', size: 32 },
+            { color: '#fb7185', accent: '#9f1239', size: 10 },
+            { color: '#34d399', accent: '#065f46', size: 20 },
         ];
-
-        for (var i = 0; i < FISH_COUNT; i++) {
+        for (var i = 0; i < 22; i++) {
             var t = fishTypes[i % fishTypes.length];
             var dir = Math.random() > 0.5 ? 1 : -1;
             fishes.push({
-                x: Math.random() * W,
-                y: Math.random() * H,
-                speed: (0.4 + Math.random() * 0.6) * dir,
+                x: Math.random() * W, y: H * 0.12 + Math.random() * H * 0.72,
+                speed: (0.25 + Math.random() * 0.8) * dir,
                 wobble: Math.random() * Math.PI * 2,
-                wobbleSpeed: 0.02 + Math.random() * 0.02,
-                color: t.color,
-                accent: t.accent,
-                size: t.size * (0.7 + Math.random() * 0.6),
-                dir: dir,
-                opacity: 0.3 + Math.random() * 0.35,
-                depth: Math.random(), // 0=far, 1=close
+                wobbleSpeed: 0.016 + Math.random() * 0.028,
+                color: t.color, accent: t.accent,
+                size: t.size * (0.6 + Math.random() * 0.8),
+                dir: dir, opacity: 0.2 + Math.random() * 0.45,
+                depth: Math.random(),
+                tailPhase: Math.random() * Math.PI * 2,
+                type: 'fish'
             });
         }
 
-        // Bubbles
+        // ── FISH SCHOOL (tiny fish moving together) ──
+        var school = [];
+        var schoolCenter = { x: W * 0.3, y: H * 0.35, vx: 0.4, vy: 0.1 };
+        for (var sf = 0; sf < 30; sf++) {
+            school.push({
+                ox: (Math.random() - 0.5) * 80,
+                oy: (Math.random() - 0.5) * 40,
+                phase: Math.random() * Math.PI * 2,
+            });
+        }
+
+        // ── JELLYFISH ──
+        var jellies = [];
+        for (var j = 0; j < 4; j++) {
+            jellies.push({
+                x: Math.random() * W,
+                y: H * 0.1 + Math.random() * H * 0.5,
+                r: 18 + Math.random() * 22,
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.12 + Math.random() * 0.18,
+                color: ['rgba(180,100,255,', 'rgba(100,200,255,', 'rgba(255,150,200,', 'rgba(100,255,200,'][j % 4],
+                drift: (Math.random() - 0.5) * 0.15,
+            });
+        }
+
+        // ── BUBBLES ──
         var bubbles = [];
-        for (var b = 0; b < 20; b++) {
+        for (var b = 0; b < 45; b++) {
             bubbles.push({
-                x: Math.random() * W,
-                y: H + Math.random() * H,
-                r: 2 + Math.random() * 5,
-                speed: 0.3 + Math.random() * 0.5,
+                x: Math.random() * W, y: H + Math.random() * H,
+                r: 1.2 + Math.random() * 7,
+                speed: 0.2 + Math.random() * 0.6,
                 wobble: Math.random() * Math.PI * 2,
-                opacity: 0.1 + Math.random() * 0.15,
+                opacity: 0.06 + Math.random() * 0.2,
             });
         }
 
+        // ── SEAWEED ──
+        var seaweeds = [];
+        for (var sw = 0; sw < 20; sw++) {
+            seaweeds.push({
+                x: (sw / 20) * W * 1.1 - W * 0.05 + (Math.random() - 0.5) * 60,
+                segments: 5 + Math.floor(Math.random() * 6),
+                height: 35 + Math.random() * 100,
+                phase: Math.random() * Math.PI * 2,
+                color: ['#00a066','#00805a','#00c87a','#006644'][Math.floor(Math.random()*4)],
+                opacity: 0.1 + Math.random() * 0.22,
+                thickness: 1.5 + Math.random() * 4,
+            });
+        }
+
+        // ── CORALS ──
+        var corals = [];
+        for (var co = 0; co < 12; co++) {
+            corals.push({
+                x: (co / 12) * W * 1.1 - W * 0.05 + (Math.random() - 0.5) * 40,
+                type: Math.floor(Math.random() * 3),
+                color: ['#ff6b6b','#ff9a40','#ff6b9d','#a78bfa','#00ffa3'][Math.floor(Math.random()*5)],
+                size: 15 + Math.random() * 30,
+                opacity: 0.15 + Math.random() * 0.25,
+                phase: Math.random() * Math.PI * 2,
+            });
+        }
+
+        // ── PARTICLES ──
+        var particles = [];
+        for (var p = 0; p < 80; p++) {
+            particles.push({
+                x: Math.random() * W, y: Math.random() * H,
+                r: 0.4 + Math.random() * 1.8,
+                speed: 0.04 + Math.random() * 0.18,
+                drift: (Math.random() - 0.5) * 0.1,
+                opacity: 0.03 + Math.random() * 0.12,
+            });
+        }
+
+        // ── DRAW FISH ──
         function drawFish(f) {
             ctx.save();
             ctx.globalAlpha = f.opacity;
             ctx.translate(f.x, f.y);
             if (f.dir < 0) ctx.scale(-1, 1);
             var s = f.size;
-
-            // Body
+            var tailWag = Math.sin(f.tailPhase) * 0.32;
+            ctx.shadowColor = f.color;
+            ctx.shadowBlur = s * 1.0;
+            var bodyGrad = ctx.createRadialGradient(s * 0.15, -s * 0.1, 0, 0, 0, s);
+            bodyGrad.addColorStop(0, f.color);
+            bodyGrad.addColorStop(1, f.accent);
             ctx.beginPath();
-            ctx.ellipse(0, 0, s, s * 0.45, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, 0, s, s * 0.4, 0, 0, Math.PI * 2);
+            ctx.fillStyle = bodyGrad;
+            ctx.fill();
+            // Scales
+            ctx.globalAlpha = f.opacity * 0.25;
+            ctx.strokeStyle = f.accent;
+            ctx.lineWidth = 0.6;
+            for (var sc = 0; sc < 4; sc++) {
+                ctx.beginPath();
+                ctx.arc(-s * 0.2 + sc * s * 0.22, 0, s * 0.18, Math.PI * 0.3, Math.PI * 1.7);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = f.opacity;
+            // Tail
+            ctx.save();
+            ctx.translate(-s * 0.78, 0);
+            ctx.rotate(tailWag);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-s * 0.7, -s * 0.58);
+            ctx.lineTo(-s * 0.7, s * 0.58);
+            ctx.closePath();
+            ctx.fillStyle = f.accent;
+            ctx.shadowBlur = 0;
+            ctx.fill();
+            ctx.restore();
+            // Dorsal fin
+            ctx.beginPath();
+            ctx.moveTo(-s * 0.1, -s * 0.36);
+            ctx.quadraticCurveTo(s * 0.2, -s * 0.9, s * 0.5, -s * 0.36);
+            ctx.closePath();
+            ctx.globalAlpha = f.opacity * 0.55;
             ctx.fillStyle = f.color;
             ctx.fill();
-
-            // Tail
+            // Pectoral fin
             ctx.beginPath();
-            ctx.moveTo(-s * 0.7, 0);
-            ctx.lineTo(-s * 1.35, -s * 0.5);
-            ctx.lineTo(-s * 1.35, s * 0.5);
+            ctx.moveTo(s * 0.1, s * 0.1);
+            ctx.quadraticCurveTo(s * 0.4, s * 0.55, s * 0.0, s * 0.42);
             ctx.closePath();
-            ctx.fillStyle = f.accent;
+            ctx.globalAlpha = f.opacity * 0.4;
+            ctx.fillStyle = f.color;
             ctx.fill();
-
-            // Fin top
-            ctx.beginPath();
-            ctx.moveTo(-s * 0.1, -s * 0.35);
-            ctx.lineTo(s * 0.2, -s * 0.7);
-            ctx.lineTo(s * 0.5, -s * 0.35);
-            ctx.closePath();
-            ctx.fillStyle = f.accent;
-            ctx.globalAlpha = f.opacity * 0.7;
-            ctx.fill();
-
             // Eye
-            ctx.beginPath();
-            ctx.arc(s * 0.5, -s * 0.1, s * 0.12, 0, Math.PI * 2);
-            ctx.fillStyle = '#000';
             ctx.globalAlpha = f.opacity;
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(s * 0.52, -s * 0.08, s * 0.14, 0, Math.PI * 2);
+            ctx.fillStyle = '#001020';
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(s * 0.52, -s * 0.12, s * 0.05, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
+            ctx.arc(s * 0.54, -s * 0.1, s * 0.06, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
             ctx.fill();
+            ctx.restore();
+        }
 
+        // ── DRAW JELLYFISH ──
+        function drawJellyfish(j, ts) {
+            ctx.save();
+            var pulse = Math.sin(ts * 0.001 + j.phase) * 0.15 + 0.85;
+            ctx.globalAlpha = 0.18 + Math.sin(ts * 0.0008 + j.phase) * 0.06;
+            ctx.translate(j.x, j.y);
+            // Bell
+            ctx.beginPath();
+            ctx.ellipse(0, 0, j.r * pulse, j.r * 0.65 * pulse, 0, Math.PI, 0);
+            var jGrad = ctx.createRadialGradient(0, -j.r * 0.2, 0, 0, 0, j.r);
+            jGrad.addColorStop(0, j.color + '0.9)');
+            jGrad.addColorStop(1, j.color + '0.1)');
+            ctx.fillStyle = jGrad;
+            ctx.shadowColor = j.color + '1)';
+            ctx.shadowBlur = 20;
+            ctx.fill();
+            // Tentacles
+            ctx.shadowBlur = 8;
+            for (var t = -3; t <= 3; t++) {
+                ctx.beginPath();
+                ctx.moveTo(t * j.r * 0.28, 0);
+                var tx = t * j.r * 0.28 + Math.sin(ts * 0.0015 + j.phase + t) * 8;
+                ctx.bezierCurveTo(tx - 5, j.r * 0.6, tx + 5, j.r * 1.2, tx, j.r * 1.6);
+                ctx.strokeStyle = j.color + '0.5)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // ── DRAW SEAWEED ──
+        function drawSeaweed(sw, ts) {
+            ctx.save();
+            ctx.globalAlpha = sw.opacity;
+            ctx.strokeStyle = sw.color;
+            ctx.lineWidth = sw.thickness;
+            ctx.lineCap = 'round';
+            ctx.shadowColor = sw.color;
+            ctx.shadowBlur = 8;
+            var segH = sw.height / sw.segments;
+            ctx.beginPath();
+            ctx.moveTo(sw.x, H);
+            for (var seg = 0; seg < sw.segments; seg++) {
+                var progress = (seg + 1) / sw.segments;
+                var wave = Math.sin(ts * 0.0009 + sw.phase + seg * 0.9) * 14 * progress;
+                ctx.quadraticCurveTo(sw.x + wave * 0.5, H - (seg + 0.5) * segH, sw.x + wave, H - (seg + 1) * segH);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // ── DRAW CORAL ──
+        function drawCoral(co, ts) {
+            ctx.save();
+            ctx.globalAlpha = co.opacity;
+            ctx.strokeStyle = co.color;
+            ctx.shadowColor = co.color;
+            ctx.shadowBlur = 12;
+            var sway = Math.sin(ts * 0.0007 + co.phase) * 3;
+            if (co.type === 0) {
+                // Branch coral
+                ctx.lineWidth = 2.5;
+                for (var br = 0; br < 5; br++) {
+                    var angle = -Math.PI / 2 + (br - 2) * 0.35 + sway * 0.04;
+                    ctx.beginPath();
+                    ctx.moveTo(co.x, H);
+                    ctx.lineTo(co.x + Math.cos(angle) * co.size, H - co.size * 1.2);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(co.x + Math.cos(angle) * co.size, H - co.size * 1.2, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = co.color;
+                    ctx.fill();
+                }
+            } else if (co.type === 1) {
+                // Fan coral
+                ctx.lineWidth = 1.2;
+                for (var fan = 0; fan < 8; fan++) {
+                    var fa = -Math.PI * 0.8 + fan * (Math.PI * 0.6 / 7) + sway * 0.03;
+                    ctx.beginPath();
+                    ctx.moveTo(co.x, H);
+                    ctx.lineTo(co.x + Math.cos(fa) * co.size * 0.9, H - co.size);
+                    ctx.stroke();
+                }
+            } else {
+                // Round coral blobs
+                for (var bl = 0; bl < 4; bl++) {
+                    var bx = co.x + (bl - 1.5) * co.size * 0.4 + sway;
+                    var by = H - co.size * 0.5 - bl * co.size * 0.15;
+                    ctx.beginPath();
+                    ctx.arc(bx, by, co.size * 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = co.color;
+                    ctx.fill();
+                }
+            }
             ctx.restore();
         }
 
@@ -7026,68 +7214,147 @@
         function frame(ts) {
             var dt = Math.min(ts - lastTime, 50);
             lastTime = ts;
-
             ctx.clearRect(0, 0, W, H);
 
-            // Ocean gradient background
+            // ── BACKGROUND GRADIENT ──
             var grad = ctx.createLinearGradient(0, 0, 0, H);
-            grad.addColorStop(0,   '#020f1a');
-            grad.addColorStop(0.4, '#031828');
-            grad.addColorStop(1,   '#010a12');
+            grad.addColorStop(0,   '#000d1a');
+            grad.addColorStop(0.25,'#011628');
+            grad.addColorStop(0.6, '#010e1e');
+            grad.addColorStop(1,   '#00070f');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            // Subtle light rays from top
-            for (var r = 0; r < 5; r++) {
-                var rx = W * (0.1 + r * 0.2) + Math.sin(ts * 0.0003 + r) * 30;
-                var rayGrad = ctx.createLinearGradient(rx, 0, rx + 60, H * 0.7);
-                rayGrad.addColorStop(0, 'rgba(0,180,255,0.04)');
+            // ── AMBIENT GLOWS ──
+            var lg = ctx.createRadialGradient(W*0.1, H*0.35, 0, W*0.1, H*0.35, W*0.6);
+            lg.addColorStop(0, 'rgba(0,80,160,0.07)');
+            lg.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+            var rg = ctx.createRadialGradient(W*0.9, H*0.65, 0, W*0.9, H*0.65, W*0.55);
+            rg.addColorStop(0, 'rgba(80,0,180,0.05)');
+            rg.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+
+            // ── LIGHT RAYS ──
+            for (var r = 0; r < 10; r++) {
+                var rx = W * (0.04 + r * 0.1) + Math.sin(ts * 0.00022 + r * 1.4) * 50;
+                var rw = 15 + Math.sin(ts * 0.00035 + r * 0.9) * 18;
+                var rayAlpha = 0.03 + Math.sin(ts * 0.0004 + r) * 0.02;
+                var rayGrad = ctx.createLinearGradient(rx, 0, rx + rw * 0.4, H * 0.8);
+                rayGrad.addColorStop(0, `rgba(0,180,255,${rayAlpha * 1.8})`);
+                rayGrad.addColorStop(0.4, `rgba(0,180,255,${rayAlpha})`);
                 rayGrad.addColorStop(1, 'rgba(0,180,255,0)');
                 ctx.beginPath();
-                ctx.moveTo(rx - 20, 0);
-                ctx.lineTo(rx + 80, 0);
-                ctx.lineTo(rx + 40, H * 0.7);
-                ctx.lineTo(rx - 10, H * 0.7);
+                ctx.moveTo(rx, 0); ctx.lineTo(rx + rw, 0);
+                ctx.lineTo(rx + rw * 0.2 + 35, H * 0.8); ctx.lineTo(rx - 25, H * 0.8);
                 ctx.closePath();
-                ctx.fillStyle = rayGrad;
-                ctx.fill();
+                ctx.fillStyle = rayGrad; ctx.fill();
             }
 
-            // Bubbles
-            bubbles.forEach(function(bub) {
-                bub.y -= bub.speed * dt * 0.05;
-                bub.wobble += 0.02;
-                bub.x += Math.sin(bub.wobble) * 0.3;
-                if (bub.y + bub.r < 0) {
-                    bub.y = H + bub.r;
-                    bub.x = Math.random() * W;
-                }
+            // ── CAUSTICS ON FLOOR ──
+            ctx.save();
+            for (var ca = 0; ca < 10; ca++) {
+                var cax = W * (0.05 + ca * 0.1) + Math.sin(ts * 0.0005 + ca * 2.1) * 25;
+                var cay = H * 0.88 + Math.cos(ts * 0.0006 + ca) * 8;
+                var caR = 30 + Math.sin(ts * 0.0008 + ca) * 15;
+                var caGrad = ctx.createRadialGradient(cax, cay, 0, cax, cay, caR);
+                caGrad.addColorStop(0, 'rgba(0,220,255,0.07)');
+                caGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = caGrad;
+                ctx.globalAlpha = 1;
+                ctx.fillRect(0, H * 0.78, W, H * 0.22);
+            }
+            ctx.restore();
+
+            // ── PARTICLES ──
+            particles.forEach(function(p) {
+                p.y -= p.speed * dt * 0.04;
+                p.x += p.drift;
+                if (p.y < -5) { p.y = H + 5; p.x = Math.random() * W; }
                 ctx.beginPath();
-                ctx.arc(bub.x, bub.y, bub.r, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(0,220,255,' + bub.opacity + ')';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(150,220,255,' + p.opacity + ')';
+                ctx.fill();
             });
 
-            // Fish (sort by depth)
+            // ── JELLYFISH ──
+            jellies.forEach(function(j) {
+                j.y -= j.speed * dt * 0.03;
+                j.x += j.drift;
+                if (j.y < -j.r * 2) { j.y = H + j.r; j.x = Math.random() * W; }
+                if (j.x < -j.r) j.x = W + j.r;
+                if (j.x > W + j.r) j.x = -j.r;
+                drawJellyfish(j, ts);
+            });
+
+            // ── CORALS ──
+            corals.forEach(function(co) { drawCoral(co, ts); });
+
+            // ── SEAWEED ──
+            seaweeds.forEach(function(sw) { drawSeaweed(sw, ts); });
+
+            // ── SANDY FLOOR ──
+            var floorGrad = ctx.createLinearGradient(0, H * 0.86, 0, H);
+            floorGrad.addColorStop(0, 'rgba(0,15,30,0)');
+            floorGrad.addColorStop(0.5, 'rgba(0,8,20,0.5)');
+            floorGrad.addColorStop(1, 'rgba(0,5,15,0.85)');
+            ctx.fillStyle = floorGrad;
+            ctx.fillRect(0, H * 0.86, W, H * 0.14);
+
+            // ── BUBBLES ──
+            bubbles.forEach(function(bub) {
+                bub.y -= bub.speed * dt * 0.05;
+                bub.wobble += 0.022;
+                bub.x += Math.sin(bub.wobble) * 0.4;
+                if (bub.y + bub.r < 0) { bub.y = H + bub.r; bub.x = Math.random() * W; }
+                ctx.save();
+                ctx.globalAlpha = bub.opacity;
+                var bubGrad = ctx.createRadialGradient(bub.x - bub.r*0.35, bub.y - bub.r*0.35, 0, bub.x, bub.y, bub.r);
+                bubGrad.addColorStop(0, 'rgba(210,245,255,0.5)');
+                bubGrad.addColorStop(0.5, 'rgba(0,180,255,0.06)');
+                bubGrad.addColorStop(1, 'rgba(0,200,255,0.28)');
+                ctx.beginPath();
+                ctx.arc(bub.x, bub.y, bub.r, 0, Math.PI * 2);
+                ctx.fillStyle = bubGrad; ctx.fill();
+                ctx.strokeStyle = 'rgba(0,220,255,' + (bub.opacity * 1.6) + ')';
+                ctx.lineWidth = 0.5; ctx.stroke();
+                ctx.restore();
+            });
+
+            // ── FISH SCHOOL ──
+            schoolCenter.x += schoolCenter.vx * dt * 0.04;
+            schoolCenter.y += Math.sin(ts * 0.0003) * 0.3;
+            if (schoolCenter.x > W + 100) { schoolCenter.x = -100; schoolCenter.y = H * 0.2 + Math.random() * H * 0.5; }
+            school.forEach(function(sf) {
+                var sx = schoolCenter.x + sf.ox + Math.sin(ts * 0.002 + sf.phase) * 6;
+                var sy = schoolCenter.y + sf.oy + Math.cos(ts * 0.0015 + sf.phase) * 4;
+                ctx.save();
+                ctx.globalAlpha = 0.22;
+                ctx.translate(sx, sy);
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI * 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                // tiny tail
+                ctx.beginPath();
+                ctx.moveTo(-4, 0); ctx.lineTo(-7, -2.5); ctx.lineTo(-7, 2.5);
+                ctx.closePath(); ctx.fillStyle = '#0369a1'; ctx.fill();
+                ctx.restore();
+            });
+
+            // ── MAIN FISH ──
             fishes.sort(function(a,b){ return a.depth - b.depth; });
             fishes.forEach(function(f) {
+                f.tailPhase += 0.082;
                 f.wobble += f.wobbleSpeed;
                 f.x += f.speed * dt * 0.04;
-                f.y += Math.sin(f.wobble) * 0.4;
-
-                // Wrap around
-                if (f.dir > 0 && f.x > W + f.size * 2) {
-                    f.x = -f.size * 2;
-                    f.y = H * 0.1 + Math.random() * H * 0.8;
-                }
-                if (f.dir < 0 && f.x < -f.size * 2) {
-                    f.x = W + f.size * 2;
-                    f.y = H * 0.1 + Math.random() * H * 0.8;
-                }
+                f.y += Math.sin(f.wobble) * 0.38;
+                if (f.dir > 0 && f.x > W + f.size * 2) { f.x = -f.size * 2; f.y = H * 0.1 + Math.random() * H * 0.78; }
+                if (f.dir < 0 && f.x < -f.size * 2) { f.x = W + f.size * 2; f.y = H * 0.1 + Math.random() * H * 0.78; }
                 if (f.y < 20) f.y = 20;
-                if (f.y > H - 20) f.y = H - 20;
-
+                if (f.y > H - 35) f.y = H - 35;
                 drawFish(f);
             });
 
