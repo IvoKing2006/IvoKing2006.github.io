@@ -992,7 +992,7 @@
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>🎒 Truppen-Packliste & Checkliste</h3>
                 <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-                    <input type="text" id="new-pack-item" placeholder="Gegenstand hinzufügen..." style="flex:2;min-width:120px;">
+                    <input type="text" id="new-pack-item" placeholder="Gegenstand hinzufügen..." style="flex:2;min-width:120px;" onkeydown="if(event.key==='Enter') addPackItem()">
                     <select id="new-pack-cat" style="flex:1;min-width:110px;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;font-size:13px;color:var(--text-main);">
                         <option value="Sonstiges">📦 Sonstiges</option>
                         <option value="Kleidung">👕 Kleidung</option>
@@ -1003,6 +1003,7 @@
                         <option value="Strand">🏖️ Strand</option>
                     </select>
                     <button onclick="addPackItem()" style="width:auto;padding:0 20px;white-space:nowrap;">Hinzufügen</button>
+                    <button onclick="resetPackChecks()" style="width:auto;padding:0 14px;white-space:nowrap;background:rgba(255,77,109,.12);color:var(--danger);border:1px solid rgba(255,77,109,.3);box-shadow:none;font-size:13px;">↺ Reset</button>
                 </div>
                 <input type="text" id="pack-search" placeholder="🔍 Packliste durchsuchen..." oninput="filterPackList()" style="margin-bottom:16px;padding:9px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--text-main);width:100%;">
                 <div class="packing-grid" id="all-packing-lists"></div>
@@ -3080,6 +3081,29 @@
         if (item) { item.checked = !item.checked; saveDB(); }
     }
 
+    function resetPackChecks() {
+        if (!db.packing || !Array.isArray(db.packing[currentUser])) return;
+        if (!confirm('Alle Häkchen in deiner Liste entfernen?')) return;
+        db.packing[currentUser].forEach(item => item.checked = false);
+        saveDB();
+    }
+
+    function movePackItem(user, itemId, cat, direction) {
+        if (user !== currentUser) return;
+        if (!Array.isArray(db.packing[user])) db.packing[user] = Object.values(db.packing[user] || {});
+        // Get all items in this category
+        const allItems = db.packing[user];
+        const catItems = allItems.filter(i => (i.cat || 'Sonstiges') === cat);
+        const idx = catItems.findIndex(i => i.id === itemId);
+        const newIdx = idx + direction;
+        if (newIdx < 0 || newIdx >= catItems.length) return;
+        // Swap in original array
+        const aIdx = allItems.indexOf(catItems[idx]);
+        const bIdx = allItems.indexOf(catItems[newIdx]);
+        [allItems[aIdx], allItems[bIdx]] = [allItems[bIdx], allItems[aIdx]];
+        saveDB();
+    }
+
     function deletePackItem(user, itemId) {
         if (user !== currentUser) return;
         if (!Array.isArray(db.packing[user])) db.packing[user] = Object.values(db.packing[user] || {});
@@ -3416,13 +3440,19 @@
                     const items = grouped[cat];
                     itemsHTML += `<div style="margin-bottom:10px;">
                         <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">${catIcons[cat]||'📦'} ${cat}</div>`;
-                    items.forEach(item => {
+                    items.forEach((item, idx) => {
+                        const isFirst = idx === 0;
+                        const isLast = idx === items.length - 1;
                         itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}">
-                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;">
+                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1;">
                                 <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
                                 ${item.name}
                             </label>
-                            ${isMe ? `<button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>` : ''}
+                            ${isMe ? `<div style="display:flex;gap:3px;align-items:center;">
+                                <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
+                                <button onclick="movePackItem('${user}','${item.id}','${cat}',1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isLast?'0.3':'1'};cursor:${isLast?'default':'pointer'};" ${isLast?'disabled':''}>▼</button>
+                                <button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>
+                            </div>` : ''}
                         </div>`;
                     });
                     itemsHTML += `</div>`;
