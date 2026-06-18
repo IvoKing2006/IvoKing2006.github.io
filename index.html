@@ -938,6 +938,10 @@
 
             <div class="card" style="margin-top: 25px;">
                 <h3>Dein Ausgaben-Verlauf (Bestätigte Posten)</h3>
+                <div style="display:flex;gap:8px;margin-bottom:12px;">
+                    <button id="exp-tab-alle" onclick="switchExpenseTab('alle')" style="flex:1;padding:8px;font-size:13px;font-weight:700;background:linear-gradient(135deg,rgba(0,212,255,.25),rgba(0,150,200,.2));color:var(--primary);border:1px solid rgba(0,212,255,.4);box-shadow:none;">📊 Alle inkl. Fixkosten</button>
+                    <button id="exp-tab-vororte" onclick="switchExpenseTab('vororte')" style="flex:1;padding:8px;font-size:13px;font-weight:700;background:rgba(255,255,255,.04);color:var(--text-muted);border:1px solid var(--glass-border);box-shadow:none;">🏖️ Nur Vor-Ort-Kosten</button>
+                </div>
                 <input type="text" id="expense-search" placeholder="🔍 Ausgaben durchsuchen..." oninput="filterExpenses()" style="margin-bottom:12px;padding:9px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;font-size:13px;color:var(--text-main);width:100%;">
                 <ul id="personal-history" style="max-height:340px;overflow-y:auto;padding-right:4px;margin:0;"></ul>
                 <div id="payment-summary" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--border); display:flex; gap:12px; flex-wrap:wrap;">
@@ -3379,6 +3383,38 @@
         else if (!Array.isArray(db.customCats)) db.customCats = Object.values(db.customCats);
     }
 
+    var _expenseTab = 'alle';
+    var FIXKOSTEN = ['flug', 'airbnb', 'touristensteuer'];
+
+    function switchExpenseTab(tab) {
+        _expenseTab = tab;
+        var alleBtn = document.getElementById('exp-tab-alle');
+        var vorOrteBtn = document.getElementById('exp-tab-vororte');
+        if (alleBtn && vorOrteBtn) {
+            if (tab === 'alle') {
+                alleBtn.style.background = 'linear-gradient(135deg,rgba(0,212,255,.25),rgba(0,150,200,.2))';
+                alleBtn.style.color = 'var(--primary)';
+                alleBtn.style.border = '1px solid rgba(0,212,255,.4)';
+                vorOrteBtn.style.background = 'rgba(255,255,255,.04)';
+                vorOrteBtn.style.color = 'var(--text-muted)';
+                vorOrteBtn.style.border = '1px solid var(--glass-border)';
+            } else {
+                vorOrteBtn.style.background = 'linear-gradient(135deg,rgba(0,212,255,.25),rgba(0,150,200,.2))';
+                vorOrteBtn.style.color = 'var(--primary)';
+                vorOrteBtn.style.border = '1px solid rgba(0,212,255,.4)';
+                alleBtn.style.background = 'rgba(255,255,255,.04)';
+                alleBtn.style.color = 'var(--text-muted)';
+                alleBtn.style.border = '1px solid var(--glass-border)';
+            }
+        }
+        updateUI();
+    }
+
+    function isFixkosten(purpose) {
+        var p = (purpose || '').toLowerCase().trim();
+        return FIXKOSTEN.some(function(k) { return p.includes(k); });
+    }
+
     function updateUI() {
         if (!currentUser) return;
         normalizeDB();
@@ -3399,6 +3435,7 @@
         });
 
         db.expenses.forEach(exp => {
+            if (_expenseTab === 'vororte' && isFixkosten(exp.purpose)) return;
             if (exp.payer === currentUser) {
                 const myPart = exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
                 totalOwnCost += myPart;
