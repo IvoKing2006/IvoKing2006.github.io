@@ -5504,14 +5504,13 @@
         var exp = db.expenses.find(function(e){ return e.id === expId; });
         if (!exp) return;
 
-        // Permission check
-        var isGroupExp = exp.participants.length > 1;
-        if (isGroupExp && currentUser !== 'Ivo') {
-            showNotif('❌', 'Nur Ivo kann Gruppenausgaben bearbeiten', 'danger', 3000);
+        // Permission check — Ivo kann alles, andere nur eigene Einzelausgaben
+        if (currentUser !== 'Ivo' && exp.payer !== currentUser) {
+            showNotif('❌', 'Du kannst nur eigene Ausgaben bearbeiten', 'danger', 3000);
             return;
         }
-        if (!isGroupExp && exp.payer !== currentUser) {
-            showNotif('❌', 'Du kannst nur eigene Ausgaben bearbeiten', 'danger', 3000);
+        if (currentUser !== 'Ivo' && exp.participants.length > 1) {
+            showNotif('❌', 'Nur Ivo kann Gruppenausgaben bearbeiten', 'danger', 3000);
             return;
         }
 
@@ -5520,10 +5519,10 @@
         document.getElementById('edit-exp-purpose').value = exp.purpose;
         document.getElementById('edit-exp-method').value = exp.method || 'Karte';
 
-        // Show participants for group expenses (Ivo only)
+        // Teilnehmer-Checkboxen immer für Ivo anzeigen
         var partArea = document.getElementById('edit-exp-participants-area');
         var partEl = document.getElementById('edit-exp-participants');
-        if (isGroupExp && currentUser === 'Ivo') {
+        if (currentUser === 'Ivo') {
             partArea.style.display = 'block';
             partEl.innerHTML = ALL_USERS.map(function(u) {
                 var checked = exp.participants.includes(u) ? 'checked' : '';
@@ -5558,10 +5557,9 @@
         var exp = db.expenses[expIdx];
         var oldPurpose = exp.purpose;
 
-        // Update participants if Ivo editing group expense
-        var isGroupExp = exp.participants.length > 1;
+        // Update participants - immer wenn Ivo editiert
         var newParticipants = exp.participants;
-        if (isGroupExp && currentUser === 'Ivo') {
+        if (currentUser === 'Ivo') {
             newParticipants = ALL_USERS.filter(function(u) {
                 var cb = document.getElementById('edit-part-' + u);
                 return cb && cb.checked;
@@ -6469,7 +6467,7 @@
         db.expenses.forEach(exp => {
             var myPart = 0;
             if (exp.payer === currentUser) {
-                myPart = exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
+                myPart = exp.participants.includes(currentUser) ? exp.shareAmount : 0;
             } else if (exp.participants.includes(currentUser)) {
                 var debt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (debt && debt.resolved) myPart = exp.shareAmount;
