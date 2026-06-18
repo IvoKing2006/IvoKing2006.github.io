@@ -1428,15 +1428,13 @@
                 <div class="restaurant-grid">
 
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.399943" data-lng="2.203082">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="da_nanni___poblenou" data-lat="41.399943" data-lng="2.203082">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Da Nanni | Poblenou</h4>
                         <div class="cuisine-tag">🍕 Pizzeria</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Rambla del Poblenou, 20, Sant Martí, 08005 Barcelona</div>
                         <span class="hours-info">Mo–So: 13:00–23:30</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Da Nanni', 'Rambla del Poblenou, 20, Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Da Nanni | Poblenou')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Da Nanni | Poblenou"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.382894" data-lng="2.177813">
@@ -1446,8 +1444,6 @@
                         <span class="hours-info">Mo–So: 13:00–23:30</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Da Nanni Pizzeria', 'Carrer de la Llibreteria, 10, Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Da Nanni Pizzeria')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Da Nanni Pizzeria"></div>
                     </div>
 
 
@@ -1459,8 +1455,6 @@
                         <span class="hours-info">Mo–So: 12:00–00:00</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('La Caravana', 'Carrer de Mozart, 15, 16, Gràcia, 08012 Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('La Caravana')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="La Caravana"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.381739" data-lng="2.171585">
@@ -1470,8 +1464,6 @@
                         <span class="hours-info">Mo–Sa: 08:00–20:30 · So: Geschlossen</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Mercat de la Boqueria', 'La Rambla, 91, Ciutat Vella, 08001 Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Mercat de la Boqueria')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Mercat de la Boqueria"></div>
                     </div>
 
                     <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.392471" data-lng="2.176882">
@@ -1481,8 +1473,6 @@
                         <span class="hours-info">Mo–So: 10:00–02:30</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Bella Istanbul', 'Pg. de St. Joan, 57, Eixample, 08009 Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Bella Istanbul')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Bella Istanbul"></div>
                     </div>
 
 
@@ -1504,8 +1494,6 @@
                         <span class="hours-info">Mo–Do: 10:00–02:00 · Fr–So: 10:00–03:00</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Mustafa Can', 'La Rambla, 54, Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Mustafa Can\'s Gemüse Kebap')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Mustafa Can's Gemüse Kebap"></div>
                     </div>
 
 
@@ -1517,13 +1505,13 @@
                         <span class="hours-info">Mo–Do &amp; So: 12:30–23:00 · Fr–Sa: 12:30–00:30</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Rosa Negra (Laietana)', 'Via Laietana, 46, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('Rosa Negra (Laietana)')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="Rosa Negra (Laietana)"></div>
                     </div>
 
                     
 
-                </div>
+                
+                        <button class="btn-visited" onclick="toggleVisited('da_nanni___poblenou')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;">📍 Als besucht markieren</button>
+                    </div>
             </div>
         </div>
         <div id="content-tabak" class="subtab-content hidden">
@@ -1535,7 +1523,7 @@
 
                 <div class="restaurant-grid" id="tabak-grid">
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.39582" data-lng="2.15978">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="estanc_exp__170" data-lat="41.39582" data-lng="2.15978">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">ESTANC EXP. 170</h4>
                         <div class="tabak-tag">🚬 Tabakladen</div>
                         <div class="meta-info">Carrer del Rosselló, 241, Eixample</div>
@@ -1861,7 +1849,9 @@
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc de Sicilia','Carrer de Sicilia, 240, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
-                </div>
+                
+                        <button class="btn-visited" onclick="toggleVisited('estanc_exp__170')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;">📍 Als besucht markieren</button>
+                    </div>
 
             </div>
         </div>
@@ -1873,7 +1863,7 @@
                 </p>
                 <div class="restaurant-grid" id="apotheke-grid">
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.3887" data-lng="2.1592">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="farm_cia_torres" data-lat="41.3887" data-lng="2.1592">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Torres</h4>
                         <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
                         <div class="meta-info">Carrer d'Aribau, 62, Eixample</div>
@@ -1963,7 +1953,9 @@
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Farmacia Marti Tor','Carrer Arago, 395, 08013 Barcelona')">🗺️ Route öffnen</button>
                     </div>
-                </div>
+                
+                        <button class="btn-visited" onclick="toggleVisited('farm_cia_torres')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;">📍 Als besucht markieren</button>
+                    </div>
             </div>
         </div>
         <div id="content-orte" class="subtab-content hidden">
@@ -1982,7 +1974,7 @@
                         <button class="btn-nav-link" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="openMap('', 'Carrer de la Marina, 212, Barcelona, Catalunya 08013, Spanien')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-lat="41.397682" data-lng="2.194255">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="billars_agbar" data-lat="41.397682" data-lng="2.194255">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Billars Agbar</h4>
                         <div class="cuisine-tag" style="background: rgba(168, 85, 247, 0.15); color: var(--accent);">🎱 Billardhalle</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de Pere IV, 29, Sexto 1a, Sant Martí, 08018 Barcelona</div>
@@ -2029,7 +2021,9 @@
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('Bunkers del Carmel', 'Carrer de la Gran Vista, 96, Horta-Guinardó, 08032 Barcelona')">🗺️ Route öffnen</button>
                     </div>
-                </div>
+                
+                        <button class="btn-visited" onclick="toggleVisited('billars_agbar')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;">📍 Als besucht markieren</button>
+                    </div>
             </div>
         </div>
 
@@ -2254,8 +2248,6 @@
                         <span class="hours-info">Mo–So: 12:00–22:00</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('99 Cheesecake', 'Carrer de la Canuda, 13, Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Canuda')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="99 Cheesecake | Canuda"></div>
                     </div>
                     <div class="card" style="background:#0f172a;" data-lat="41.387412" data-lng="2.154123">
                         <div class="cuisine-tag">🍰 Dessert</div>
@@ -2264,8 +2256,6 @@
                         <span class="hours-info">Mo–So: 12:00–22:00</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('99 Cheesecake', 'Carrer Aribau, 42, Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Aribau')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="99 Cheesecake | Aribau"></div>
                     </div>
                     <div class="card" style="background:#0f172a;" data-lat="41.403234" data-lng="2.155345">
                         <div class="cuisine-tag">🍰 Dessert</div>
@@ -2274,8 +2264,6 @@
                         <span class="hours-info">Mo–So: 12:00–22:00</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('99 Cheesecake', 'Carrer Gran de Gracia, 194, Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('99 Cheesecake | Gran de Gràcia')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="99 Cheesecake | Gran de Gràcia"></div>
                     </div>
                     <div class="card" style="background:#0f172a;" data-lat="41.380821" data-lng="2.182345">
                         <div class="cuisine-tag">🍦 Gelato</div>
@@ -2284,8 +2272,6 @@
                         <span class="hours-info">Mo–So: 13:00–00:00</span>
                         <div class="distance-live">🔍 Suche GPS...</div>
                         <button class="btn-nav-link" onclick="openMap('CAJÚ gelato', 'Carrer de Rera Palau, 9, Ciutat Vella, 08003 Barcelona')">🗺️ Route öffnen</button>
-                        <button class="btn-bewerten" onclick="openReviewModal('CAJÚ gelato')">⭐ Bewerten & Fotos</button>
-                        <div class="reviews-container" data-rest-name="CAJÚ gelato"></div>
                     </div>
                 </div>
             </div>
@@ -2517,36 +2503,6 @@
     </div>
 </div>
 
-<div id="review-modal" class="modal hidden">
-    <div class="modal-content" style="width:400px; padding: 25px; max-height:90vh; overflow-y:auto;">
-        <button class="close-modal" onclick="closeReviewModal()">✕</button>
-        <h3 id="review-modal-title" style="margin-bottom: 15px;">Bewertung abgeben</h3>
-        <input type="hidden" id="rev-rest-id">
-        <div class="rating-grid">
-            <div class="form-group" style="margin-bottom: 10px;">
-                <label style="margin-bottom: 5px;">Service (1-5):</label>
-                <input type="number" id="rev-service" min="1" max="5" value="5">
-            </div>
-            <div class="form-group" style="margin-bottom: 10px;">
-                <label style="margin-bottom: 5px;">Preis/Leistung:</label>
-                <input type="number" id="rev-pl" min="1" max="5" value="5">
-            </div>
-            <div class="form-group" style="margin-bottom: 10px;">
-                <label style="margin-bottom: 5px;">Geschmack (1-5):</label>
-                <input type="number" id="rev-taste" min="1" max="5" value="5">
-            </div>
-            <div class="form-group" style="margin-bottom: 10px;">
-                <label style="margin-bottom: 5px;">Ambiente (1-5):</label>
-                <input type="number" id="rev-amb" min="1" max="5" value="5">
-            </div>
-        </div>
-        <div class="form-group" style="margin-top: 10px; margin-bottom: 0;">
-            <label>Foto vom Essen:</label>
-            <input type="file" id="rev-img" accept="image/*">
-        </div>
-        <button onclick="saveReview()" style="margin-top:20px;">💾 Bewertung Speichern</button>
-    </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
     // ====================== NOTIZEN ======================
@@ -2693,6 +2649,7 @@
         if (tabName === 'restaurants' || tabName === 'tabak' || tabName === 'apotheke' || tabName === 'orte') {
             startLiveTracking();
             reapplySortOrder();
+            renderVisitedButtons();
         }
         if (tabName === 'chat') renderChat();
         if (tabName === 'schwimmen') renderSchwimmen();
@@ -3134,97 +3091,9 @@
     }
 
     // Funktionen für das Food Diary
-    function openReviewModal(restId) {
-        document.getElementById('rev-rest-id').value = restId;
-        document.getElementById('review-modal-title').innerText = restId + " bewerten";
-        
-        document.getElementById('rev-service').value = 5;
-        document.getElementById('rev-pl').value = 5;
-        document.getElementById('rev-taste').value = 5;
-        document.getElementById('rev-amb').value = 5;
-        document.getElementById('rev-img').value = "";
-        
-        document.getElementById('review-modal').classList.remove('hidden');
-    }
-
-    function closeReviewModal() { 
-        document.getElementById('review-modal').classList.add('hidden'); 
-    }
-
-    function saveReview() {
-        const file = document.getElementById('rev-img').files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const scale = 800 / img.width;
-                    canvas.width = 800; canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    addReviewToDb(canvas.toDataURL('image/jpeg', 0.7));
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        } else {
-            addReviewToDb(null);
-        }
-    }
-
-    function addReviewToDb(imgBase64) {
-        const restId = document.getElementById('rev-rest-id').value;
-        db.food_diary.push({
-            id: Date.now().toString(),
-            restId: restId,
-            author: currentUser,
-            timestamp: new Date().toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }),
-            ratings: { 
-                service: document.getElementById('rev-service').value,
-                pl: document.getElementById('rev-pl').value,
-                taste: document.getElementById('rev-taste').value,
-                amb: document.getElementById('rev-amb').value
-            },
-            photo: imgBase64
-        });
-        saveDB();
-        closeReviewModal();
-    }
-
-    function renderAllReviews() {
-        document.querySelectorAll('.reviews-container').forEach(container => {
-            container.innerHTML = "";
-            const restName = container.getAttribute('data-rest-name');
-            const reviews = db.food_diary.filter(r => r.restId === restName);
-            
-            if (reviews.length > 0) {
-                let html = `<h5 style="margin: 15px 0 5px 0; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 5px;">Tagebuch-Einträge:</h5>`;
-                reviews.forEach(r => {
-                    html += `
-                        <div class="review-card">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                <strong style="color: var(--primary);">${r.author}</strong>
-                                <span style="font-size: 11px; color: var(--text-muted);">${r.timestamp}</span>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px;">
-                                <span>🍽️ Geschmack: <span class="stars">${r.ratings.taste}</span></span>
-                                <span>💸 P/L: <span class="stars">${r.ratings.pl}</span></span>
-                                <span>🕴️ Service: <span class="stars">${r.ratings.service}</span></span>
-                                <span>🍷 Ambiente: <span class="stars">${r.ratings.amb}</span></span>
-                            </div>
-                            ${r.photo ? `<img src="${r.photo}">` : ''}
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-        });
-    }
-
     // Modal Close via Escape
-    document.addEventListener("keydown", function(e) { 
-        if (e.key === "Escape") { closeModal(); closeReviewModal(); } 
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") { closeModal(); }
     });
     function closeModal() { document.getElementById('receipt-modal').classList.add('hidden'); }
 
@@ -3253,6 +3122,38 @@
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon/2) * Math.sin(dLon/2);
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function toggleVisited(placeId) {
+        if (!db.visited) db.visited = {};
+        if (db.visited[placeId]) {
+            delete db.visited[placeId];
+        } else {
+            db.visited[placeId] = { by: currentUser, ts: Date.now() };
+        }
+        saveDB();
+    }
+
+    function renderVisitedButtons() {
+        document.querySelectorAll('[data-place-id]').forEach(function(card) {
+            var placeId = card.getAttribute('data-place-id');
+            var btn = card.querySelector('.btn-visited');
+            if (!btn) return;
+            var visited = db.visited && db.visited[placeId];
+            if (visited) {
+                btn.textContent = '✅ Besucht';
+                btn.style.background = 'rgba(0,255,163,.15)';
+                btn.style.color = 'var(--success)';
+                btn.style.border = '1px solid rgba(0,255,163,.35)';
+                card.style.opacity = '0.7';
+            } else {
+                btn.textContent = '📍 Als besucht markieren';
+                btn.style.background = 'rgba(255,255,255,.04)';
+                btn.style.color = 'var(--text-muted)';
+                btn.style.border = '1px solid var(--glass-border)';
+                card.style.opacity = '1';
+            }
+        });
     }
 
     function reapplySortOrder() {
@@ -3350,8 +3251,8 @@
     function updateUI() {
         if (!currentUser) return;
         normalizeDB();
-
-        const creditsList = document.getElementById('my-credits-list');
+        if (!db.visited) db.visited = {};
+        renderVisitedButtons();
         const debtsList = document.getElementById('my-debts-list');
         const historyList = document.getElementById('personal-history');
         
@@ -3509,7 +3410,6 @@
         if (schwTab && schwTab.classList.contains('active')) renderSchwimmen();
 
         // Bewertungen für alle Restaurants laden
-        renderAllReviews();
     }
 
     // ================= FIN STATS =================
