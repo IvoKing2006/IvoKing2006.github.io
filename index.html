@@ -3437,12 +3437,13 @@
         db.expenses.forEach(exp => {
             if (_expenseTab === 'vororte' && isFixkosten(exp.purpose)) return;
             if (exp.payer === currentUser) {
-                const myPart = exp.participants.includes(currentUser) ? exp.shareAmount : exp.totalAmount;
-                totalOwnCost += myPart;
+                const istVorgelegt = !exp.participants.includes(currentUser);
+                const myPart = istVorgelegt ? 0 : exp.shareAmount;
+                if (!istVorgelegt) totalOwnCost += myPart;
+
                 const hasReceipt = exp.personalNote || exp.personalImage;
                 const receiptButton = hasReceipt ? `<button class="btn-receipt-view" onclick="openReceiptModal('${exp.id}')">📄 Beleg</button>` : '';
 
-                // Rückzahlungen der anderen anzeigen
                 const othersInfo = exp.participants
                     .filter(p => p !== currentUser)
                     .map(p => {
@@ -3458,8 +3459,17 @@
                     .filter(Boolean)
                     .join(' · ');
 
-                const rueckInfo = othersInfo ? `<span class="meta-info">Zurückbekommen: ${othersInfo}</span>` : '';
-                historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span><button onclick="openEditExpense('${exp.id}')" style="background:none;border:1px solid rgba(0,212,255,0.4);color:var(--primary);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe bearbeiten">✏️</button><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
+                const rueckInfo = othersInfo ? `<span class="meta-info">${istVorgelegt ? 'Status' : 'Zurückbekommen'}: ${othersInfo}</span>` : '';
+
+                const amountLabel = istVorgelegt
+                    ? `<span class="amount-tag" style="background:rgba(255,190,11,.15);color:var(--warning);border:1px solid rgba(255,190,11,.3);">vorgelegt: ${exp.totalAmount.toFixed(2)} €</span>`
+                    : `<span class="amount-tag amount-danger">-${myPart.toFixed(2)} €</span>`;
+
+                const metaText = istVorgelegt
+                    ? `Vorgelegt für: ${exp.participants.join(', ')} | Gesamt: ${exp.totalAmount.toFixed(2)}€ | 🕐 ${exp.timestamp || ""}`
+                    : `Du bezahlt. Gesamt: ${exp.totalAmount.toFixed(2)}€ | Geteilt mit: ${exp.participants.join(', ')} | 🕐 ${exp.timestamp || ""}`;
+
+                historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">${metaText}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${amountLabel}<button onclick="openEditExpense('${exp.id}')" style="background:none;border:1px solid rgba(0,212,255,0.4);color:var(--primary);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe bearbeiten">✏️</button><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
             } else if (exp.participants.includes(currentUser)) {
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
                 if (associatedDebt && associatedDebt.resolved) {
