@@ -3570,6 +3570,7 @@
         const totals = {};
         ALL_USERS.forEach(u => totals[u] = 0);
         db.expenses.forEach(exp => {
+            if (isFixkosten(exp.purpose)) return;
             const payerShare = exp.participants.includes(exp.payer) ? exp.shareAmount : exp.totalAmount;
             totals[exp.payer] = (totals[exp.payer] || 0) + payerShare;
             exp.participants.forEach(p => {
