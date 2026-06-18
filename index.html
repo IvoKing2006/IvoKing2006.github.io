@@ -3365,8 +3365,15 @@
 
                 historyList.innerHTML += `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><strong>${exp.purpose}</strong> (${exp.method}) ${receiptButton}<span class="meta-info">${metaText}</span>${rueckInfo}</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${amountLabel}<button onclick="openEditExpense('${exp.id}')" style="background:none;border:1px solid rgba(0,212,255,0.4);color:var(--primary);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe bearbeiten">✏️</button><button onclick="deleteExpense('${exp.id}')" style="background:none;border:1px solid rgba(255,77,109,0.4);color:var(--danger);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;width:auto;box-shadow:none;flex-shrink:0;" title="Ausgabe löschen">🗑️</button></div></li>`;
             } else if (exp.participants.includes(currentUser)) {
-                if (!exp.participants.includes(exp.payer)) return; // Vorgelegt — nicht als Ausgabe zählen
                 const associatedDebt = db.debts.find(d => d.expenseId === exp.id && d.from === currentUser);
+                if (!exp.participants.includes(exp.payer)) {
+                    // Vorgelegt — nur anzeigen wenn Schuld beglichen (Rückzahlung)
+                    if (associatedDebt && associatedDebt.resolved) {
+                        const resolvedMethod = associatedDebt.resolvedMethod || exp.method;
+                        historyList.innerHTML += `<li><div><strong>💸 Rückzahlung an ${exp.payer}</strong> (${resolvedMethod})<span class="meta-info">Vorgestrecktes Geld zurückgezahlt | 🕐 ${exp.timestamp || ""}</span></div><span class="amount-tag" style="background:rgba(255,190,11,.15);color:var(--warning);border:1px solid rgba(255,190,11,.3);">zurückgezahlt: ${exp.totalAmount.toFixed(2)} €</span></li>`;
+                    }
+                    return;
+                }
                 if (associatedDebt && associatedDebt.resolved) {
                     totalOwnCost += exp.shareAmount;
                     const resolvedMethod = associatedDebt.resolvedMethod || exp.method;
