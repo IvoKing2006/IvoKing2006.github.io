@@ -1085,7 +1085,16 @@
             <!-- TAXI PREISRECHNER -->
             <div class="card" style="border-top:4px solid var(--warning);">
                 <h3>🧮 Taxi-Preisrechner</h3>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Offizielle AMB-Tarife 2025. Berechnung vom aktuellen GPS-Standort zum Ziel.</p>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Offizielle AMB-Tarife 2025. Wähle deinen Startpunkt und gib das Ziel ein.</p>
+
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label style="display:block;margin-bottom:6px;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Startpunkt</label>
+                    <div style="display:flex;gap:8px;margin-bottom:8px;">
+                        <button id="taxi-start-gps-btn" onclick="taxiSelectStart('gps')" style="flex:1;padding:10px;font-size:13px;font-weight:700;background:linear-gradient(135deg,rgba(0,212,255,.25),rgba(0,150,200,.2));color:var(--primary);border:1px solid rgba(0,212,255,.4);box-shadow:none;">📍 Aktueller Standort</button>
+                        <button id="taxi-start-manual-btn" onclick="taxiSelectStart('manual')" style="flex:1;padding:10px;font-size:13px;font-weight:700;background:rgba(255,255,255,.04);color:var(--text-muted);border:1px solid var(--glass-border);box-shadow:none;">✏️ Manuell eingeben</button>
+                    </div>
+                    <input type="text" id="taxi-start-input" placeholder="z.B. Barceloneta Beach, Barcelona" style="display:none;width:100%;margin-top:4px;">
+                </div>
 
                 <div class="form-group">
                     <label>Ziel eingeben</label>
@@ -3741,6 +3750,33 @@
         }, 480);
     }
 
+    var _taxiStartMode = 'gps'; // 'gps' oder 'manual'
+
+    function taxiSelectStart(mode) {
+        _taxiStartMode = mode;
+        var gpsBtn = document.getElementById('taxi-start-gps-btn');
+        var manualBtn = document.getElementById('taxi-start-manual-btn');
+        var manualInput = document.getElementById('taxi-start-input');
+        if (mode === 'gps') {
+            gpsBtn.style.background = 'linear-gradient(135deg,rgba(0,212,255,.25),rgba(0,150,200,.2))';
+            gpsBtn.style.color = 'var(--primary)';
+            gpsBtn.style.border = '1px solid rgba(0,212,255,.4)';
+            manualBtn.style.background = 'rgba(255,255,255,.04)';
+            manualBtn.style.color = 'var(--text-muted)';
+            manualBtn.style.border = '1px solid var(--glass-border)';
+            manualInput.style.display = 'none';
+        } else {
+            manualBtn.style.background = 'linear-gradient(135deg,rgba(0,212,255,.25),rgba(0,150,200,.2))';
+            manualBtn.style.color = 'var(--primary)';
+            manualBtn.style.border = '1px solid rgba(0,212,255,.4)';
+            gpsBtn.style.background = 'rgba(255,255,255,.04)';
+            gpsBtn.style.color = 'var(--text-muted)';
+            gpsBtn.style.border = '1px solid var(--glass-border)';
+            manualInput.style.display = 'block';
+            manualInput.focus();
+        }
+    }
+
     function taxiBerechnen() {
         var dest = document.getElementById('taxi-dest').value.trim();
         var taxiType = document.getElementById('taxi-type').value;
@@ -3754,14 +3790,9 @@
         if (!dest) { errorEl.style.display='block'; errorEl.textContent='Bitte ein Ziel eingeben.'; return; }
         errorEl.style.display = 'none';
         resultEl.style.display = 'block';
-        resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">📍 GPS wird ermittelt...</div>';
 
-        navigator.geolocation.getCurrentPosition(function(pos) {
-            var userLat = pos.coords.latitude;
-            var userLng = pos.coords.longitude;
+        function berechnenMitStart(userLat, userLng, startLabel) {
             resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Ziel wird gesucht...</div>';
-
-            // Nominatim Geocoding (kein API Key nötig)
             var query = encodeURIComponent(dest + ', Barcelona');
             fetch('https://nominatim.openstreetmap.org/search?q=' + query + '&format=json&limit=1&countrycodes=es')
                 .then(function(r){ return r.json(); })
@@ -3776,18 +3807,14 @@
                     var destLng = parseFloat(data[0].lon);
                     var destName = data[0].display_name;
 
-                    // Luftlinien-Distanz (Haversine) × 1.35 Faktor für Straßen
                     var R = 6371;
                     var dLat = (destLat - userLat) * Math.PI / 180;
                     var dLon = (destLng - userLng) * Math.PI / 180;
                     var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(userLat*Math.PI/180)*Math.cos(destLat*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
                     var luftlinie = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                    var distanceKm = luftlinie * 1.35; // Straßen-Faktor
-
-                    // Fahrzeit schätzen: ~25 km/h Durchschnitt in Barcelona
+                    var distanceKm = luftlinie * 1.35;
                     var durationMin = Math.ceil((distanceKm / 25) * 60);
 
-                    // Tarif bestimmen
                     var now = new Date();
                     var h = now.getHours();
                     var day = now.getDay();
@@ -3801,15 +3828,11 @@
                     var kmPreis = isT2 ? 1.62 : 1.32;
                     var preis = 2.75 + (distanceKm * kmPreis);
 
-                    // Zuschläge
-                    var zuschläge = 0;
                     var zuschlagTexte = [];
-                    if (taxiType === 'van') { zuschläge += 4.50; zuschlagTexte.push('Van +4,50€'); }
-                    if (flughafen) { zuschläge += 4.50; zuschlagTexte.push('Flughafen +4,50€'); }
-                    if (sants) { zuschläge += 2.50; zuschlagTexte.push('Sants +2,50€'); }
-                    if (fira) { zuschläge += 3.30; zuschlagTexte.push('Fira +3,30€'); }
-                    preis += zuschläge;
-
+                    if (taxiType === 'van') { preis += 4.50; zuschlagTexte.push('Van +4,50€'); }
+                    if (flughafen) { preis += 4.50; zuschlagTexte.push('Flughafen +4,50€'); }
+                    if (sants) { preis += 2.50; zuschlagTexte.push('Sants +2,50€'); }
+                    if (fira) { preis += 3.30; zuschlagTexte.push('Fira +3,30€'); }
                     if (flughafen && preis < 21) preis = 21;
                     if (preis < 8.00) preis = 8.00;
 
@@ -3818,7 +3841,8 @@
 
                     resultEl.innerHTML =
                         '<div style="background:linear-gradient(135deg,rgba(255,190,11,.12),rgba(255,140,0,.08));border:1px solid rgba(255,190,11,.3);border-radius:14px;padding:18px;margin-top:4px;">' +
-                        '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 ' + destName.split(',').slice(0,3).join(',') + '</div>' +
+                        '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">🚀 Von: ' + startLabel + '</div>' +
+                        '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 Nach: ' + destName.split(',').slice(0,3).join(',') + '</div>' +
                         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">' +
                             '<div><div style="font-size:12px;color:var(--text-muted);">Strecke (ca.)</div><div style="font-size:20px;font-weight:800;color:var(--text-main);">' + distanceKm.toFixed(1) + ' km</div></div>' +
                             '<div><div style="font-size:12px;color:var(--text-muted);">Fahrzeit (ca.)</div><div style="font-size:20px;font-weight:800;color:var(--text-main);">~' + durationMin + ' Min</div></div>' +
@@ -3827,7 +3851,7 @@
                         '<div style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">' +
                             '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">' + (isT2 ? '🌙 T2 Nachttarif' : '☀️ T1 Tagtarif') + '</span>' +
                             '<span style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:6px;padding:3px 8px;color:var(--text-muted);">2,75€ + ' + distanceKm.toFixed(1) + 'km × ' + kmPreis + '€</span>' +
-                            (zuschlagTexte.map(function(z){ return '<span style="background:rgba(255,190,11,.1);border:1px solid rgba(255,190,11,.3);border-radius:6px;padding:3px 8px;color:var(--warning);">' + z + '</span>'; }).join('')) +
+                            zuschlagTexte.map(function(z){ return '<span style="background:rgba(255,190,11,.1);border:1px solid rgba(255,190,11,.3);border-radius:6px;padding:3px 8px;color:var(--warning);">' + z + '</span>'; }).join('') +
                         '</div>' +
                         '<div style="margin-top:10px;font-size:11px;color:var(--text-muted);">⚠️ Schätzung auf Basis offizieller AMB-Tarife 2025. Stau & Wartezeit können den Preis erhöhen.</div>' +
                         '</div>';
@@ -3837,11 +3861,38 @@
                     errorEl.style.display = 'block';
                     errorEl.textContent = '❌ Fehler bei der Suche. Bitte Internetverbindung prüfen.';
                 });
-        }, function() {
-            resultEl.innerHTML = '';
-            errorEl.style.display = 'block';
-            errorEl.textContent = '❌ GPS nicht verfügbar. Bitte GPS-Zugriff erlauben.';
-        }, { enableHighAccuracy: true, timeout: 8000 });
+        }
+
+        if (_taxiStartMode === 'manual') {
+            var startAdresse = document.getElementById('taxi-start-input').value.trim();
+            if (!startAdresse) { errorEl.style.display='block'; errorEl.textContent='Bitte Startpunkt eingeben.'; return; }
+            resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Startpunkt wird gesucht...</div>';
+            fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(startAdresse + ', Barcelona') + '&format=json&limit=1&countrycodes=es')
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    if (!data || data.length === 0) {
+                        resultEl.innerHTML = '';
+                        errorEl.style.display = 'block';
+                        errorEl.textContent = '❌ Startpunkt nicht gefunden. Bitte genauer eingeben.';
+                        return;
+                    }
+                    berechnenMitStart(parseFloat(data[0].lat), parseFloat(data[0].lon), data[0].display_name.split(',').slice(0,2).join(','));
+                })
+                .catch(function() {
+                    resultEl.innerHTML = '';
+                    errorEl.style.display = 'block';
+                    errorEl.textContent = '❌ Fehler bei der Suche. Bitte Internetverbindung prüfen.';
+                });
+        } else {
+            resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">📍 GPS wird ermittelt...</div>';
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                berechnenMitStart(pos.coords.latitude, pos.coords.longitude, 'Aktueller Standort');
+            }, function() {
+                resultEl.innerHTML = '';
+                errorEl.style.display = 'block';
+                errorEl.textContent = '❌ GPS nicht verfügbar. Bitte GPS-Zugriff erlauben oder Startpunkt manuell eingeben.';
+            }, { enableHighAccuracy: true, timeout: 8000 });
+        }
     }
 
     var COCKTAILS = [
