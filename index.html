@@ -7054,30 +7054,6 @@
             });
         }
 
-        // ── FISH SCHOOL (tiny fish moving together) ──
-        var school = [];
-        var schoolCenter = { x: W * 0.3, y: H * 0.35, vx: 0.4, vy: 0.1 };
-        for (var sf = 0; sf < 30; sf++) {
-            school.push({
-                ox: (Math.random() - 0.5) * 80,
-                oy: (Math.random() - 0.5) * 40,
-                phase: Math.random() * Math.PI * 2,
-            });
-        }
-
-        // ── JELLYFISH ──
-        var jellies = [];
-        for (var j = 0; j < 4; j++) {
-            jellies.push({
-                x: Math.random() * W,
-                y: H * 0.1 + Math.random() * H * 0.5,
-                r: 18 + Math.random() * 22,
-                phase: Math.random() * Math.PI * 2,
-                speed: 0.12 + Math.random() * 0.18,
-                color: ['rgba(180,100,255,', 'rgba(100,200,255,', 'rgba(255,150,200,', 'rgba(100,255,200,'][j % 4],
-                drift: (Math.random() - 0.5) * 0.15,
-            });
-        }
 
         // ── BUBBLES ──
         var bubbles = [];
@@ -7200,35 +7176,6 @@
             ctx.restore();
         }
 
-        // ── DRAW JELLYFISH ──
-        function drawJellyfish(j, ts) {
-            ctx.save();
-            var pulse = Math.sin(ts * 0.001 + j.phase) * 0.15 + 0.85;
-            ctx.globalAlpha = 0.18 + Math.sin(ts * 0.0008 + j.phase) * 0.06;
-            ctx.translate(j.x, j.y);
-            // Bell
-            ctx.beginPath();
-            ctx.ellipse(0, 0, j.r * pulse, j.r * 0.65 * pulse, 0, Math.PI, 0);
-            var jGrad = ctx.createRadialGradient(0, -j.r * 0.2, 0, 0, 0, j.r);
-            jGrad.addColorStop(0, j.color + '0.9)');
-            jGrad.addColorStop(1, j.color + '0.1)');
-            ctx.fillStyle = jGrad;
-            ctx.shadowColor = j.color + '1)';
-            ctx.shadowBlur = 20;
-            ctx.fill();
-            // Tentacles
-            ctx.shadowBlur = 8;
-            for (var t = -3; t <= 3; t++) {
-                ctx.beginPath();
-                ctx.moveTo(t * j.r * 0.28, 0);
-                var tx = t * j.r * 0.28 + Math.sin(ts * 0.0015 + j.phase + t) * 8;
-                ctx.bezierCurveTo(tx - 5, j.r * 0.6, tx + 5, j.r * 1.2, tx, j.r * 1.6);
-                ctx.strokeStyle = j.color + '0.5)';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
 
         // ── DRAW SEAWEED ──
         function drawSeaweed(sw, ts) {
@@ -7364,15 +7311,6 @@
                 ctx.fill();
             });
 
-            // ── JELLYFISH ──
-            jellies.forEach(function(j) {
-                j.y -= j.speed * dt * 0.03;
-                j.x += j.drift;
-                if (j.y < -j.r * 2) { j.y = H + j.r; j.x = Math.random() * W; }
-                if (j.x < -j.r) j.x = W + j.r;
-                if (j.x > W + j.r) j.x = -j.r;
-                drawJellyfish(j, ts);
-            });
 
             // ── CORALS ──
             corals.forEach(function(co) { drawCoral(co, ts); });
@@ -7408,28 +7346,6 @@
                 ctx.restore();
             });
 
-            // ── FISH SCHOOL ──
-            schoolCenter.x += schoolCenter.vx * dt * 0.04;
-            schoolCenter.y += Math.sin(ts * 0.0003) * 0.3;
-            if (schoolCenter.x > W + 100) { schoolCenter.x = -100; schoolCenter.y = H * 0.2 + Math.random() * H * 0.5; }
-            school.forEach(function(sf) {
-                var sx = schoolCenter.x + sf.ox + Math.sin(ts * 0.002 + sf.phase) * 6;
-                var sy = schoolCenter.y + sf.oy + Math.cos(ts * 0.0015 + sf.phase) * 4;
-                ctx.save();
-                ctx.globalAlpha = 0.22;
-                ctx.translate(sx, sy);
-                ctx.beginPath();
-                ctx.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI * 2);
-                ctx.fillStyle = '#38bdf8';
-                ctx.shadowColor = '#38bdf8';
-                ctx.shadowBlur = 6;
-                ctx.fill();
-                // tiny tail
-                ctx.beginPath();
-                ctx.moveTo(-4, 0); ctx.lineTo(-7, -2.5); ctx.lineTo(-7, 2.5);
-                ctx.closePath(); ctx.fillStyle = '#0369a1'; ctx.fill();
-                ctx.restore();
-            });
 
             // ── MAIN FISH ──
             fishes.sort(function(a,b){ return a.depth - b.depth; });
