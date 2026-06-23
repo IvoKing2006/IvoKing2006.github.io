@@ -2436,7 +2436,6 @@
                 <button id="subtab-zufall" class="subnav-btn active" onclick="switchSubTab('spiele', 'zufall')">🎲 Zufall</button>
                 <button id="subtab-cocktail" class="subnav-btn" onclick="switchSubTab('spiele', 'cocktail')">🍹 Cocktail</button>
                 <button id="subtab-schwimmen" class="subnav-btn" onclick="switchSubTab('spiele', 'schwimmen')">🃏 Schwimmen</button>
-                <button id="subtab-blackjack" class="subnav-btn" onclick="switchSubTab('spiele', 'blackjack')">🃏 Blackjack</button>
 
                 <button id="subtab-poker" class="subnav-btn" onclick="switchSubTab('spiele', 'poker')">♠️ Poker</button>
                 <button id="subtab-shirttausch" class="subnav-btn" onclick="switchSubTab('spiele', 'shirttausch')">👕 Shirt-Tausch</button>
@@ -2478,43 +2477,6 @@
         </div>
 
         <!-- BLACKJACK -->
-        <div id="content-blackjack" class="subtab-content hidden">
-            <div class="card" style="border-top:4px solid var(--success);">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                    <h3 style="margin:0;">🃏 Blackjack</h3>
-                    <div style="background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.3);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--success);">💰 <span id="bj-balance">0</span> €</div>
-                </div>
-                <div id="bj-dealer-area" style="margin-bottom:16px;">
-                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Dealer</div>
-                    <div id="bj-dealer-cards" style="display:flex;gap:8px;flex-wrap:wrap;min-height:80px;align-items:center;"></div>
-                    <div id="bj-dealer-score" style="font-size:13px;color:var(--text-muted);margin-top:6px;"></div>
-                </div>
-                <div id="bj-player-area" style="margin-bottom:16px;">
-                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Du</div>
-                    <div id="bj-player-cards" style="display:flex;gap:8px;flex-wrap:wrap;min-height:80px;align-items:center;"></div>
-                    <div id="bj-player-score" style="font-size:13px;color:var(--text-muted);margin-top:6px;"></div>
-                </div>
-                <div id="bj-message" style="text-align:center;font-size:16px;font-weight:700;margin-bottom:14px;min-height:24px;"></div>
-                <div id="bj-bet-area" style="margin-bottom:14px;">
-                    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">Einsatz (€)</label>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-                        <button onclick="bjSetBet(5)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">5</button>
-                        <button onclick="bjSetBet(10)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">10</button>
-                        <button onclick="bjSetBet(25)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">25</button>
-                        <button onclick="bjSetBet(50)" style="width:auto;padding:6px 14px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-main);box-shadow:none;">50</button>
-                        <input type="number" id="bj-bet-input" min="1" placeholder="Betrag" style="width:90px;padding:6px 10px;font-size:13px;">
-                    </div>
-                </div>
-                <div id="bj-actions" style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button id="bj-deal-btn" onclick="bjDeal()" style="flex:1;background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">🃏 Karten geben</button>
-                    <button id="bj-hit-btn" onclick="bjHit()" style="flex:1;display:none;">➕ Karte</button>
-                    <button id="bj-stand-btn" onclick="bjStand()" style="flex:1;display:none;">✋ Halten</button>
-                </div>
-                <div id="bj-broke-area" style="display:none;margin-top:14px;"></div>
-            </div>
-        </div>
-
-        <!-- ROULETTE -->
         <!-- POKER -->
         <div id="content-poker" class="subtab-content hidden">
             <div class="card" style="border-top:4px solid var(--accent);">
@@ -4628,122 +4590,11 @@
         setCasinoBalance(currentUser, 150);
         var el = document.getElementById(areaId);
         if (el) el.style.display = 'none';
-        if (game === 'bj') bjUpdateUI();
         if (game === 'pk') pkUpdateUI();
         showNotif('💰 Guthaben aufgeladen', '150€ Startguthaben erhalten!', 'success', 3000);
     }
 
     // ══════════════ BLACKJACK ══════════════
-    var bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjBet = 0, bjGameActive = false;
-    var SUITS = ['♠','♥','♦','♣'];
-    var VALUES = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-
-    function bjNewDeck() {
-        var d = [];
-        SUITS.forEach(function(s){ VALUES.forEach(function(v){ d.push({v:v,s:s}); }); });
-        for(var i=d.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=d[i];d[i]=d[j];d[j]=t;}
-        return d;
-    }
-
-    function bjCardValue(card) {
-        if (['J','Q','K'].includes(card.v)) return 10;
-        if (card.v === 'A') return 11;
-        return parseInt(card.v);
-    }
-
-    function bjHandValue(hand) {
-        var total = 0, aces = 0;
-        hand.forEach(function(c){ total += bjCardValue(c); if(c.v==='A') aces++; });
-        while(total > 21 && aces > 0){ total -= 10; aces--; }
-        return total;
-    }
-
-    function bjUpdateUI() {
-        var bal = getCasinoBalance(currentUser);
-        document.getElementById('bj-balance').textContent = bal.toFixed(2);
-        if (bal <= 0 && !bjGameActive) {
-            showBrokeArea('bj-broke-area', 'bj');
-        }
-    }
-
-    function bjSetBet(amount) {
-        document.getElementById('bj-bet-input').value = amount;
-    }
-
-    function bjRenderCards(hand, elId, hideFirst) {
-        var el = document.getElementById(elId);
-        el.innerHTML = hand.map(function(c, i) {
-            if (hideFirst && i === 0) return cardBack();
-            return casinoCard(c.v, c.s);
-        }).join('');
-    }
-
-    function bjDeal() {
-        var betInput = document.getElementById('bj-bet-input');
-        bjBet = parseFloat(betInput.value) || 0;
-        var bal = getCasinoBalance(currentUser);
-        if (bjBet <= 0) { document.getElementById('bj-message').textContent = 'Bitte Einsatz eingeben!'; return; }
-        if (bjBet > bal) { document.getElementById('bj-message').textContent = 'Nicht genug Guthaben!'; return; }
-
-        bjDeck = bjNewDeck();
-        bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
-        bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
-        bjGameActive = true;
-
-        bjRenderCards(bjPlayerHand, 'bj-player-cards');
-        bjRenderCards(bjDealerHand, 'bj-dealer-cards', true);
-        document.getElementById('bj-player-score').textContent = 'Punkte: '+bjHandValue(bjPlayerHand);
-        document.getElementById('bj-dealer-score').textContent = 'Punkte: ?';
-        document.getElementById('bj-message').textContent = '';
-        document.getElementById('bj-deal-btn').style.display = 'none';
-        document.getElementById('bj-hit-btn').style.display = 'block';
-        document.getElementById('bj-stand-btn').style.display = 'block';
-        document.getElementById('bj-bet-area').style.opacity = '0.5';
-        document.getElementById('bj-broke-area').style.display = 'none';
-
-        if (bjHandValue(bjPlayerHand) === 21) bjStand();
-    }
-
-    function bjHit() {
-        bjPlayerHand.push(bjDeck.pop());
-        bjRenderCards(bjPlayerHand, 'bj-player-cards');
-        var score = bjHandValue(bjPlayerHand);
-        document.getElementById('bj-player-score').textContent = 'Punkte: '+score;
-        if (score > 21) bjEndGame('bust');
-    }
-
-    function bjStand() {
-        // Dealer draws until 17+
-        while(bjHandValue(bjDealerHand) < 17) bjDealerHand.push(bjDeck.pop());
-        bjRenderCards(bjDealerHand, 'bj-dealer-cards');
-        var ds = bjHandValue(bjDealerHand);
-        var ps = bjHandValue(bjPlayerHand);
-        document.getElementById('bj-dealer-score').textContent = 'Punkte: '+ds;
-        if (ds > 21) bjEndGame('dealer_bust');
-        else if (ps > ds) bjEndGame('win');
-        else if (ps < ds) bjEndGame('lose');
-        else bjEndGame('push');
-    }
-
-    function bjEndGame(result) {
-        bjGameActive = false;
-        var bal = getCasinoBalance(currentUser);
-        var msg = '', color = '';
-        if (result === 'bust') { msg = '💥 Bust! Du verlierst '+bjBet+'€'; color = 'var(--danger)'; setCasinoBalance(currentUser, bal - bjBet); }
-        else if (result === 'dealer_bust') { msg = '🎉 Dealer Bust! Du gewinnst '+bjBet+'€'; color = 'var(--success)'; setCasinoBalance(currentUser, bal + bjBet); }
-        else if (result === 'win') { msg = '🏆 Gewonnen! Du gewinnst '+bjBet+'€'; color = 'var(--success)'; setCasinoBalance(currentUser, bal + bjBet); }
-        else if (result === 'lose') { msg = '😞 Verloren! Du verlierst '+bjBet+'€'; color = 'var(--danger)'; setCasinoBalance(currentUser, bal - bjBet); }
-        else { msg = '🤝 Unentschieden – Einsatz zurück'; color = 'var(--warning)'; }
-        var msgEl = document.getElementById('bj-message');
-        msgEl.textContent = msg; msgEl.style.color = color;
-        bjRenderCards(bjDealerHand, 'bj-dealer-cards');
-        document.getElementById('bj-hit-btn').style.display = 'none';
-        document.getElementById('bj-stand-btn').style.display = 'none';
-        document.getElementById('bj-deal-btn').style.display = 'block';
-        document.getElementById('bj-deal-btn').textContent = '🃏 Neue Runde';
-        document.getElementById('bj-bet-area').style.opacity = '1';
-        bjUpdateUI();
-    }
 
     // ══════════════ POKER (Texas Hold'em) ══════════════
 
@@ -5236,7 +5087,6 @@
 
 
     function initCasino() {
-        bjUpdateUI();
         pkUpdateUI();
     }
 
