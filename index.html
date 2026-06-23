@@ -5439,22 +5439,27 @@
             target = filteredTargets[Math.floor(Math.random() * filteredTargets.length)];
         }
 
-        // Find target index on wheel
+        // Find target index on wheel and calculate correct rotation
         var targetIdx = SHIRT_PLAYERS.indexOf(target);
         var sliceAngle = (Math.PI * 2) / SHIRT_PLAYERS.length;
-        // Pointer at top = -PI/2. Slice center must land there.
-        // shirtAngle + targetIdx * sliceAngle + sliceAngle/2 = -PI/2
-        var desiredAngle = -Math.PI/2 - targetIdx * sliceAngle - sliceAngle/2;
-        var spins = 6 + Math.random() * 3;
-        var currentNorm = ((shirtAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
-        var desiredNorm = ((desiredAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
-        var diff = desiredNorm - currentNorm;
-        if (diff > 0) diff -= Math.PI*2;
+        // Pointer is at top (-PI/2). We need the center of target slice to land there.
+        // After rotation: shirtAngle + targetIdx * sliceAngle + sliceAngle/2 = -PI/2 + k*2PI
+        // So: targetAngle = -PI/2 - targetIdx * sliceAngle - sliceAngle/2
+        var targetAngle = -Math.PI/2 - targetIdx * sliceAngle - sliceAngle/2;
+        // Add random offset within slice to look natural (but stay within slice)
+        targetAngle += (Math.random() - 0.5) * sliceAngle * 0.5;
+        var spins = 6 + Math.floor(Math.random() * 4);
+        // Calculate how much to rotate from current angle
+        var diff = targetAngle - shirtAngle;
+        // Normalize to go backwards (clockwise = positive in canvas)
+        diff = ((diff % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+        if (diff < Math.PI * 0.1) diff += Math.PI * 2;
         var totalRotation = spins * Math.PI * 2 + diff;
 
         shirtSpinning = true;
         document.getElementById('shirt-result').textContent = '🌀 dreht...';
         var startAngle = shirtAngle;
+        var endAngle = shirtAngle + totalRotation;
         var duration = 4000;
         var startTime = null;
 
@@ -5467,8 +5472,8 @@
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
+                shirtAngle = endAngle;
                 shirtSpinning = false;
-                // Save result
                 if (!db.shirttausch) db.shirttausch = { results: {}, order: [] };
                 db.shirttausch.results[currentUser] = target;
                 saveDB();
