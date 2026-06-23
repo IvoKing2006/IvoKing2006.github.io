@@ -5398,19 +5398,12 @@
             return;
         }
 
-        var next = remaining[0];
-        if (btnEl) btnEl.style.display = 'block';
-
         if (results[currentUser]) {
             el.innerHTML = '✅ Du hast bereits gedreht. Warte auf die anderen...';
             if (btnEl) btnEl.style.display = 'none';
-        } else if (currentUser === next || remaining.includes(currentUser)) {
-            if (currentUser === next) {
-                el.innerHTML = '<strong style="color:var(--primary);">👕 Du bist dran! Dreh das Rad!</strong>';
-            } else {
-                el.innerHTML = 'Warte... <strong style="color:var(--warning);">' + next + '</strong> ist gerade dran.';
-                if (btnEl) btnEl.style.display = 'none';
-            }
+        } else {
+            el.innerHTML = '<strong style="color:var(--primary);">👕 Dreh das Rad!</strong> Noch <strong>' + remaining.length + '</strong> ausstehend.';
+            if (btnEl) btnEl.style.display = 'block';
         }
     }
 
@@ -5420,12 +5413,6 @@
 
         if (results[currentUser]) {
             showNotif('ℹ️', 'Du hast bereits gedreht!', 'warning', 2000);
-            return;
-        }
-
-        var remaining = shirtGetRemaining();
-        if (remaining[0] !== currentUser) {
-            showNotif('⏳', remaining[0] + ' muss zuerst drehen!', 'warning', 2000);
             return;
         }
 
