@@ -3180,6 +3180,23 @@
         saveDB();
     }
 
+    function editPackItem(user, itemId) {
+        if (user !== currentUser) return;
+        if (!Array.isArray(db.packing[user])) db.packing[user] = Object.values(db.packing[user] || {});
+        const item = db.packing[user].find(i => i.id === itemId);
+        if (!item) return;
+        const newName = prompt('Name des Gegenstands:', item.name);
+        if (newName === null) return;
+        const trimmedName = newName.trim();
+        if (!trimmedName) return;
+        const newWeightRaw = prompt('Gewicht in kg (z.B. 0.3):', item.weight || '');
+        if (newWeightRaw === null) return;
+        const newWeight = parseFloat(newWeightRaw.replace(',', '.')) || 0;
+        item.name = trimmedName;
+        item.weight = newWeight;
+        saveDB();
+    }
+
     function resetAllData() {
         if (currentUser !== "Ivo") return;
         if (confirm("Möchtest du wirklich ALLE Daten löschen?")) {
@@ -3475,6 +3492,7 @@
                             ${isMe ? `<div style="display:flex;gap:3px;align-items:center;">
                                 <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
                                 <button onclick="movePackItem('${user}','${item.id}','${cat}',1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isLast?'0.3':'1'};cursor:${isLast?'default':'pointer'};" ${isLast?'disabled':''}>▼</button>
+                                <button onclick="editPackItem('${user}','${item.id}')" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;">✏️</button>
                                 <button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>
                             </div>` : ''}
                         </div>`;
