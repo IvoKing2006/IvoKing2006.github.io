@@ -3147,13 +3147,49 @@
         if (user !== currentUser) return;
         if (!Array.isArray(db.packing[user])) db.packing[user] = Object.values(db.packing[user] || {});
         const item = db.packing[user].find(i => i.id === itemId);
-        if (item) { item.checked = !item.checked; saveDB(); }
+        if (!item) return;
+        if (!item.checked) {
+            // Wird gerade abgehakt -> erst fragen, wo es eingepackt wird
+            askPackContainer(item);
+        } else {
+            // Wird gerade abgewählt -> einfach zurücksetzen
+            item.checked = false;
+            item.container = null;
+            saveDB();
+        }
+    }
+
+    function askPackContainer(item) {
+        updateUI(); // Checkbox visuell zurücksetzen, bis eine Wahl getroffen wurde
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+        modal.innerHTML = `<div style="background:#1e293b;border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center;">
+                <h3 style="margin:0 0 8px;color:#f8fafc;">📦 Wohin gepackt?</h3>
+                <p style="color:#94a3b8;font-size:14px;margin:0 0 20px;"><strong style="color:#f8fafc;">${item.name}</strong></p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button onclick="confirmPackContainer('${item.id}','rucksack', this.closest('div').parentElement.parentElement)" style="flex:1;background:linear-gradient(135deg,#38bdf8,#0284c7);border:none;padding:12px;border-radius:10px;color:white;font-size:15px;font-weight:700;cursor:pointer;">🎒 Rucksack</button>
+                    <button onclick="confirmPackContainer('${item.id}','koffer', this.closest('div').parentElement.parentElement)" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;padding:12px;border-radius:10px;color:white;font-size:15px;font-weight:700;cursor:pointer;">🧳 Handkoffer</button>
+                </div>
+                <button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;background:#334155;border:none;padding:8px 16px;border-radius:8px;color:#94a3b8;font-size:13px;cursor:pointer;width:auto;box-shadow:none;">Abbrechen</button>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
+    function confirmPackContainer(itemId, container, modal) {
+        if (!Array.isArray(db.packing[currentUser])) db.packing[currentUser] = Object.values(db.packing[currentUser] || {});
+        const item = db.packing[currentUser].find(i => i.id === itemId);
+        if (item) {
+            item.checked = true;
+            item.container = container;
+            saveDB();
+        }
+        modal.remove();
     }
 
     function resetPackChecks() {
         if (!db.packing || !Array.isArray(db.packing[currentUser])) return;
         if (!confirm('Alle Häkchen in deiner Liste entfernen?')) return;
-        db.packing[currentUser].forEach(item => item.checked = false);
+        db.packing[currentUser].forEach(item => { item.checked = false; item.container = null; });
         saveDB();
     }
 
@@ -3487,7 +3523,7 @@
                         itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}">
                             <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1;">
                                 <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
-                                ${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}
+                                ${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}${item.checked && item.container ? ` <span style="font-size:11px;">${item.container === 'rucksack' ? '🎒' : '🧳'}</span>` : ''}
                             </label>
                             ${isMe ? `<div style="display:flex;gap:3px;align-items:center;">
                                 <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
@@ -3505,13 +3541,20 @@
             const pct = total > 0 ? Math.round(checked/total*100) : 0;
             const packedWeight = list.filter(i => i.checked).reduce((sum, i) => sum + (parseFloat(i.weight) || 0), 0);
             const totalWeight = list.reduce((sum, i) => sum + (parseFloat(i.weight) || 0), 0);
+            const rucksackWeight = list.filter(i => i.checked && i.container === 'rucksack').reduce((sum, i) => sum + (parseFloat(i.weight) || 0), 0);
+            const kofferWeight = list.filter(i => i.checked && i.container === 'koffer').reduce((sum, i) => sum + (parseFloat(i.weight) || 0), 0);
             const progressBar = total > 0 ? `<div style="background:rgba(255,255,255,.05);border-radius:99px;height:4px;overflow:hidden;margin-bottom:10px;"><div style="height:100%;border-radius:99px;background:${pct===100?'var(--success)':'var(--primary)'};width:${pct}%;transition:width .4s;"></div></div>` : '';
+            const containerBreakdown = isMe && (rucksackWeight > 0 || kofferWeight > 0) ? `<div style="display:flex;gap:10px;font-size:11px;color:var(--text-muted);margin-bottom:10px;">
+                    <span>🎒 Rucksack: <strong style="color:var(--text-main);">${rucksackWeight.toFixed(3)} kg</strong></span>
+                    <span>🧳 Koffer: <strong style="color:var(--text-main);">${kofferWeight.toFixed(3)} kg</strong></span>
+                </div>` : '';
             packingGrid.innerHTML += `<div class="card" style="background:rgba(15,23,42,0.6);padding:15px;border-color:${isMe?'var(--primary)':'var(--border)'}">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                     <h4 style="color:${isMe?'var(--primary)':'var(--text-main)'};margin:0;">${user}${isMe?' (Du)':''}</h4>
                     ${total > 0 ? `<span style="font-size:11px;color:${pct===100?'var(--success)':'var(--text-muted)'};text-align:right;">${checked}/${total} ✓${totalWeight > 0 ? `<br>⚖️ ${packedWeight.toFixed(3)} / ${totalWeight.toFixed(3)} kg` : ''}</span>` : ''}
                 </div>
                 ${progressBar}
+                ${containerBreakdown}
                 <div>${itemsHTML}</div>
             </div>`;
         });
