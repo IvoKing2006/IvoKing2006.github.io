@@ -1082,7 +1082,7 @@
                 <h3>🎒 Truppen-Packliste & Checkliste</h3>
                 <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
                     <input type="text" id="new-pack-item" placeholder="Gegenstand hinzufügen..." style="flex:2;min-width:120px;" onkeydown="if(event.key==='Enter') addPackItem()">
-                    <input type="number" id="new-pack-weight" placeholder="Gewicht (kg)" step="0.01" min="0" style="flex:1;min-width:100px;" onkeydown="if(event.key==='Enter') addPackItem()">
+                    <input type="text" inputmode="decimal" id="new-pack-weight" placeholder="Gewicht (kg)" style="flex:1;min-width:100px;" onkeydown="if(event.key==='Enter') addPackItem()">
                     <select id="new-pack-cat" style="flex:1;min-width:110px;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;font-size:13px;color:var(--text-main);">
                         <option value="Sonstiges">📦 Sonstiges</option>
                         <option value="Kleidung">👕 Kleidung</option>
@@ -3133,7 +3133,7 @@
         const text = input.value.trim();
         const cat = document.getElementById('new-pack-cat').value;
         const weightInput = document.getElementById('new-pack-weight');
-        const weight = parseFloat(weightInput.value) || 0;
+        const weight = parseFloat(weightInput.value.replace(',', '.')) || 0;
         if (!text) return;
         if (!db.packing) db.packing = {};
         if (!Array.isArray(db.packing[currentUser])) db.packing[currentUser] = [];
@@ -3509,7 +3509,7 @@
             packingGrid.innerHTML += `<div class="card" style="background:rgba(15,23,42,0.6);padding:15px;border-color:${isMe?'var(--primary)':'var(--border)'}">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                     <h4 style="color:${isMe?'var(--primary)':'var(--text-main)'};margin:0;">${user}${isMe?' (Du)':''}</h4>
-                    ${total > 0 ? `<span style="font-size:11px;color:${pct===100?'var(--success)':'var(--text-muted)'};text-align:right;">${checked}/${total} ✓${totalWeight > 0 ? `<br>⚖️ ${packedWeight.toFixed(2)} / ${totalWeight.toFixed(2)} kg` : ''}</span>` : ''}
+                    ${total > 0 ? `<span style="font-size:11px;color:${pct===100?'var(--success)':'var(--text-muted)'};text-align:right;">${checked}/${total} ✓${totalWeight > 0 ? `<br>⚖️ ${packedWeight.toFixed(3)} / ${totalWeight.toFixed(3)} kg` : ''}</span>` : ''}
                 </div>
                 ${progressBar}
                 <div>${itemsHTML}</div>
