@@ -1082,6 +1082,7 @@
                 <h3>🎒 Truppen-Packliste & Checkliste</h3>
                 <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
                     <input type="text" id="new-pack-item" placeholder="Gegenstand hinzufügen..." style="flex:2;min-width:120px;" onkeydown="if(event.key==='Enter') addPackItem()">
+                    <input type="number" id="new-pack-weight" placeholder="Gewicht (kg)" step="0.01" min="0" style="flex:1;min-width:100px;" onkeydown="if(event.key==='Enter') addPackItem()">
                     <select id="new-pack-cat" style="flex:1;min-width:110px;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;font-size:13px;color:var(--text-main);">
                         <option value="Sonstiges">📦 Sonstiges</option>
                         <option value="Kleidung">👕 Kleidung</option>
@@ -3131,11 +3132,14 @@
         const input = document.getElementById('new-pack-item');
         const text = input.value.trim();
         const cat = document.getElementById('new-pack-cat').value;
+        const weightInput = document.getElementById('new-pack-weight');
+        const weight = parseFloat(weightInput.value) || 0;
         if (!text) return;
         if (!db.packing) db.packing = {};
         if (!Array.isArray(db.packing[currentUser])) db.packing[currentUser] = [];
-        db.packing[currentUser].push({ id: Date.now().toString(), name: text, checked: false, cat: cat || 'Sonstiges' });
+        db.packing[currentUser].push({ id: Date.now().toString(), name: text, checked: false, cat: cat || 'Sonstiges', weight: weight });
         input.value = '';
+        weightInput.value = '';
         saveDB();
     }
 
@@ -3466,7 +3470,7 @@
                         itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}">
                             <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1;">
                                 <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
-                                ${item.name}
+                                ${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}
                             </label>
                             ${isMe ? `<div style="display:flex;gap:3px;align-items:center;">
                                 <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
@@ -3481,11 +3485,13 @@
             const checked = list.filter(i => i.checked).length;
             const total = list.length;
             const pct = total > 0 ? Math.round(checked/total*100) : 0;
+            const packedWeight = list.filter(i => i.checked).reduce((sum, i) => sum + (parseFloat(i.weight) || 0), 0);
+            const totalWeight = list.reduce((sum, i) => sum + (parseFloat(i.weight) || 0), 0);
             const progressBar = total > 0 ? `<div style="background:rgba(255,255,255,.05);border-radius:99px;height:4px;overflow:hidden;margin-bottom:10px;"><div style="height:100%;border-radius:99px;background:${pct===100?'var(--success)':'var(--primary)'};width:${pct}%;transition:width .4s;"></div></div>` : '';
             packingGrid.innerHTML += `<div class="card" style="background:rgba(15,23,42,0.6);padding:15px;border-color:${isMe?'var(--primary)':'var(--border)'}">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                     <h4 style="color:${isMe?'var(--primary)':'var(--text-main)'};margin:0;">${user}${isMe?' (Du)':''}</h4>
-                    ${total > 0 ? `<span style="font-size:11px;color:${pct===100?'var(--success)':'var(--text-muted)'};">${checked}/${total} ✓</span>` : ''}
+                    ${total > 0 ? `<span style="font-size:11px;color:${pct===100?'var(--success)':'var(--text-muted)'};text-align:right;">${checked}/${total} ✓${totalWeight > 0 ? `<br>⚖️ ${packedWeight.toFixed(2)} / ${totalWeight.toFixed(2)} kg` : ''}</span>` : ''}
                 </div>
                 ${progressBar}
                 <div>${itemsHTML}</div>
