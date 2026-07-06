@@ -1113,7 +1113,7 @@
                 <h3 style="color:var(--warning);">🍺 Alkohol & Feiern</h3>
                 <div style="display:flex;flex-direction:column;gap:10px;">
                     <div class="law-box"><strong>🚫 Alkohol in der Öffentlichkeit:</strong> Trinken auf Straßen, Plätzen oder am Strand verboten. Bußgeld <b>50–600 €</b>.</div>
-                    <div class="law-box"><strong>🕙 Alkoholverkauf 22–8 Uhr:</strong> Supermärkte und Kioske dürfen zwischen 22 und 8 Uhr keinen Alkohol mehr verkaufen.</div>
+                    <div class="law-box"><strong>🕙 Alkoholverkauf ab 22 Uhr:</strong> Supermärkte und Kioske dürfen nach 22 Uhr keinen Alkohol mehr verkaufen.</div>
                     <div class="law-box" style="border-left-color:#ef4444;background:rgba(239,68,68,0.05);"><strong>⚠️ Fliegende Händler:</strong> Kauf von Bier oder Mojitos bei Straßen-/Strandverkäufern ist illegal – auch für Käufer!</div>
                     <div class="law-box"><strong>🔇 Lärm ab 21 Uhr:</strong> Laute Musik in Touristenwohnungen → schnell vierstellige Bußgelder.</div>
                     <div class="law-box"><strong>🌿 Drogen:</strong> Öffentlicher Konsum und Besitz (auch Cannabis) illegal. Nur im privaten Raum oder registrierten Cannabis Social Clubs geduldet.</div>
@@ -3522,16 +3522,16 @@
                     items.forEach((item, idx) => {
                         const isFirst = idx === 0;
                         const isLast = idx === items.length - 1;
-                        itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}">
-                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1;">
-                                <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
-                                ${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}${item.checked && item.container ? ` <span style="font-size:11px;">${item.container === 'rucksack' ? '🎒' : '🧳'}</span>` : ''}
+                        itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}" style="flex-wrap:wrap;">
+                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1 1 140px;min-width:0;word-break:break-word;">
+                                <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;flex-shrink:0;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
+                                <span style="min-width:0;word-break:break-word;">${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}${item.checked && item.container ? ` <span style="font-size:11px;">${item.container === 'rucksack' ? '🎒' : '🧳'}</span>` : ''}</span>
                             </label>
-                            ${isMe ? `<div style="display:flex;gap:3px;align-items:center;">
-                                <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
-                                <button onclick="movePackItem('${user}','${item.id}','${cat}',1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isLast?'0.3':'1'};cursor:${isLast?'default':'pointer'};" ${isLast?'disabled':''}>▼</button>
-                                <button onclick="editPackItem('${user}','${item.id}')" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;">✏️</button>
-                                <button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>
+                            ${isMe ? `<div style="display:flex;gap:3px;align-items:center;flex-shrink:0;margin-left:auto;">
+                                <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;flex-shrink:0;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
+                                <button onclick="movePackItem('${user}','${item.id}','${cat}',1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;flex-shrink:0;opacity:${isLast?'0.3':'1'};cursor:${isLast?'default':'pointer'};" ${isLast?'disabled':''}>▼</button>
+                                <button onclick="editPackItem('${user}','${item.id}')" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;flex-shrink:0;">✏️</button>
+                                <button class="delete-btn" style="flex-shrink:0;" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>
                             </div>` : ''}
                         </div>`;
                     });
