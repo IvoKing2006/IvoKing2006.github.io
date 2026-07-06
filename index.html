@@ -3882,22 +3882,34 @@
         errorEl.style.display = 'none';
         resultEl.style.display = 'block';
 
+        function geocodeBarcelona(rawQuery, onFound, onNotFound, onError) {
+            function attempt(q, isRetry) {
+                var url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q + ', Barcelona') + '&format=json&limit=1&countrycodes=es';
+                fetch(url)
+                    .then(function(r){ return r.json(); })
+                    .then(function(data) {
+                        if (!data || data.length === 0) {
+                            if (!isRetry) {
+                                // Fallback: Hausnummer entfernen, nur Straße/Ort erneut suchen
+                                var stripped = q.replace(/,?\s*\d+\s*[a-zA-Z]?\s*(,|$)/, '$1').trim().replace(/,$/, '');
+                                if (stripped && stripped !== q) {
+                                    attempt(stripped, true);
+                                    return;
+                                }
+                            }
+                            onNotFound();
+                            return;
+                        }
+                        onFound(parseFloat(data[0].lat), parseFloat(data[0].lon), data[0].display_name);
+                    })
+                    .catch(onError);
+            }
+            attempt(rawQuery, false);
+        }
+
         function berechnenMitStart(userLat, userLng, startLabel) {
             resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Ziel wird gesucht...</div>';
-            var query = encodeURIComponent(dest + ', Barcelona');
-            fetch('https://nominatim.openstreetmap.org/search?q=' + query + '&format=json&limit=1&countrycodes=es')
-                .then(function(r){ return r.json(); })
-                .then(function(data) {
-                    if (!data || data.length === 0) {
-                        resultEl.innerHTML = '';
-                        errorEl.style.display = 'block';
-                        errorEl.textContent = '❌ Ziel nicht gefunden. Bitte genauer eingeben (z.B. "Sagrada Família, Barcelona").';
-                        return;
-                    }
-                    var destLat = parseFloat(data[0].lat);
-                    var destLng = parseFloat(data[0].lon);
-                    var destName = data[0].display_name;
-
+            geocodeBarcelona(dest, function(destLat, destLng, destName) {
                     var R = 6371;
                     var dLat = (destLat - userLat) * Math.PI / 180;
                     var dLon = (destLng - userLng) * Math.PI / 180;
@@ -3948,8 +3960,11 @@
                         '</div>' +
                         '<div style="margin-top:10px;font-size:11px;color:var(--text-muted);">⚠️ Schätzung auf Basis offizieller AMB-Tarife 2025. Stau & Wartezeit können den Preis erhöhen.</div>' +
                         '</div>';
-                })
-                .catch(function() {
+                }, function() {
+                    resultEl.innerHTML = '';
+                    errorEl.style.display = 'block';
+                    errorEl.textContent = '❌ Ziel nicht gefunden. Bitte genauer eingeben (z.B. "Sagrada Família, Barcelona").';
+                }, function() {
                     resultEl.innerHTML = '';
                     errorEl.style.display = 'block';
                     errorEl.textContent = '❌ Fehler bei der Suche. Bitte Internetverbindung prüfen.';
@@ -3960,22 +3975,17 @@
             var startAdresse = document.getElementById('taxi-start-input').value.trim();
             if (!startAdresse) { errorEl.style.display='block'; errorEl.textContent='Bitte Startpunkt eingeben.'; return; }
             resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">🗺️ Startpunkt wird gesucht...</div>';
-            fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(startAdresse + ', Barcelona') + '&format=json&limit=1&countrycodes=es')
-                .then(function(r){ return r.json(); })
-                .then(function(data) {
-                    if (!data || data.length === 0) {
-                        resultEl.innerHTML = '';
-                        errorEl.style.display = 'block';
-                        errorEl.textContent = '❌ Startpunkt nicht gefunden. Bitte genauer eingeben.';
-                        return;
-                    }
-                    berechnenMitStart(parseFloat(data[0].lat), parseFloat(data[0].lon), data[0].display_name.split(',').slice(0,2).join(','));
-                })
-                .catch(function() {
-                    resultEl.innerHTML = '';
-                    errorEl.style.display = 'block';
-                    errorEl.textContent = '❌ Fehler bei der Suche. Bitte Internetverbindung prüfen.';
-                });
+            geocodeBarcelona(startAdresse, function(lat, lng, displayName) {
+                berechnenMitStart(lat, lng, displayName.split(',').slice(0,2).join(','));
+            }, function() {
+                resultEl.innerHTML = '';
+                errorEl.style.display = 'block';
+                errorEl.textContent = '❌ Startpunkt nicht gefunden. Bitte genauer eingeben.';
+            }, function() {
+                resultEl.innerHTML = '';
+                errorEl.style.display = 'block';
+                errorEl.textContent = '❌ Fehler bei der Suche. Bitte Internetverbindung prüfen.';
+            });
         } else {
             resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">📍 GPS wird ermittelt...</div>';
             navigator.geolocation.getCurrentPosition(function(pos) {
