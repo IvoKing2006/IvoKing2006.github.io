@@ -1226,7 +1226,13 @@
                         <input type="checkbox" id="taxi-sants" style="width:16px;height:16px;accent-color:var(--warning);"> 🚂 Bahnhof Sants (+2,50€)
                     </label>
                     <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;flex:1;min-width:140px;">
-                        <input type="checkbox" id="taxi-fira" style="width:16px;height:16px;accent-color:var(--warning);"> 🏛️ Messe Fira (+3,30€)
+                        <input type="checkbox" id="taxi-fira" style="width:16px;height:16px;accent-color:var(--warning);"> 🏛️ Messe Fira (+2,50€)
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;flex:1;min-width:140px;">
+                        <input type="checkbox" id="taxi-hafen" style="width:16px;height:16px;accent-color:var(--warning);"> 🚢 Hafen Moll Adossat (+4,50€)
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:8px;padding:8px 12px;flex:1;min-width:140px;">
+                        <input type="checkbox" id="taxi-feiertag" style="width:16px;height:16px;accent-color:var(--warning);"> 🎄 Besonderer Feiertag (+3,50€)
                     </label>
                 </div>
 
@@ -1238,7 +1244,8 @@
                         📋 <strong style="color:var(--text-main);">Offizielle AMB-Tarife 2025:</strong><br>
                         T1 (Mo–Fr 08–20h): 2,75€ Grundgebühr + 1,32€/km · Mindest: 8,00€<br>
                         T2 (Nacht/Sa/So/Feiertage): 2,75€ Grundgebühr + 1,62€/km · Mindest: 8,00€<br>
-                        Van (5–8 Pers.): +4,50€ Zuschlag · Gepäck: kostenlos
+                        Van (5–8 Pers.): +4,50€ · Flughafen: +4,50€ (min. 21€) · Hafen: +4,50€<br>
+                        Bahnhof Sants / Fira: +2,50€ · Besondere Feiertage: +3,50€ · Gepäck: kostenlos
                     </div>
                 </div>
             </div>
@@ -3522,16 +3529,16 @@
                     items.forEach((item, idx) => {
                         const isFirst = idx === 0;
                         const isLast = idx === items.length - 1;
-                        itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}" style="flex-wrap:wrap;">
-                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1 1 140px;min-width:0;word-break:break-word;">
-                                <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;flex-shrink:0;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
-                                <span style="min-width:0;word-break:break-word;">${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}${item.checked && item.container ? ` <span style="font-size:11px;">${item.container === 'rucksack' ? '🎒' : '🧳'}</span>` : ''}</span>
+                        itemsHTML += `<div class="pack-item ${item.checked ? 'checked' : ''}" data-name="${item.name.toLowerCase()}">
+                            <label style="margin:0;display:flex;align-items:center;color:var(--text-main);font-weight:normal;flex:1;">
+                                <input type="checkbox" ${item.checked ? 'checked' : ''} ${!isMe ? 'disabled' : ''} style="margin-right:8px;accent-color:var(--primary);" onchange="togglePackItem('${user}', '${item.id}')">
+                                ${item.name}${item.weight ? ` <span style="color:var(--text-muted);font-size:11px;">(${item.weight} kg)</span>` : ''}${item.checked && item.container ? ` <span style="font-size:11px;">${item.container === 'rucksack' ? '🎒' : '🧳'}</span>` : ''}
                             </label>
-                            ${isMe ? `<div style="display:flex;gap:3px;align-items:center;flex-shrink:0;margin-left:auto;">
-                                <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;flex-shrink:0;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
-                                <button onclick="movePackItem('${user}','${item.id}','${cat}',1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;flex-shrink:0;opacity:${isLast?'0.3':'1'};cursor:${isLast?'default':'pointer'};" ${isLast?'disabled':''}>▼</button>
-                                <button onclick="editPackItem('${user}','${item.id}')" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;flex-shrink:0;">✏️</button>
-                                <button class="delete-btn" style="flex-shrink:0;" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>
+                            ${isMe ? `<div style="display:flex;gap:3px;align-items:center;">
+                                <button onclick="movePackItem('${user}','${item.id}','${cat}',-1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isFirst?'0.3':'1'};cursor:${isFirst?'default':'pointer'};" ${isFirst?'disabled':''}>▲</button>
+                                <button onclick="movePackItem('${user}','${item.id}','${cat}',1)" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;opacity:${isLast?'0.3':'1'};cursor:${isLast?'default':'pointer'};" ${isLast?'disabled':''}>▼</button>
+                                <button onclick="editPackItem('${user}','${item.id}')" style="width:24px;height:24px;padding:0;font-size:12px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);box-shadow:none;border-radius:6px;">✏️</button>
+                                <button class="delete-btn" onclick="deletePackItem('${user}', '${item.id}')">🗑️</button>
                             </div>` : ''}
                         </div>`;
                     });
@@ -3866,6 +3873,8 @@
         var flughafen = document.getElementById('taxi-flughafen').checked;
         var sants = document.getElementById('taxi-sants').checked;
         var fira = document.getElementById('taxi-fira').checked;
+        var hafen = document.getElementById('taxi-hafen').checked;
+        var feiertag = document.getElementById('taxi-feiertag').checked;
         var resultEl = document.getElementById('taxi-result');
         var errorEl = document.getElementById('taxi-error');
 
@@ -3914,7 +3923,9 @@
                     if (taxiType === 'van') { preis += 4.50; zuschlagTexte.push('Van +4,50€'); }
                     if (flughafen) { preis += 4.50; zuschlagTexte.push('Flughafen +4,50€'); }
                     if (sants) { preis += 2.50; zuschlagTexte.push('Sants +2,50€'); }
-                    if (fira) { preis += 3.30; zuschlagTexte.push('Fira +3,30€'); }
+                    if (fira) { preis += 2.50; zuschlagTexte.push('Fira +2,50€'); }
+                    if (hafen) { preis += 4.50; zuschlagTexte.push('Hafen +4,50€'); }
+                    if (feiertag) { preis += 3.50; zuschlagTexte.push('Feiertag +3,50€'); }
                     if (flughafen && preis < 21) preis = 21;
                     if (preis < 8.00) preis = 8.00;
 
