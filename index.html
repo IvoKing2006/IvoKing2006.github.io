@@ -2389,6 +2389,10 @@
                     <label>Öffnungszeiten (optional)</label>
                     <input type="text" id="eo-hours" placeholder="z.B. Mo–So: 12:00–23:00">
                 </div>
+                <div class="form-group">
+                    <label>Link (optional)</label>
+                    <input type="text" id="eo-link" placeholder="z.B. https://www.portaventuraworld.com/tickets">
+                </div>
                 <div id="eo-status" style="font-size:13px;margin-bottom:10px;display:none;"></div>
                 <button onclick="addEigenerOrt()" style="background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(0,200,122,.15));color:var(--success);border:1px solid rgba(0,255,163,.35);">➕ Ort hinzufügen</button>
             </div>
@@ -4293,6 +4297,7 @@
         var newCatName = document.getElementById('eo-new-cat-name').value.trim();
         var tag    = document.getElementById('eo-tag').value.trim();
         var hours  = document.getElementById('eo-hours').value.trim();
+        var link   = document.getElementById('eo-link').value.trim();
         var status = document.getElementById('eo-status');
 
         if (!name || !addr) { status.textContent = '❌ Bitte Name und Adresse eingeben.'; status.style.color = 'var(--danger)'; status.style.display = 'block'; return; }
@@ -4327,6 +4332,7 @@
                 cat: cat,
                 tag: tag,
                 hours: hours,
+                link: link ? (/^https?:\/\//i.test(link) ? link : 'https://' + link) : '',
                 lat: lat,
                 lng: lng,
                 addedBy: currentUser
@@ -4341,6 +4347,7 @@
             document.getElementById('eo-addr').value = '';
             document.getElementById('eo-tag').value = '';
             document.getElementById('eo-hours').value = '';
+            document.getElementById('eo-link').value = '';
             document.getElementById('eo-new-cat-name').value = '';
             document.getElementById('eo-new-cat-wrap').style.display = 'none';
 
@@ -4462,6 +4469,7 @@
                 if (o.hours) html += '<span class="hours-info">' + o.hours + '</span>';
                 if (o.lat) html += '<div class="distance-live">🔍 Suche GPS...</div>';
                 html += '<button class="btn-nav-link" id="enav-' + o.id + '">🗺️ Route öffnen</button>';
+                if (o.link) html += '<a href="' + o.link + '" target="_blank" rel="noopener" class="btn-nav-link" style="display:block;text-align:center;text-decoration:none;margin-top:6px;">🔗 Website öffnen</a>';
                 html += '<div style="display:flex;gap:6px;margin-top:4px;">';
                 html += '<button onclick="openMoveOrt(\'' + o.id + '\')" style="flex:1;background:none;border:1px solid rgba(0,212,255,.3);color:var(--primary);box-shadow:none;padding:6px;font-size:12px;border-radius:8px;cursor:pointer;">📂 Verschieben</button>';
                 html += '<button onclick="deleteEigenerOrt(\'' + o.id + '\')" style="flex:1;background:none;border:1px solid rgba(255,77,109,.4);color:var(--danger);box-shadow:none;padding:6px;font-size:12px;border-radius:8px;cursor:pointer;">🗑️ Entfernen</button>';
