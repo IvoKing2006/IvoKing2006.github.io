@@ -1528,7 +1528,7 @@
                 <div class="restaurant-grid">
 
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="da_nanni___poblenou" data-place-id="da_nanni___poblenou" data-lat="41.399943" data-lng="2.203082">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="da_nanni___poblenou" data-lat="41.399943" data-lng="2.203082">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Da Nanni | Poblenou</h4>
                         <div class="cuisine-tag">🍕 Pizzeria</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Rambla del Poblenou, 20, Sant Martí, 08005 Barcelona</div>
@@ -1617,7 +1617,6 @@
                     
 
                 
-                        <button class="btn-visited" onclick="toggleVisited('da_nanni___poblenou')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--text-muted);border-radius:10px;">📍 Als besucht markieren</button>
                     </div>
             </div>
         </div>
@@ -1992,6 +1991,8 @@
                         <button class="btn-nav-link" style="margin-top:10px;" onclick="openMap('Estanc de Sicilia','Carrer de Sicilia, 240, Eixample, 08013 Barcelona')">🗺️ Route öffnen</button>
                                             <button class="btn-visited" onclick="toggleVisited('estanc_de_sic_lia')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--text-muted);border-radius:10px;">📍 Als besucht markieren</button>
                     </div>
+                
+                    </div>
 
             </div>
         </div>
@@ -2003,7 +2004,7 @@
                 </p>
                 <div class="restaurant-grid" id="apotheke-grid">
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="farm_cia_torres" data-place-id="farm_cia_torres" data-lat="41.3887" data-lng="2.1592">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="farm_cia_torres" data-lat="41.3887" data-lng="2.1592">
                         <h4 style="font-size: 16px; margin-bottom: 4px;">Farmàcia Torres</h4>
                         <div class="apotheke-tag">💊 Apotheke</div><div class="bereitschaft-tag">🔴 24h Bereitschaft</div>
                         <div class="meta-info">Carrer d'Aribau, 62, Eixample</div>
@@ -2104,7 +2105,6 @@
                                             <button class="btn-visited" onclick="toggleVisited('farm_cia_mart__tor')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--text-muted);border-radius:10px;">📍 Als besucht markieren</button>
                     </div>
                 
-                        <button class="btn-visited" onclick="toggleVisited('farm_cia_torres')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--text-muted);border-radius:10px;">📍 Als besucht markieren</button>
                     </div>
             </div>
         </div>
@@ -2124,7 +2124,7 @@
                         <button class="btn-nav-link" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="openMap('', 'Carrer de la Marina, 212, Barcelona, Catalunya 08013, Spanien')">🗺️ Route öffnen</button>
                     </div>
 
-                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="billars_agbar" data-place-id="billars_agbar" data-lat="41.397682" data-lng="2.194255">
+                    <div class="card" style="background: #0f172a; margin-bottom:0;" data-place-id="billars_agbar" data-lat="41.397682" data-lng="2.194255">
                         <h4 style="font-size: 17px; margin-bottom: 5px;">Billars Agbar</h4>
                         <div class="cuisine-tag" style="background: rgba(168, 85, 247, 0.15); color: var(--accent);">🎱 Billardhalle</div>
                         <div class="meta-info" style="margin-bottom: 10px;">Carrer de Pere IV, 29, Sexto 1a, Sant Martí, 08018 Barcelona</div>
@@ -2178,7 +2178,6 @@
                                             <button class="btn-visited" onclick="toggleVisited('bunkers_del_carmel')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--text-muted);border-radius:10px;">📍 Als besucht markieren</button>
                     </div>
                 
-                        <button class="btn-visited" onclick="toggleVisited('billars_agbar')" style="width:100%;margin-top:6px;font-size:12px;padding:8px;box-shadow:none;border:1px solid var(--glass-border);background:rgba(255,255,255,.04);color:var(--text-muted);border-radius:10px;">📍 Als besucht markieren</button>
                     </div>
             </div>
         </div>
@@ -4013,17 +4012,19 @@
         { name: 'Long Island Iced Tea', emoji: '🥃', zutaten: ['Wodka', 'Gin', 'Rum', 'Tequila', 'Triple Sec', 'Zitronensaft', 'Cola'], beschreibung: 'Vorsicht — schmeckt wie Eistee, haut aber rein wie ein Vorschlaghammer.' },
         { name: 'Espresso Martini', emoji: '☕', zutaten: ['Wodka', 'Kaffeelikör', 'Espresso', 'Zuckersirup', 'Eis'], beschreibung: 'Wach bleiben und Party — der perfekte Spätnacht-Drink.' },
         { name: 'Negroni', emoji: '🍊', zutaten: ['Gin', 'Campari', 'Roter Wermut', 'Eis', 'Orangenschale'], beschreibung: 'Bitter, komplex, ein Erwachsenen-Drink. 1:1:1.' },
+        { name: 'Paloma', emoji: '🍹', zutaten: ['Tequila', 'Grapefruitlimo (Squirt)', 'Limettensaft', 'Salz', 'Eis'], beschreibung: 'In Mexiko beliebter als die Margarita — hier in Barcelona auch.' },
         { name: 'Cuba Libre', emoji: '🥤', zutaten: ['Rum', 'Cola', 'Limettensaft', 'Eis', 'Limettenscheibe'], beschreibung: 'Rum-Cola mit Limette — einfach und gut.' },
         { name: 'Tequila Sunrise', emoji: '🌅', zutaten: ['Tequila', 'Orangensaft', 'Grenadine', 'Eis'], beschreibung: 'Sieht wie ein Sonnenaufgang aus — ideal für den Morgen danach.' },
         { name: 'Caipirinha', emoji: '🍈', zutaten: ['Cachaça', 'Limette', 'Rohrzucker', 'Crushed Ice'], beschreibung: 'Brasilianischer Nationaldrink — frisch und stark.' },
         { name: 'Whisky Sour', emoji: '🥃', zutaten: ['Bourbon Whisky', 'Zitronensaft', 'Zuckersirup', 'Eiweiß (optional)', 'Eis'], beschreibung: 'Sauer trifft Whisky — mit Schaum obendrauf ein Gedicht.' },
         { name: 'Dry Martini', emoji: '🍸', zutaten: ['Gin', 'Trockener Wermut', 'Eiswürfel', 'Olive oder Zitronenschale'], beschreibung: 'Gerührt, nicht geschüttelt. Der King.' },
         { name: 'Moscow Mule', emoji: '🫚', zutaten: ['Wodka', 'Ginger Beer', 'Limettensaft', 'Eis', 'Minze'], beschreibung: 'Scharf vom Ingwer, frisch von der Limette.' },
+        { name: 'Penicillin', emoji: '🍯', zutaten: ['Scotch Whisky', 'Zitronensaft', 'Honig-Ingwer-Sirup', 'Islay Whisky (float)'], beschreibung: 'Moderner Klassiker — rauchig, süß, sauer. Gehört auf jede Karte.' },
+        { name: 'Cava Sangria', emoji: '🥂', zutaten: ['Cava (Spanischer Sekt)', 'Orangensaft', 'Brandy', 'Früchte', 'Eis'], beschreibung: 'Die Barceloner Version — leichter und prickelnder als normale Sangria.' },
         { name: 'Carajillo', emoji: '☕', zutaten: ['Espresso', 'Licor 43', 'Eis (optional)'], beschreibung: 'Das katalanische Kultgetränk — Kaffee mit Licor 43. Süß und stark.' },
-        { name: 'Vermut', emoji: '🫒', zutaten: ['Roter Wermut', 'Soda (optional)', 'Eiswürfel', 'Olive', 'Orangenscheibe'], beschreibung: 'In Barcelona Tradition zum Mittag — "La hora del vermut" ist heilig.' },
-        { name: 'Tinto de Verano', emoji: '🍋', zutaten: ['Rotwein', 'Limonade (Casera/Sprite)', 'Eis', 'Zitronenscheibe'], beschreibung: 'Noch alltäglicher als Sangria — der spanische Sommer-Standard schlechthin.' },
-        { name: 'Campari Orange', emoji: '🍊', zutaten: ['Campari', 'Orangensaft', 'Eis'], beschreibung: 'Einfach, bitter-süß, in jeder Bar sofort machbar.' },
-        { name: 'Mai Tai', emoji: '🍹', zutaten: ['Weißer Rum', 'Brauner Rum', 'Orgeat-Sirup', 'Limettensaft', 'Orange Curaçao', 'Eis'], beschreibung: 'Tropischer Tiki-Klassiker — in Cocktailbars praktisch Standard.' }
+        { name: 'Agua de Valencia', emoji: '🍊', zutaten: ['Cava', 'Orangensaft', 'Wodka', 'Gin', 'Zucker'], beschreibung: 'Valencianischer Export — süß, gefährlich, wird in großen Karaffen serviert.' },
+        { name: 'Rebujito', emoji: '🌿', zutaten: ['Manzanilla Sherry', 'Sprite oder 7UP', 'Minze', 'Eis'], beschreibung: 'Andalusischer Partyklassiker — leicht, frisch, geht runter wie Wasser.' },
+        { name: 'Vermut', emoji: '🫒', zutaten: ['Roter Wermut', 'Soda (optional)', 'Eiswürfel', 'Olive', 'Orangenscheibe'], beschreibung: 'In Barcelona Tradition zum Mittag — "La hora del vermut" ist heilig.' }
     ];
 
     var _cocktailLiveListener = null;
